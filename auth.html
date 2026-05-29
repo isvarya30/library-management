@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LibraRead | Login & Register</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Inter', system-ui, sans-serif;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Split Container */
+        .split-container {
+            display: flex;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Left Side - Image */
+        .left-side {
+            flex: 1;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .left-side::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?w=800&h=800&fit=crop') center/cover;
+            opacity: 0.4;
+        }
+
+        .left-content {
+            position: relative;
+            z-index: 1;
+            color: white;
+            text-align: center;
+            padding: 2rem;
+            animation: fadeInUp 0.8s ease;
+        }
+
+        .left-content .logo-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        .left-content h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .left-content p {
+            font-size: 1rem;
+            opacity: 0.9;
+            max-width: 80%;
+            margin: 0 auto;
+        }
+
+        .quote-text {
+            margin-top: 2rem;
+            font-style: italic;
+            font-size: 0.9rem;
+            border-top: 1px solid rgba(255,255,255,0.3);
+            padding-top: 1rem;
+            display: inline-block;
+        }
+
+        /* Right Side - Forms */
+        .right-side {
+            flex: 1;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            overflow-y: auto;
+        }
+
+        .form-container {
+            width: 100%;
+            max-width: 450px;
+            animation: fadeInRight 0.8s ease;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .tab {
+            flex: 1;
+            text-align: center;
+            padding: 1rem;
+            cursor: pointer;
+            font-weight: 600;
+            color: #6c7a91;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .tab.active {
+            color: #667eea;
+        }
+
+        .tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+        }
+
+        .tab:hover:not(.active) {
+            color: #4a5568;
+        }
+
+        /* Forms */
+        .form {
+            display: none;
+        }
+
+        .form.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #6c7a91;
+            margin-bottom: 0.4rem;
+            text-transform: uppercase;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-wrapper input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+            padding-right: 40px;
+        }
+
+        .input-wrapper input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102,126,234,0.1);
+        }
+
+        .input-wrapper input.error {
+            border-color: #e53e3e;
+        }
+
+        .input-wrapper input.valid {
+            border-color: #28a745;
+        }
+
+        .input-icon {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1rem;
+        }
+
+        .input-icon .fa-check-circle {
+            color: #28a745;
+        }
+
+        .input-icon .fa-exclamation-circle {
+            color: #e53e3e;
+        }
+
+        .error-message {
+            color: #e53e3e;
+            font-size: 0.7rem;
+            margin-top: 0.25rem;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .success-message {
+            color: #28a745;
+            font-size: 0.7rem;
+            margin-top: 0.25rem;
+            display: none;
+        }
+
+        .success-message.show {
+            display: block;
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 40px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 1rem;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102,126,234,0.4);
+        }
+
+        .btn-submit:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .switch-text {
+            text-align: center;
+            margin-top: 1.5rem;
+            font-size: 0.85rem;
+            color: #6c7a91;
+        }
+
+        .switch-link {
+            color: #667eea;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .switch-link:hover {
+            text-decoration: underline;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border: 2px solid white;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 0.6s linear infinite;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInRight {
+            from {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .split-container {
+                flex-direction: column;
+            }
+            .left-side {
+                min-height: 200px;
+            }
+            .left-content h1 {
+                font-size: 1.5rem;
+            }
+            .left-content p {
+                font-size: 0.8rem;
+            }
+            .right-side {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="split-container">
+        <!-- Left Side - Image & Quote -->
+        <div class="left-side">
+            <div class="left-content">
+                <div class="logo-icon">
+                    <i class="fas fa-book-open"></i>
+                </div>
+                <h1>LibraRead</h1>
+                <p>Your gateway to endless knowledge and imagination</p>
+                <div class="quote-text">
+                    <i class="fas fa-quote-left"></i> A library is a hospital for the mind.<br>
+                    <i class="fas fa-quote-right"></i> - Anonymous
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Side - Login/Register Forms -->
+        <div class="right-side">
+            <div class="form-container">
+                <!-- Tabs -->
+                <div class="tabs">
+                    <div class="tab active" data-tab="login">Login</div>
+                    <div class="tab" data-tab="register">Register</div>
+                </div>
+
+                <!-- Login Form -->
+                <div id="loginForm" class="form active">
+                    <form id="loginFormElement">
+                        <div class="form-group">
+                            <label><i class="fas fa-envelope"></i> Email Address</label>
+                            <div class="input-wrapper">
+                                <input type="email" id="loginEmail" placeholder="Enter your email">
+                                <span class="input-icon" id="loginEmailIcon"></span>
+                            </div>
+                            <div class="error-message" id="loginEmailError"></div>
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-lock"></i> Password</label>
+                            <div class="input-wrapper">
+                                <input type="password" id="loginPassword" placeholder="Enter your password">
+                                <span class="input-icon" id="loginPasswordIcon"></span>
+                            </div>
+                            <div class="error-message" id="loginPasswordError"></div>
+                        </div>
+                        <button type="submit" class="btn-submit" id="loginBtn">Login to Library</button>
+                    </form>
+                    <div class="switch-text">
+                        Don't have an account? <span class="switch-link" onclick="switchTab('register')">Register here</span>
+                    </div>
+                </div>
+
+                <!-- Register Form -->
+                <div id="registerForm" class="form">
+                    <form id="registerFormElement">
+                        <div class="form-group">
+                            <label><i class="fas fa-user"></i> Full Name</label>
+                            <div class="input-wrapper">
+                                <input type="text" id="regName" placeholder="Enter your full name">
+                                <span class="input-icon" id="regNameIcon"></span>
+                            </div>
+                            <div class="error-message" id="regNameError"></div>
+                            <div class="success-message" id="regNameSuccess"></div>
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-envelope"></i> Email Address</label>
+                            <div class="input-wrapper">
+                                <input type="email" id="regEmail" placeholder="Enter your email">
+                                <span class="input-icon" id="regEmailIcon"></span>
+                            </div>
+                            <div class="error-message" id="regEmailError"></div>
+                            <div class="success-message" id="regEmailSuccess"></div>
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-lock"></i> Password</label>
+                            <div class="input-wrapper">
+                                <input type="password" id="regPassword" placeholder="Create a password">
+                                <span class="input-icon" id="regPasswordIcon"></span>
+                            </div>
+                            <div class="error-message" id="regPasswordError"></div>
+                            <div class="success-message" id="regPasswordSuccess"></div>
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-check-circle"></i> Confirm Password</label>
+                            <div class="input-wrapper">
+                                <input type="password" id="regConfirmPassword" placeholder="Confirm your password">
+                                <span class="input-icon" id="regConfirmIcon"></span>
+                            </div>
+                            <div class="error-message" id="regConfirmError"></div>
+                            <div class="success-message" id="regConfirmSuccess"></div>
+                        </div>
+                        <button type="submit" class="btn-submit" id="registerBtn">Create Account</button>
+                    </form>
+                    <div class="switch-text">
+                        Already have an account? <span class="switch-link" onclick="switchTab('login')">Login here</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const BASE_URL = "https://dev-api.humhealth.com/LibraryManagementAPI";
+        const LOCAL_BACKEND = "http://localhost:8080";
+
+        // Helper function to update input icon
+        function updateInputIcon(inputId, isValid, isLoading = false) {
+            const iconSpan = document.getElementById(`${inputId}Icon`);
+            if (!iconSpan) return;
+            
+            if (isLoading) {
+                iconSpan.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+                return;
+            }
+            
+            if (isValid === true) {
+                iconSpan.innerHTML = '<i class="fas fa-check-circle"></i>';
+            } else if (isValid === false) {
+                iconSpan.innerHTML = '<i class="fas fa-exclamation-circle"></i>';
+            } else {
+                iconSpan.innerHTML = '';
+            }
+        }
+
+        // Clear all errors and success messages
+        function clearFieldMessages(fieldId) {
+            const errorDiv = document.getElementById(`${fieldId}Error`);
+            const successDiv = document.getElementById(`${fieldId}Success`);
+            if (errorDiv) errorDiv.classList.remove('show');
+            if (successDiv) successDiv.classList.remove('show');
+        }
+
+        function showFieldError(fieldId, message) {
+            const errorDiv = document.getElementById(`${fieldId}Error`);
+            const inputField = document.getElementById(fieldId);
+            if (errorDiv) {
+                errorDiv.textContent = message;
+                errorDiv.classList.add('show');
+            }
+            if (inputField) {
+                inputField.classList.add('error');
+                inputField.classList.remove('valid');
+            }
+            updateInputIcon(fieldId, false);
+        }
+
+        function showFieldSuccess(fieldId, message = '') {
+            const successDiv = document.getElementById(`${fieldId}Success`);
+            const errorDiv = document.getElementById(`${fieldId}Error`);
+            const inputField = document.getElementById(fieldId);
+            
+            if (errorDiv) errorDiv.classList.remove('show');
+            if (successDiv) {
+                if (message) successDiv.textContent = message;
+                successDiv.classList.add('show');
+            }
+            if (inputField) {
+                inputField.classList.remove('error');
+                inputField.classList.add('valid');
+            }
+            updateInputIcon(fieldId, true);
+        }
+
+        function resetFieldStyles(fieldId) {
+            const inputField = document.getElementById(fieldId);
+            const errorDiv = document.getElementById(`${fieldId}Error`);
+            const successDiv = document.getElementById(`${fieldId}Success`);
+            
+            if (inputField) {
+                inputField.classList.remove('error', 'valid');
+            }
+            if (errorDiv) errorDiv.classList.remove('show');
+            if (successDiv) successDiv.classList.remove('show');
+            updateInputIcon(fieldId, null);
+        }
+
+        // Tab switching
+        function switchTab(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelector(`.tab[data-tab="${tab}"]`).classList.add('active');
+            
+            document.getElementById('loginForm').classList.remove('active');
+            document.getElementById('registerForm').classList.remove('active');
+            
+            if (tab === 'login') {
+                document.getElementById('loginForm').classList.add('active');
+            } else {
+                document.getElementById('registerForm').classList.add('active');
+            }
+            
+            // Reset all fields
+            document.querySelectorAll('input').forEach(input => {
+                resetFieldStyles(input.id);
+            });
+        }
+
+        // Validate email format
+        function validateEmail(email) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email);
+        }
+
+        // Validate password strength
+        function validatePassword(password) {
+            return password.length >= 6;
+        }
+
+        // Validate name (letters and spaces only)
+        function validateName(name) {
+            const nameRegex = /^[a-zA-Z\s]{2,50}$/;
+            return nameRegex.test(name);
+        }
+
+        // Check if email exists in member list
+        async function checkEmailInMemberList(email) {
+            try {
+                const payload = {
+                    start: 0,
+                    length: 100,
+                    searchValue: "",
+                    order: { sortType: "asc", sortColumn: "memberFirstName" },
+                    filter: { memberWorkStatus: "", membershipStatus: "" }
+                };
+                
+                const response = await fetch(`${BASE_URL}/members/list`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload)
+                });
+                
+                const result = await response.json();
+                
+                if (result.members && Array.isArray(result.members)) {
+                    const member = result.members.find(m => m.memberEmail === email);
+                    return member ? true : false;
+                }
+                return false;
+            } catch (error) {
+                console.error("Error checking email:", error);
+                return false;
+            }
+        }
+
+        // Register user
+        async function registerUser(name, email, password) {
+            try {
+                const response = await fetch(`${LOCAL_BACKEND}/api/auth/register`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ name, email, password })
+                });
+                
+                return await response.json();
+            } catch (error) {
+                console.error("Registration error:", error);
+                return { status: "Error", message: error.message };
+            }
+        }
+
+        // Login user
+        async function loginUser(email, password) {
+            try {
+                const response = await fetch(`${LOCAL_BACKEND}/api/auth/login`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ email, password })
+                });
+                
+                return await response.json();
+            } catch (error) {
+                console.error("Login error:", error);
+                return { status: "Error", message: error.message };
+            }
+        }
+
+        // Register Form Validations
+        let emailCheckTimeout;
+
+        document.getElementById('regName').addEventListener('input', function() {
+            const value = this.value.trim();
+            clearFieldMessages('regName');
+            
+            if (!value) {
+                showFieldError('regName', 'Name is required');
+            } else if (!validateName(value)) {
+                showFieldError('regName', 'Name should contain only letters and spaces (2-50 characters)');
+            } else {
+                showFieldSuccess('regName', '✓ Valid name');
+            }
+        });
+
+        document.getElementById('regEmail').addEventListener('input', async function() {
+            const value = this.value.trim();
+            clearFieldMessages('regEmail');
+            updateInputIcon('regEmail', null, true);
+            
+            if (!value) {
+                showFieldError('regEmail', 'Email is required');
+                updateInputIcon('regEmail', false);
+                return;
+            }
+            
+            if (!validateEmail(value)) {
+                showFieldError('regEmail', 'Enter a valid email address');
+                updateInputIcon('regEmail', false);
+                return;
+            }
+            
+            // Check email in member list
+            clearTimeout(emailCheckTimeout);
+            emailCheckTimeout = setTimeout(async () => {
+                const exists = await checkEmailInMemberList(value);
+                if (!exists) {
+                    showFieldError('regEmail', 'This email is not registered in our library system. Please contact the library administrator.');
+                    updateInputIcon('regEmail', false);
+                } else {
+                    showFieldSuccess('regEmail', '✓ Email verified');
+                    updateInputIcon('regEmail', true);
+                }
+            }, 500);
+        });
+
+        document.getElementById('regPassword').addEventListener('input', function() {
+            const value = this.value;
+            clearFieldMessages('regPassword');
+            
+            if (!value) {
+                showFieldError('regPassword', 'Password is required');
+            } else if (value.length < 6) {
+                showFieldError('regPassword', 'Password must be at least 6 characters');
+            } else {
+                showFieldSuccess('regPassword', '✓ Strong password');
+                // Also validate confirm password if it has value
+                const confirmValue = document.getElementById('regConfirmPassword').value;
+                if (confirmValue) {
+                    document.getElementById('regConfirmPassword').dispatchEvent(new Event('input'));
+                }
+            }
+        });
+
+        document.getElementById('regConfirmPassword').addEventListener('input', function() {
+            const password = document.getElementById('regPassword').value;
+            const confirm = this.value;
+            clearFieldMessages('regConfirm');
+            
+            if (!confirm) {
+                showFieldError('regConfirm', 'Please confirm your password');
+            } else if (password !== confirm) {
+                showFieldError('regConfirm', 'Passwords do not match');
+            } else {
+                showFieldSuccess('regConfirm', '✓ Passwords match');
+            }
+        });
+
+        // Login Form Validations
+        document.getElementById('loginEmail').addEventListener('input', function() {
+            const value = this.value.trim();
+            clearFieldMessages('loginEmail');
+            
+            if (!value) {
+                showFieldError('loginEmail', 'Email is required');
+            } else if (!validateEmail(value)) {
+                showFieldError('loginEmail', 'Enter a valid email address');
+            } else {
+                showFieldSuccess('loginEmail', '');
+                updateInputIcon('loginEmail', true);
+            }
+        });
+
+        document.getElementById('loginPassword').addEventListener('input', function() {
+            const value = this.value;
+            clearFieldMessages('loginPassword');
+            
+            if (!value) {
+                showFieldError('loginPassword', 'Password is required');
+            } else {
+                showFieldSuccess('loginPassword', '');
+                updateInputIcon('loginPassword', true);
+            }
+        });
+
+        // Register Submit
+        document.getElementById('registerFormElement').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const name = document.getElementById('regName').value.trim();
+            const email = document.getElementById('regEmail').value.trim();
+            const password = document.getElementById('regPassword').value;
+            const confirm = document.getElementById('regConfirmPassword').value;
+            
+            let isValid = true;
+            
+            if (!name || !validateName(name)) {
+                showFieldError('regName', 'Valid name is required');
+                isValid = false;
+            }
+            if (!email || !validateEmail(email)) {
+                showFieldError('regEmail', 'Valid email is required');
+                isValid = false;
+            } else {
+                const exists = await checkEmailInMemberList(email);
+                if (!exists) {
+                    showFieldError('regEmail', 'Email not registered in library system');
+                    isValid = false;
+                }
+            }
+            if (!password || password.length < 6) {
+                showFieldError('regPassword', 'Password must be at least 6 characters');
+                isValid = false;
+            }
+            if (password !== confirm) {
+                showFieldError('regConfirm', 'Passwords do not match');
+                isValid = false;
+            }
+            
+            if (!isValid) return;
+            
+            const registerBtn = document.getElementById('registerBtn');
+            registerBtn.disabled = true;
+            registerBtn.innerHTML = '<span class="loading-spinner"></span> Creating Account...';
+            
+            const result = await registerUser(name, email, password);
+            
+            if (result.status === "Success") {
+                alert('✅ Registration successful! Please login.');
+                switchTab('login');
+                document.getElementById('registerFormElement').reset();
+                // Reset all field styles
+                ['regName', 'regEmail', 'regPassword', 'regConfirmPassword'].forEach(field => {
+                    resetFieldStyles(field);
+                });
+            } else {
+                alert(`❌ Registration failed: ${result.message}`);
+            }
+            
+            registerBtn.disabled = false;
+            registerBtn.innerHTML = 'Create Account';
+        });
+
+        // Login Submit
+        document.getElementById('loginFormElement').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value;
+            
+            let isValid = true;
+            
+            if (!email || !validateEmail(email)) {
+                showFieldError('loginEmail', 'Valid email is required');
+                isValid = false;
+            }
+            if (!password) {
+                showFieldError('loginPassword', 'Password is required');
+                isValid = false;
+            }
+            
+            if (!isValid) return;
+            
+            const loginBtn = document.getElementById('loginBtn');
+            loginBtn.disabled = true;
+            loginBtn.innerHTML = '<span class="loading-spinner"></span> Logging in...';
+            
+            const result = await loginUser(email, password);
+            
+            if (result.status === "Success") {
+                sessionStorage.setItem('userEmail', email);
+                sessionStorage.setItem('userName', result.data.name);
+                sessionStorage.setItem('userRole', 'user');
+                window.location.href = 'userDashboard.html';
+            } else {
+                alert(`❌ Login failed: ${result.message}`);
+                showFieldError('loginPassword', 'Invalid email or password');
+            }
+            
+            loginBtn.disabled = false;
+            loginBtn.innerHTML = 'Login to Library';
+        });
+
+        // Tab click handlers
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                switchTab(tab.dataset.tab);
+            });
+        });
+    </script>
+</body>
+</html>

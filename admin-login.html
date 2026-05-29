@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login | LibraRead</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Inter', system-ui, sans-serif;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Split Container */
+        .split-container {
+            display: flex;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Left Side - Image */
+        .left-side {
+            flex: 1;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .left-side::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?w=800&h=800&fit=crop') center/cover;
+            opacity: 0.3;
+        }
+
+        .left-content {
+            position: relative;
+            z-index: 1;
+            color: white;
+            text-align: center;
+            padding: 2rem;
+            animation: fadeInUp 0.8s ease;
+        }
+
+        .left-content .logo-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            color: #ff6c37;
+        }
+
+        .left-content h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .left-content p {
+            font-size: 1rem;
+            opacity: 0.9;
+            max-width: 80%;
+            margin: 0 auto;
+        }
+
+        .admin-badge {
+            margin-top: 2rem;
+            padding: 0.5rem 1rem;
+            background: rgba(255,108,55,0.2);
+            border: 1px solid rgba(255,108,55,0.5);
+            border-radius: 40px;
+            display: inline-block;
+            font-size: 0.8rem;
+        }
+
+        .quote-text {
+            margin-top: 2rem;
+            font-style: italic;
+            font-size: 0.9rem;
+            border-top: 1px solid rgba(255,255,255,0.3);
+            padding-top: 1rem;
+            display: inline-block;
+        }
+
+        /* Right Side - Login Form */
+        .right-side {
+            flex: 1;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            overflow-y: auto;
+        }
+
+        .form-container {
+            width: 100%;
+            max-width: 450px;
+            animation: fadeInRight 0.8s ease;
+        }
+
+        .header-section {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .header-section h2 {
+            font-size: 1.8rem;
+            color: #1a2c3e;
+            margin-bottom: 0.5rem;
+        }
+
+        .header-section p {
+            color: #6c7a91;
+            font-size: 0.9rem;
+        }
+
+        .admin-icon {
+            font-size: 3rem;
+            color: #ff6c37;
+            margin-bottom: 1rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #6c7a91;
+            margin-bottom: 0.4rem;
+            text-transform: uppercase;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-wrapper input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+            padding-right: 40px;
+        }
+
+        .input-wrapper input:focus {
+            outline: none;
+            border-color: #ff6c37;
+            box-shadow: 0 0 0 3px rgba(255,108,55,0.1);
+        }
+
+        .input-wrapper input.error {
+            border-color: #e53e3e;
+        }
+
+        .input-wrapper input.valid {
+            border-color: #28a745;
+        }
+
+        .input-icon {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1rem;
+        }
+
+        .input-icon .fa-check-circle {
+            color: #28a745;
+        }
+
+        .input-icon .fa-exclamation-circle {
+            color: #e53e3e;
+        }
+
+        .error-message {
+            color: #e53e3e;
+            font-size: 0.7rem;
+            margin-top: 0.25rem;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #ff6c37, #ffb347);
+            color: white;
+            border: none;
+            border-radius: 40px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 1rem;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(255,108,55,0.4);
+        }
+
+        .btn-submit:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border: 2px solid white;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 0.6s linear infinite;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .back-link {
+            text-align: center;
+            margin-top: 1.5rem;
+        }
+
+        .back-link a {
+            color: #6c7a91;
+            text-decoration: none;
+            font-size: 0.85rem;
+            transition: color 0.2s;
+        }
+
+        .back-link a:hover {
+            color: #ff6c37;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInRight {
+            from {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .split-container {
+                flex-direction: column;
+            }
+            .left-side {
+                min-height: 200px;
+            }
+            .left-content h1 {
+                font-size: 1.5rem;
+            }
+            .left-content p {
+                font-size: 0.8rem;
+            }
+            .right-side {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="split-container">
+        <!-- Left Side - Image & Quote -->
+        <div class="left-side">
+            <div class="left-content">
+                <div class="logo-icon">
+                    <i class="fas fa-user-shield"></i>
+                </div>
+                <h1>Admin Portal</h1>
+                <p>Library Management System</p>
+                <div class="admin-badge">
+                    <i class="fas fa-lock"></i> Secure Admin Access
+                </div>
+                <div class="quote-text">
+                    <i class="fas fa-quote-left"></i> Managing knowledge, empowering minds.<br>
+                    <i class="fas fa-quote-right"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Side - Login Form -->
+        <div class="right-side">
+            <div class="form-container">
+                <div class="header-section">
+                    <div class="admin-icon">
+                        <i class="fas fa-user-shield"></i>
+                    </div>
+                    <h2>Admin Login</h2>
+                    <p>Enter your credentials to access dashboard</p>
+                </div>
+
+                <form id="adminLoginForm">
+                    <div class="form-group">
+                        <label><i class="fas fa-envelope"></i> Email Address</label>
+                        <div class="input-wrapper">
+                            <input type="email" id="adminEmail" placeholder="admin@libraread.com">
+                            <span class="input-icon" id="adminEmailIcon"></span>
+                        </div>
+                        <div class="error-message" id="adminEmailError"></div>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-lock"></i> Password</label>
+                        <div class="input-wrapper">
+                            <input type="password" id="adminPassword" placeholder="Enter your password">
+                            <span class="input-icon" id="adminPasswordIcon"></span>
+                        </div>
+                        <div class="error-message" id="adminPasswordError"></div>
+                    </div>
+                    <button type="submit" class="btn-submit" id="adminLoginBtn">
+                        <i class="fas fa-sign-in-alt"></i> Login to Dashboard
+                    </button>
+                </form>
+
+                <div class="back-link">
+                    <a href="role-selection.html">
+                        <i class="fas fa-arrow-left"></i> Back to Role Selection
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const LOCAL_BACKEND = "http://localhost:8080";
+
+        // Helper function to update input icon
+        function updateInputIcon(inputId, isValid, isLoading = false) {
+            const iconSpan = document.getElementById(`${inputId}Icon`);
+            if (!iconSpan) return;
+            
+            if (isLoading) {
+                iconSpan.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+                return;
+            }
+            
+            if (isValid === true) {
+                iconSpan.innerHTML = '<i class="fas fa-check-circle"></i>';
+            } else if (isValid === false) {
+                iconSpan.innerHTML = '<i class="fas fa-exclamation-circle"></i>';
+            } else {
+                iconSpan.innerHTML = '';
+            }
+        }
+
+        function showFieldError(fieldId, message) {
+            const errorDiv = document.getElementById(`${fieldId}Error`);
+            const inputField = document.getElementById(fieldId);
+            if (errorDiv) {
+                errorDiv.textContent = message;
+                errorDiv.classList.add('show');
+            }
+            if (inputField) {
+                inputField.classList.add('error');
+                inputField.classList.remove('valid');
+            }
+            updateInputIcon(fieldId, false);
+        }
+
+        function showFieldSuccess(fieldId) {
+            const errorDiv = document.getElementById(`${fieldId}Error`);
+            const inputField = document.getElementById(fieldId);
+            if (errorDiv) errorDiv.classList.remove('show');
+            if (inputField) {
+                inputField.classList.remove('error');
+                inputField.classList.add('valid');
+            }
+            updateInputIcon(fieldId, true);
+        }
+
+        function clearFieldError(fieldId) {
+            const errorDiv = document.getElementById(`${fieldId}Error`);
+            if (errorDiv) errorDiv.classList.remove('show');
+        }
+
+        // Validate email format
+        function validateEmail(email) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email);
+        }
+
+        // Admin Login API
+        async function adminLogin(email, password) {
+            try {
+                const response = await fetch(`${LOCAL_BACKEND}/api/auth/admin-login`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ email, password })
+                });
+                
+                return await response.json();
+            } catch (error) {
+                console.error("Login error:", error);
+                return { status: "Error", message: error.message };
+            }
+        }
+
+        // Create default admin if not exists (run this once)
+        async function createDefaultAdmin() {
+            try {
+                await fetch(`${LOCAL_BACKEND}/api/auth/create-default-admin`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" }
+                });
+            } catch (error) {
+                console.error("Error creating default admin:", error);
+            }
+        }
+
+        // Form validations
+        document.getElementById('adminEmail').addEventListener('input', function() {
+            const value = this.value.trim();
+            clearFieldError('adminEmail');
+            
+            if (!value) {
+                showFieldError('adminEmail', 'Email is required');
+            } else if (!validateEmail(value)) {
+                showFieldError('adminEmail', 'Enter a valid email address');
+            } else {
+                showFieldSuccess('adminEmail');
+            }
+        });
+
+        document.getElementById('adminPassword').addEventListener('input', function() {
+            const value = this.value;
+            clearFieldError('adminPassword');
+            
+            if (!value) {
+                showFieldError('adminPassword', 'Password is required');
+            } else if (value.length < 6) {
+                showFieldError('adminPassword', 'Password must be at least 6 characters');
+            } else {
+                showFieldSuccess('adminPassword');
+            }
+        });
+
+        // Login Submit
+        document.getElementById('adminLoginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById('adminEmail').value.trim();
+            const password = document.getElementById('adminPassword').value;
+            
+            let isValid = true;
+            
+            if (!email || !validateEmail(email)) {
+                showFieldError('adminEmail', 'Valid email is required');
+                isValid = false;
+            }
+            if (!password) {
+                showFieldError('adminPassword', 'Password is required');
+                isValid = false;
+            } else if (password.length < 6) {
+                showFieldError('adminPassword', 'Password must be at least 6 characters');
+                isValid = false;
+            }
+            
+            if (!isValid) return;
+            
+            const loginBtn = document.getElementById('adminLoginBtn');
+            loginBtn.disabled = true;
+            loginBtn.innerHTML = '<span class="loading-spinner"></span> Logging in...';
+            
+            const result = await adminLogin(email, password);
+            
+            if (result.status === "Success") {
+                sessionStorage.setItem('adminEmail', email);
+                sessionStorage.setItem('adminName', result.data.name);
+                sessionStorage.setItem('adminRole', 'admin');
+                sessionStorage.setItem('isAdminLoggedIn', 'true');
+                window.location.href = 'admindashboard.html';
+            } else {
+                alert(`❌ Login failed: ${result.message}`);
+                showFieldError('adminPassword', 'Invalid email or password');
+            }
+            
+            loginBtn.disabled = false;
+            loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Login to Dashboard';
+        });
+
+        // Create default admin on page load
+        createDefaultAdmin();
+    </script>
+</body>
+</html>

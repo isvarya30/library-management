@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HumHealth - Register New Member</title>
+  <!-- DataTables CSS (smooth, responsive) -->
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+  <!-- Optional: minor styling for better spacing -->
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+      background: #f0f2f8;
+      margin: 0;
+      padding: 24px 16px;
+    }
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      background: #ffffff;
+      border-radius: 28px;
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08);
+      padding: 24px 32px 32px 32px;
+      transition: all 0.2s;
+    }
+    h2 {
+      text-align: center;
+      font-weight: 600;
+      font-size: 1.9rem;
+      margin-top: 0;
+      margin-bottom: 0.5rem;
+      color: #1a2c3e;
+      letter-spacing: -0.3px;
+    }
+    .sub {
+      text-align: center;
+      color: #5e6f8d;
+      margin-bottom: 28px;
+      font-size: 0.9rem;
+      border-bottom: 1px solid #e9edf2;
+      padding-bottom: 12px;
+    }
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 600;
+      color: #1f2a44;
+      font-size: 0.85rem;
+    }
+    input, select {
+      width: 100%;
+      padding: 10px 12px;
+      margin-bottom: 18px;
+      border: 1.5px solid #dfe3e9;
+      border-radius: 14px;
+      font-size: 0.9rem;
+      transition: 0.2s;
+      background-color: #fff;
+      font-family: inherit;
+    }
+    input:focus, select:focus {
+      border-color: #2c7da0;
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(44,125,160,0.2);
+    }
+    .form-row {
+      display: flex;
+      gap: 18px;
+      flex-wrap: wrap;
+    }
+    .form-row > div {
+      flex: 1;
+      min-width: 160px;
+    }
+    button {
+      background: #1f7b4d;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 40px;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 600;
+      width: 100%;
+      transition: 0.2s;
+      margin-top: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+    button:hover {
+      background: #0e5e3a;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 12px rgba(0,0,0,0.08);
+    }
+    .message {
+      margin: 20px 0 16px 0;
+      padding: 12px 16px;
+      border-radius: 20px;
+      font-weight: 500;
+      background: #f8f9fc;
+      border-left: 5px solid;
+      font-size: 0.9rem;
+      white-space: pre-line;
+      word-break: break-word;
+    }
+    .message.success {
+      background: #e6f4ea;
+      border-left-color: #2e7d32;
+      color: #1d4d1f;
+    }
+    .message.warning {
+      background: #fff4e5;
+      border-left-color: #ed6c02;
+      color: #a95b00;
+    }
+    .message.error {
+      background: #ffe9e9;
+      border-left-color: #d32f2f;
+      color: #b71c1c;
+    }
+    .data-table-wrapper {
+      margin-top: 28px;
+      overflow-x: auto;
+      border-radius: 20px;
+      border: 1px solid #eef2f6;
+      background: #fff;
+      padding: 4px 0;
+    }
+    table.dataTable {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+    table.dataTable thead th {
+      background: #f8fafd;
+      color: #1e2a47;
+      font-weight: 700;
+      padding: 14px 10px;
+      border-bottom: 2px solid #e2e8f0;
+    }
+    table.dataTable tbody td {
+      padding: 12px 10px;
+      border-bottom: 1px solid #eef2f8;
+    }
+    @media (max-width: 640px) {
+      .container {
+        padding: 20px;
+      }
+      .form-row {
+        flex-direction: column;
+        gap: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h2>📚 Register New Member</h2>
+  <div class="sub">HumHealth Library Management · Complete membership</div>
+
+  <form id="saveMemberForm">
+    <input type="hidden" name="memberId" value="">
+
+    <div class="form-row">
+      <div>
+        <label for="memberFirstName">First Name *</label>
+        <input type="text" id="memberFirstName" name="memberFirstName" placeholder="John" required>
+      </div>
+      <div>
+        <label for="memberMiddleName">Middle Name</label>
+        <input type="text" id="memberMiddleName" name="memberMiddleName" placeholder="(optional)">
+      </div>
+      <div>
+        <label for="memberLastName">Last Name *</label>
+        <input type="text" id="memberLastName" name="memberLastName" placeholder="Doe" required>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div>
+        <label for="memberEmail">Email Address *</label>
+        <input type="email" id="memberEmail" name="memberEmail" placeholder="member@example.com" required>
+      </div>
+      <div>
+        <label for="memberMobileNumber">Mobile Number (10 digits) *</label>
+        <input type="tel" id="memberMobileNumber" name="memberMobileNumber" pattern="[0-9]{10}" placeholder="9876543210" required>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div>
+        <label for="memberAddressLine1">Address Line 1 *</label>
+        <input type="text" id="memberAddressLine1" name="memberAddressLine1" placeholder="Street, house no." required>
+      </div>
+      <div>
+        <label for="memberAddressLine2">Address Line 2</label>
+        <input type="text" id="memberAddressLine2" name="memberAddressLine2" placeholder="Apartment, landmark">
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div>
+        <label for="memberWorkStatus">Work Status</label>
+        <select id="memberWorkStatus" name="memberWorkStatus">
+          <option value="STUD">🎓 Student</option>
+          <option value="EMP">💼 Employee</option>
+        </select>
+      </div>
+      <div>
+        <label for="membershipPeriod">Membership Period (Months)</label>
+        <select id="membershipPeriod" name="membershipPeriod" required>
+          <option value="1">1 Month</option>
+          <option value="3">3 Months</option>
+          <option value="6">6 Months</option>
+          <option value="12">12 Months</option>
+        </select>
+      </div>
+      <div>
+        <label for="memberDob">Date of Birth *</label>
+        <input type="date" id="memberDob" name="memberDob" required>
+      </div>
+    </div>
+
+    <button type="submit">✨ Save Member & Load Details</button>
+  </form>
+
+  <div class="message" id="responseMessage"></div>
+
+  <div class="data-table-wrapper">
+    <table id="memberTable" class="display" style="width:100%">
+      <thead>
+        <tr>
+          <th>Member ID</th>
+          <th>First Name</th>
+          <th>Last Name</th>
+          <th>Email</th>
+          <th>Mobile</th>
+          <th>Status</th>
+          <th>Work Status</th>
+          <th>Start Date</th>
+          <th>End Date</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- DataTable will populate dynamically -->
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- jQuery + DataTables -->
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+
+<script>
+  // Global DataTable instance
+  let table;
+
+  // Helper: show styled message (status = success, warning, error)
+  function showMessage(text, type = 'error') {
+    const msgDiv = document.getElementById("responseMessage");
+    msgDiv.textContent = text;
+    msgDiv.className = `message ${type}`;
+    if (type === 'success') msgDiv.style.color = "#1d4d1f";
+    else if (type === 'warning') msgDiv.style.color = "#a95b00";
+    else msgDiv.style.color = "#b71c1c";
+  }
+
+  // Helper: populate DataTable with member record (single row)
+  function populateDataTableWithMember(member) {
+    const rowData = [[
+      member.memberId || member.memberId === 0 ? member.memberId : 'N/A',
+      member.memberFirstName || '',
+      member.memberLastName || '',
+      member.memberEmail || '',
+      member.memberMobileNumber || '',
+      member.membershipStatusDescription || (member.membershipStatus || 'ACTIVE'),
+      member.memberWorkStatusDescription || (member.memberWorkStatus === 'STUD' ? 'Student' : (member.memberWorkStatus === 'EMP' ? 'Employee' : member.memberWorkStatus || '—')),
+      member.memberStartDate || (member.startDate || '—'),
+      member.memberEndDate || (member.endDate || '—')
+    ]];
+
+    if (table) {
+      table.clear().rows.add(rowData).draw();
+    } else {
+      // Initialize DataTable with the single row
+      table = $('#memberTable').DataTable({
+        data: rowData,
+        columns: [
+          { title: "Member ID" },
+          { title: "First Name" },
+          { title: "Last Name" },
+          { title: "Email" },
+          { title: "Mobile" },
+          { title: "Status" },
+          { title: "Work Status" },
+          { title: "Start Date" },
+          { title: "End Date" }
+        ],
+        language: {
+          emptyTable: "No member data yet. Register a member to see details."
+        },
+        responsive: true,
+        autoWidth: false
+      });
+    }
+  }
+
+  // Main submit handler
+  document.getElementById("saveMemberForm").addEventListener("submit", async function(e) {
+    e.preventDefault();
+
+    // Gather form data exactly as required by backend
+    const formData = {
+      memberId: "",   // empty as per original logic for new registration
+      memberFirstName: document.getElementById("memberFirstName").value.trim(),
+      memberMiddleName: document.getElementById("memberMiddleName").value.trim(),
+      memberLastName: document.getElementById("memberLastName").value.trim(),
+      memberEmail: document.getElementById("memberEmail").value.trim(),
+      memberAddressLine1: document.getElementById("memberAddressLine1").value.trim(),
+      memberAddressLine2: document.getElementById("memberAddressLine2").value.trim(),
+      memberMobileNumber: document.getElementById("memberMobileNumber").value.trim(),
+      memberWorkStatus: document.getElementById("memberWorkStatus").value,
+      membershipPeriod: document.getElementById("membershipPeriod").value,
+      memberDob: document.getElementById("memberDob").value
+    };
+
+    // simple validation for required fields (already html required, but double-check)
+    if (!formData.memberFirstName || !formData.memberLastName || !formData.memberEmail || !formData.memberMobileNumber || !formData.memberAddressLine1 || !formData.memberDob) {
+      showMessage("❌ Please fill all required fields: First Name, Last Name, Email, Mobile, Address Line 1, Date of Birth.", "error");
+      return;
+    }
+    if (!/^\d{10}$/.test(formData.memberMobileNumber)) {
+      showMessage("📞 Mobile number must be exactly 10 digits.", "error");
+      return;
+    }
+
+    const msgBox = document.getElementById("responseMessage");
+
+    try {
+      // STEP 1: Save Member via POST to /members/save
+      const saveResponse = await fetch("https://dev-api.humhealth.com/LibraryManagementAPI/members/save", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData)
+      });
+
+      let saveResultText = await saveResponse.text();
+      let saveResult;
+      try {
+        saveResult = JSON.parse(saveResultText);
+      } catch (parseErr) {
+        saveResult = { status: "Error", message: "Non‑JSON response from save endpoint", raw: saveResultText };
+      }
+
+      // check if save was successful (status 'Success')
+      if (saveResult.status === "Success") {
+        // STEP 2: Immediately fetch the newly created member using LIST API with email search
+        // The Member List API expects POST with searchValue containing email
+        const listPayload = {
+          start: 0,
+          length: 1,
+          searchValue: formData.memberEmail,    // filter by email to get exact new record
+          order: { sortType: "asc", sortColumn: "memberFirstName" },
+          filter: { memberWorkStatus: "", membershipStatus: "ACTIVE" }
+        };
+
+        const listResponse = await fetch("https://dev-api.humhealth.com/LibraryManagementAPI/members/list", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(listPayload)
+        });
+
+        const listText = await listResponse.text();
+        let listResult;
+        try {
+          listResult = JSON.parse(listText);
+        } catch (e) {
+          listResult = { status: "Error", message: "List API returned invalid JSON", raw: listText };
+        }
+
+        // validate members array
+        if (listResult.members && Array.isArray(listResult.members) && listResult.members.length > 0) {
+          const newMemberRecord = listResult.members[0];
+          // Construct success message exactly like original pattern but more readable
+          const successMsg = `${saveResult.message || "Member registered successfully."}\n✅ Member ID: ${newMemberRecord.memberId} | Name: ${newMemberRecord.memberFirstName} ${newMemberRecord.memberLastName}`;
+          showMessage(successMsg, "success");
+
+          // Update DataTable with newly fetched member details
+          populateDataTableWithMember(newMemberRecord);
+        } else {
+          // If member saved but list API doesn't return it (edge case: maybe DB propagation delay)
+          // we still show partial success but without autofill
+          let warningDetail = `⚠️ Member saved but could not retrieve details via list API. Raw list response: ${listText.substring(0, 200)}`;
+          showMessage(`${saveResult.message || "Saved"} — but failed to fetch member by email. ${warningDetail}`, "warning");
+          // Clear table if any previous data (but keep empty)
+          if (table) {
+            table.clear().draw();
+          } else {
+            // initialize empty table if not exists
+            table = $('#memberTable').DataTable({
+              data: [],
+              columns: [
+                { title: "Member ID" }, { title: "First Name" }, { title: "Last Name" },
+                { title: "Email" }, { title: "Mobile" }, { title: "Status" },
+                { title: "Work Status" }, { title: "Start Date" }, { title: "End Date" }
+              ]
+            });
+          }
+        }
+      } else {
+        // Save failed: show error with raw details (as per original logic)
+        const errorMessage = `❌ Server error: ${saveResult.message || "Unknown error"}\n\nRaw response:\n${saveResult.raw || saveResultText}`;
+        showMessage(errorMessage, "error");
+        // Optionally reset or keep existing table unchanged
+      }
+    } catch (networkError) {
+      console.error("Network or unexpected error:", networkError);
+      showMessage(`⚠️ Network / API connection error: ${networkError.message}. Please check your internet or API availability.`, "error");
+    }
+  });
+
+  // On page load: initialize DataTable as empty (no rows) but ready.
+  // This ensures that if there's any previous ghost table, we set it gracefully.
+  window.addEventListener('DOMContentLoaded', () => {
+    // Initialize empty DataTable (preserve structure)
+    if (!table) {
+      table = $('#memberTable').DataTable({
+        data: [],
+        columns: [
+          { title: "Member ID" },
+          { title: "First Name" },
+          { title: "Last Name" },
+          { title: "Email" },
+          { title: "Mobile" },
+          { title: "Status" },
+          { title: "Work Status" },
+          { title: "Start Date" },
+          { title: "End Date" }
+        ],
+        language: {
+          emptyTable: "No member record yet. Complete registration to view details."
+        }
+      });
+    }
+    // Set default date of birth to empty placeholder
+    const dobInput = document.getElementById("memberDob");
+    if (!dobInput.value) dobInput.value = "";
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,1218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Library Management System | Admin Dashboard</title>
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', 'Inter', system-ui, sans-serif;
+      background: #f0f2f8;
+      overflow-x: hidden;
+    }
+
+    .sidebar {
+      position: fixed;
+      left: 0;
+      top: 0;
+      width: 280px;
+      height: 100%;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      color: white;
+      transition: all 0.3s;
+      z-index: 100;
+      box-shadow: 2px 0 20px rgba(0,0,0,0.1);
+    }
+
+    .sidebar-header {
+      padding: 1.5rem;
+      text-align: center;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .sidebar-header h2 {
+      font-size: 1.3rem;
+    }
+
+    .sidebar-header h2 i {
+      color: #ff6c37;
+    }
+
+    .sidebar-menu {
+      padding: 1.5rem 0;
+    }
+
+    .menu-item {
+      padding: 0.8rem 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: #a0aec0;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin: 0.2rem 0;
+    }
+
+    .menu-item:hover, .menu-item.active {
+      background: rgba(255,108,55,0.2);
+      color: #ff6c37;
+      border-left: 3px solid #ff6c37;
+    }
+
+    .menu-item i {
+      width: 24px;
+      font-size: 1.1rem;
+    }
+
+    .main-content {
+      margin-left: 280px;
+      padding: 1.5rem;
+      min-height: 100vh;
+    }
+
+    .top-bar {
+      background: white;
+      border-radius: 20px;
+      padding: 1rem 1.5rem;
+      margin-bottom: 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+
+    .page-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #1a2c3e;
+    }
+
+    .date-time {
+      color: #6c7a91;
+      font-size: 0.85rem;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .stat-card {
+      background: white;
+      border-radius: 24px;
+      padding: 1.2rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      transition: transform 0.2s;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-4px);
+    }
+
+    .stat-info h3 {
+      font-size: 0.75rem;
+      color: #6c7a91;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .stat-number {
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: #1a2c3e;
+      margin-top: 0.3rem;
+    }
+
+    .stat-icon {
+      width: 55px;
+      height: 55px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 1.6rem;
+    }
+
+    .data-table-wrapper {
+      background: white;
+      border-radius: 24px;
+      padding: 1.3rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      overflow-x: auto;
+    }
+
+    table.dataTable {
+      width: 100% !important;
+    }
+
+    table.dataTable thead th {
+      padding: 12px;
+      background: #f8fafc;
+      font-weight: 600;
+    }
+
+    table.dataTable tbody td {
+      padding: 10px;
+      vertical-align: middle;
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.7rem;
+      font-weight: 600;
+    }
+
+    .status-avai {
+      background: #e0f2e9;
+      color: #1a472a;
+    }
+
+    .status-navai {
+      background: #ffe6e5;
+      color: #a12218;
+    }
+
+    .status-borrowed {
+      background: #e3f2fd;
+      color: #1565c0;
+    }
+
+    .status-returned {
+      background: #e0f2e9;
+      color: #1a472a;
+    }
+
+    .status-overdue {
+      background: #ffe6e5;
+      color: #a12218;
+    }
+
+    .status-paid {
+      background: #e0f2e9;
+      color: #1a472a;
+    }
+
+    .status-pending {
+      background: #fff3e0;
+      color: #b45f06;
+    }
+
+    .action-btn {
+      background: #e3f2fd;
+      color: #1565c0;
+      border: none;
+      padding: 4px 10px;
+      border-radius: 15px;
+      cursor: pointer;
+      font-size: 0.7rem;
+      margin: 2px;
+    }
+
+    .action-btn:hover {
+      background: #bbdef5;
+    }
+
+    .pay-btn {
+      background: #28a745;
+      color: white;
+    }
+
+    .pay-btn:hover {
+      background: #1e7e34;
+    }
+
+    .coming-soon-card {
+      background: white;
+      border-radius: 24px;
+      padding: 2rem;
+      text-align: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+
+    .loading {
+      text-align: center;
+      padding: 2rem;
+      color: #6c7a91;
+    }
+
+    .loading-spinner {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 2px solid #e2e8f0;
+      border-radius: 50%;
+      border-top-color: #ff6c37;
+      animation: spin 0.6s linear infinite;
+      margin-right: 8px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .navigation-card {
+      background: white;
+      border-radius: 24px;
+      padding: 2rem;
+      text-align: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    .navigation-card:hover {
+      transform: translateY(-4px);
+    }
+
+    .navigation-card i {
+      font-size: 3rem;
+      color: #2b6cb0;
+      margin-bottom: 1rem;
+    }
+
+    .navigation-card h3 {
+      font-size: 1.2rem;
+      color: #1a2c3e;
+      margin-bottom: 0.5rem;
+    }
+
+    .navigation-card p {
+      color: #6c7a91;
+      font-size: 0.85rem;
+    }
+
+    .filter-bar {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+      align-items: flex-end;
+    }
+
+    .filter-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+    }
+
+    .filter-group label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: #6c7a91;
+      text-transform: uppercase;
+    }
+
+    .filter-group input, .filter-group select {
+      padding: 6px 10px;
+      border: 2px solid #e2e8f0;
+      border-radius: 10px;
+      font-size: 0.8rem;
+      min-width: 130px;
+    }
+
+    .btn-filter {
+      background: #2b6cb0;
+      color: white;
+      border: none;
+      padding: 6px 16px;
+      border-radius: 20px;
+      cursor: pointer;
+    }
+
+    .btn-refresh {
+      background: #ffc107;
+      color: #856404;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-content {
+      background: white;
+      border-radius: 20px;
+      padding: 2rem;
+      max-width: 500px;
+      width: 90%;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .close-modal {
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+
+    .payment-option {
+      padding: 10px;
+      margin: 5px 0;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .payment-option:hover {
+      background: #e3f2fd;
+      border-color: #2b6cb0;
+    }
+
+    .rental-stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .rental-stat-card {
+      background: white;
+      border-radius: 20px;
+      padding: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+
+    .rental-stat-info h4 {
+      font-size: 0.7rem;
+      color: #6c7a91;
+      text-transform: uppercase;
+    }
+
+    .rental-stat-number {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #1a2c3e;
+    }
+
+    .details-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.8rem;
+      margin: 1rem 0;
+    }
+
+    .detail-item {
+      padding: 0.5rem;
+      background: #f8fafc;
+      border-radius: 12px;
+    }
+
+    .detail-item label {
+      font-size: 0.65rem;
+      color: #6c7a91;
+      display: block;
+    }
+
+    .detail-item span {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #1a2c3e;
+    }
+
+    .due-badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.7rem;
+      font-weight: 600;
+    }
+
+    .due-normal { background: #e0f2e9; color: #1a472a; }
+    .due-warning { background: #fff3e0; color: #b45f06; }
+    .due-overdue { background: #ffe6e5; color: #a12218; }
+
+    @media (max-width: 768px) {
+      .sidebar {
+        width: 70px;
+      }
+      .sidebar-header h2, .menu-item span {
+        display: none;
+      }
+      .main-content {
+        margin-left: 70px;
+      }
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+      .rental-stats-grid {
+        grid-template-columns: 1fr;
+      }
+      .details-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <h2><i class="fas fa-book"></i> <span>LibraRead</span></h2>
+    </div>
+    <div class="sidebar-menu">
+      <div class="menu-item active" data-page="dashboard">
+        <i class="fas fa-tachometer-alt"></i> <span>Dashboard</span>
+      </div>
+      <div class="menu-item" data-page="addMember">
+        <i class="fas fa-user-plus"></i> <span>Add Member</span>
+      </div>
+      <div class="menu-item" data-page="memberList">
+        <i class="fas fa-users"></i> <span>Member List</span>
+      </div>
+      <div class="menu-item" data-page="books">
+        <i class="fas fa-book"></i> <span>Books</span>
+      </div>
+      <div class="menu-item" data-page="rentals">
+        <i class="fas fa-exchange-alt"></i> <span>Rentals</span>
+      </div>
+      <div class="menu-item" data-page="penalties">
+        <i class="fas fa-exclamation-triangle"></i> <span>Penalties</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="main-content">
+    <div class="top-bar">
+      <div class="page-title" id="pageTitle">Dashboard Overview</div>
+      <div class="date-time" id="dateTime"></div>
+    </div>
+
+    <div id="mainContent">
+      <div class="loading"><span class="loading-spinner"></span> Loading dashboard data...</div>
+    </div>
+  </div>
+
+  <!-- Payment Modal -->
+  <div id="paymentModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Pay Penalty</h3>
+        <span class="close-modal" onclick="closePaymentModal()">&times;</span>
+      </div>
+      <div id="paymentDetails"></div>
+      <div style="margin-top: 1rem;">
+        <label>Select Payment Mode:</label>
+        <div id="paymentOptions">
+          <div class="payment-option" onclick="selectPaymentMethod('CASH')">💰 Cash</div>
+          <div class="payment-option" onclick="selectPaymentMethod('UPI')">📱 UPI</div>
+          <div class="payment-option" onclick="selectPaymentMethod('CARD')">💳 Card</div>
+          <div class="payment-option" onclick="selectPaymentMethod('ONLN')">🌐 Online</div>
+        </div>
+      </div>
+      <button id="confirmPaymentBtn" class="btn-filter" style="width:100%; margin-top:1rem; background:#28a745;">Confirm Payment</button>
+    </div>
+  </div>
+
+  <!-- Rental Details Modal -->
+  <div id="rentalDetailsModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3><i class="fas fa-receipt"></i> Rental Details</h3>
+        <span class="close-modal" onclick="closeModal('rentalDetailsModal')">&times;</span>
+      </div>
+      <div id="rentalDetailsContent"></div>
+    </div>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+  <script>
+    const BASE_URL = "https://dev-api.humhealth.com/LibraryManagementAPI";
+    const LOCAL_BACKEND = "http://localhost:8080";
+    let allMembers = [];
+    let allBooks = [];
+    let rentalsDataTable = null;
+    let penaltiesDataTable = null;
+    let currentPenaltyId = null;
+    let currentPage = 'dashboard';
+
+    function updateDateTime() {
+      const now = new Date();
+      document.getElementById('dateTime').innerHTML = now.toLocaleDateString('en-US', { 
+        weekday: 'long', 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric' 
+      });
+    }
+    updateDateTime();
+    setInterval(updateDateTime, 60000);
+
+    function closeModal(modalId) { 
+      document.getElementById(modalId).style.display = 'none'; 
+    }
+
+    function closePaymentModal() {
+      document.getElementById('paymentModal').style.display = 'none';
+    }
+
+    function selectPaymentMethod(method) {
+      document.querySelectorAll('.payment-option').forEach(opt => {
+        opt.style.background = '';
+        opt.style.borderColor = '#e2e8f0';
+      });
+      event.target.style.background = '#e3f2fd';
+      event.target.style.borderColor = '#2b6cb0';
+      window.selectedPaymentMethod = method;
+    }
+
+    function formatDate(dateString) {
+      if (!dateString || dateString === 'null') return '—';
+      const date = new Date(dateString);
+      if (isNaN(date.getTime())) return dateString;
+      return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    }
+
+    function calculateDaysOverdue(dueDate) {
+      if (!dueDate) return 0;
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const due = new Date(dueDate);
+      due.setHours(0, 0, 0, 0);
+      if (today <= due) return 0;
+      return Math.ceil((today - due) / (1000 * 60 * 60 * 24));
+    }
+
+    function getDueStatus(dueDate) {
+      if (!dueDate) return { text: 'No due date', class: 'due-normal', days: 999, isOverdue: false };
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const due = new Date(dueDate);
+      due.setHours(0, 0, 0, 0);
+      const diffDays = Math.ceil((due - today) / (1000 * 60 * 60 * 24));
+      if (diffDays < 0) return { text: `Overdue by ${Math.abs(diffDays)} days`, class: 'due-overdue', days: diffDays, isOverdue: true };
+      if (diffDays === 0) return { text: 'Due today', class: 'due-warning', days: 0, isOverdue: false };
+      if (diffDays <= 3) return { text: `${diffDays} days left`, class: 'due-warning', days: diffDays, isOverdue: false };
+      return { text: `${diffDays} days left`, class: 'due-normal', days: diffDays, isOverdue: false };
+    }
+
+    window.payPenalty = function(penaltyId, amount) {
+      currentPenaltyId = penaltyId;
+      const modal = document.getElementById('paymentModal');
+      const details = document.getElementById('paymentDetails');
+      details.innerHTML = `
+        <p><strong>Penalty ID:</strong> ${penaltyId}</p>
+        <p><strong>Amount to Pay:</strong> $${amount.toFixed(2)}</p>
+        <p style="color: #e67e22;"><i class="fas fa-info-circle"></i> Please select payment method</p>
+      `;
+      modal.style.display = 'flex';
+      window.selectedPaymentMethod = null;
+    };
+
+    document.getElementById('confirmPaymentBtn').onclick = async function() {
+      if (!window.selectedPaymentMethod) {
+        alert('Please select a payment method');
+        return;
+      }
+      
+      try {
+        const response = await fetch(`${BASE_URL}/penalties/pay?penaltyId=${currentPenaltyId}&paymentModeCode=${window.selectedPaymentMethod}`, {
+          method: "PUT"
+        });
+        const result = await response.json();
+        
+        if (result.status === "Success") {
+          alert(`✅ Payment successful via ${window.selectedPaymentMethod}!`);
+          closePaymentModal();
+          if (currentPage === 'penalties') renderPenaltiesPage();
+          if (currentPage === 'dashboard') renderDashboard();
+        } else {
+          alert(`❌ Payment failed: ${result.message}`);
+        }
+      } catch (error) {
+        alert(`❌ Error: ${error.message}`);
+      }
+    };
+
+    async function fetchMembers() {
+      const payload = {
+        start: 0,
+        length: 100,
+        searchValue: "",
+        order: { sortType: "asc", sortColumn: "memberFirstName" },
+        filter: { memberWorkStatus: "", membershipStatus: "" }
+      };
+
+      try {
+        const response = await fetch(`${BASE_URL}/members/list`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+        
+        const data = await response.json();
+        
+        if (data.members && Array.isArray(data.members)) {
+          allMembers = data.members;
+          return data.members;
+        }
+        allMembers = [];
+        return [];
+      } catch (error) {
+        console.error("Error fetching members:", error);
+        allMembers = [];
+        return [];
+      }
+    }
+
+    async function fetchBooks() {
+      try {
+        const response = await fetch(`${LOCAL_BACKEND}/api/local/books/list`);
+        const result = await response.json();
+        
+        if (result.status === "Success" && result.data) {
+          allBooks = result.data;
+          return result.data;
+        }
+        return [];
+      } catch (error) {
+        console.error("Error fetching books:", error);
+        return [];
+      }
+    }
+
+    async function fetchPenalties() {
+      try {
+        const payload = {
+          start: 0,
+          length: 100,
+          searchValue: "",
+          order: { sortColumn: "serialNo", sortType: "desc" },
+          filter: {
+            memberId: 0,
+            bookId: 0,
+            language: "",
+            genre: "",
+            penaltyId: 0,
+            paymentStatusCode: "",
+            rentalTransactionId: 0,
+            paymentModeCode: ""
+          }
+        };
+        
+        const response = await fetch(`${BASE_URL}/penalties/list`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+        
+        const result = await response.json();
+        
+        if (result.status === "Success" && result.data) {
+          return result.data.penalties || [];
+        }
+        return [];
+      } catch (error) {
+        console.error("Error fetching penalties:", error);
+        return [];
+      }
+    }
+
+    // ==================== RENTAL FUNCTIONS ====================
+    
+    async function fetchAllRentalsFromLocalDB() {
+      try {
+        console.log("Fetching all rentals from local DB...");
+        const response = await fetch(`${LOCAL_BACKEND}/api/local/rentals/all/0`);
+        const result = await response.json();
+        console.log("API Response:", result);
+        
+        if (result.status === "Success" && result.data) {
+          if (allMembers.length === 0) {
+            await fetchMembers();
+          }
+          
+          const rentalsWithDetails = result.data.map(rental => {
+            const isReturned = rental.actualReturnDate !== null;
+            const daysOverdue = calculateDaysOverdue(rental.dueDate);
+            const book = allBooks.find(b => b.bookId == rental.bookId);
+            const bookPrice = book?.price || 50;
+            const penaltyAmount = daysOverdue > 0 ? Math.min(bookPrice * 0.1 * daysOverdue, bookPrice * 2) : 0;
+            
+            return {
+              transactionId: rental.transactionId,
+              memberId: rental.memberId,
+              memberName: getMemberName(rental.memberId),
+              bookId: rental.bookId,
+              bookTitle: rental.bookTitle || book?.title || 'Unknown',
+              borrowedDate: rental.borrowedDate,
+              dueDate: rental.dueDate,
+              actualReturnDate: rental.actualReturnDate,
+              status: isReturned ? 'Returned' : (daysOverdue > 0 ? 'Overdue' : 'Borrowed'),
+              daysOverdue: daysOverdue,
+              penaltyAmount: Math.round(penaltyAmount * 100) / 100,
+              isOverdue: daysOverdue > 0 && !isReturned,
+              renewedCount: rental.renewedCount || 0
+            };
+          });
+          
+          console.log(`✅ Found ${rentalsWithDetails.length} total rentals from local DB`);
+          return rentalsWithDetails;
+        }
+        return [];
+      } catch (error) {
+        console.error("Error fetching all rentals:", error);
+        return [];
+      }
+    }
+
+    function getMemberName(memberId) {
+      const member = allMembers.find(m => m.memberId == memberId);
+      if (member) {
+        return `${member.memberFirstName} ${member.memberLastName}`;
+      }
+      return `Member ${memberId}`;
+    }
+
+    // Books Page
+    async function renderBooksPage() {
+      const contentDiv = document.getElementById('mainContent');
+      contentDiv.innerHTML = `
+        <div class="stats-grid">
+          <div class="navigation-card" onclick="navigateToBookList()">
+            <i class="fas fa-book-open"></i>
+            <h3>View All Books</h3>
+            <p>Browse, search, and manage your complete book catalog</p>
+            <small style="color: #2b6cb0;">Click to access →</small>
+          </div>
+          <div class="navigation-card" onclick="navigateToAddBook()">
+            <i class="fas fa-plus-circle"></i>
+            <h3>Add New Book</h3>
+            <p>Add a new book to your library collection</p>
+            <small style="color: #28a745;">Click to access →</small>
+          </div>
+        </div>
+        <div class="coming-soon-card">
+          <i class="fas fa-chart-line"></i>
+          <h3>Book Management</h3>
+          <p>Click on "View All Books" to manage your book catalog or "Add New Book" to add a new book to the library.</p>
+          <p style="margin-top: 0.5rem; font-size: 0.8rem;">📚 Book count > 0 = Available | Book count = 0 = Not Available</p>
+        </div>
+      `;
+    }
+
+    // Enhanced Rentals Page
+    async function renderRentalsPage() {
+      const contentDiv = document.getElementById('mainContent');
+      contentDiv.innerHTML = `
+        <div class="rental-stats-grid" id="rentalStats">
+          <div class="rental-stat-card"><div class="rental-stat-info"><h4>Total Rentals</h4><div class="rental-stat-number" id="totalRentals">0</div></div><div class="stat-icon"><i class="fas fa-list"></i></div></div>
+          <div class="rental-stat-card"><div class="rental-stat-info"><h4>Active Rentals</h4><div class="rental-stat-number" id="activeRentals">0</div></div><div class="stat-icon"><i class="fas fa-book"></i></div></div>
+          <div class="rental-stat-card"><div class="rental-stat-info"><h4>Overdue Rentals</h4><div class="rental-stat-number" id="overdueRentals">0</div></div><div class="stat-icon"><i class="fas fa-clock"></i></div></div>
+          <div class="rental-stat-card"><div class="rental-stat-info"><h4>Returned Rentals</h4><div class="rental-stat-number" id="returnedRentals">0</div></div><div class="stat-icon"><i class="fas fa-check-circle"></i></div></div>
+        </div>
+        <div class="filter-bar">
+          <div class="filter-group">
+            <label>Member ID</label>
+            <input type="text" id="filterMemberId" placeholder="Enter Member ID">
+          </div>
+          <div class="filter-group">
+            <label>Status</label>
+            <select id="filterStatus">
+              <option value="">All</option>
+              <option value="Borrowed">Borrowed</option>
+              <option value="Overdue">Overdue</option>
+              <option value="Returned">Returned</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <button class="btn-filter" id="applyFilterBtn">Apply Filter</button>
+            <button class="btn-filter btn-refresh" id="refreshRentalsBtn">Refresh</button>
+          </div>
+        </div>
+        <div class="data-table-wrapper">
+          <table id="rentalsTable" class="display">
+            <thead>
+              <tr>
+                <th>Transaction ID</th>
+                <th>Member ID</th>
+                <th>Member Name</th>
+                <th>Book Title</th>
+                <th>Borrowed Date</th>
+                <th>Due Date</th>
+                <th>Returned Date</th>
+                <th>Status</th>
+                <th>Days Left/Overdue</th>
+                <th>Penalty</th>
+                <th>Renewals</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      `;
+
+      await loadRentalsData();
+
+      document.getElementById('applyFilterBtn').onclick = () => loadRentalsData();
+      document.getElementById('refreshRentalsBtn').onclick = () => loadRentalsData();
+    }
+
+    async function loadRentalsData() {
+      const memberId = document.getElementById('filterMemberId')?.value || '';
+      const statusFilter = document.getElementById('filterStatus')?.value || '';
+      
+      let rentals = await fetchAllRentalsFromLocalDB();
+      
+      if (memberId) {
+        rentals = rentals.filter(r => r.memberId == memberId);
+      }
+      if (statusFilter) {
+        rentals = rentals.filter(r => r.status === statusFilter);
+      }
+      
+      const totalRentals = rentals.length;
+      const activeRentals = rentals.filter(r => r.status === 'Borrowed').length;
+      const overdueRentals = rentals.filter(r => r.status === 'Overdue').length;
+      const returnedRentals = rentals.filter(r => r.status === 'Returned').length;
+      
+      document.getElementById('totalRentals').innerText = totalRentals;
+      document.getElementById('activeRentals').innerText = activeRentals;
+      document.getElementById('overdueRentals').innerText = overdueRentals;
+      document.getElementById('returnedRentals').innerText = returnedRentals;
+      
+      if (rentalsDataTable) {
+        rentalsDataTable.destroy();
+        rentalsDataTable = null;
+      }
+      
+      if (rentals.length === 0) {
+        $('#rentalsTable').DataTable({
+          data: [],
+          columns: [
+            { title: "Transaction ID" }, { title: "Member ID" }, { title: "Member Name" },
+            { title: "Book Title" }, { title: "Borrowed Date" }, { title: "Due Date" },
+            { title: "Returned Date" }, { title: "Status" }, { title: "Days Left/Overdue" },
+            { title: "Penalty" }, { title: "Renewals" }, { title: "Actions" }
+          ],
+          language: { emptyTable: "No rental transactions found" }
+        });
+        return;
+      }
+      
+      const rows = rentals.map(rental => {
+        const statusClass = rental.status === 'Returned' ? 'status-returned' : (rental.status === 'Overdue' ? 'status-overdue' : 'status-borrowed');
+        const dueStatus = getDueStatus(rental.dueDate);
+        const daysDisplay = rental.status === 'Returned' ? '—' : dueStatus.text;
+        const penaltyDisplay = rental.penaltyAmount > 0 ? `<span style="color:#dc2626; font-weight:bold;">$${rental.penaltyAmount.toFixed(2)}</span>` : '—';
+        const returnedDateDisplay = rental.actualReturnDate ? formatDate(rental.actualReturnDate) : '—';
+        
+        return [
+          rental.transactionId,
+          rental.memberId,
+          rental.memberName,
+          rental.bookTitle,
+          formatDate(rental.borrowedDate),
+          formatDate(rental.dueDate),
+          returnedDateDisplay,
+          `<span class="status-badge ${statusClass}">${rental.status}</span>`,
+          `<span class="due-badge ${dueStatus.class}">${daysDisplay}</span>`,
+          penaltyDisplay,
+          rental.renewedCount > 0 ? `${rental.renewedCount} time(s)` : '—',
+          `<button class="action-btn" onclick="viewRentalDetails(${rental.transactionId})"><i class="fas fa-eye"></i> View</button>`
+        ];
+      });
+      
+      rentalsDataTable = $('#rentalsTable').DataTable({
+        data: rows,
+        columns: [
+          { title: "Transaction ID" }, { title: "Member ID" }, { title: "Member Name" },
+          { title: "Book Title" }, { title: "Borrowed Date" }, { title: "Due Date" },
+          { title: "Returned Date" }, { title: "Status", orderable: false },
+          { title: "Days Left/Overdue", orderable: false }, { title: "Penalty", orderable: false },
+          { title: "Renewals", orderable: false }, { title: "Actions", orderable: false }
+        ],
+        order: [[0, 'desc']],
+        pageLength: 10,
+        language: { 
+          search: "Search:",
+          lengthMenu: "Show _MENU_ entries",
+          info: "Showing _START_ to _END_ of _TOTAL_ entries",
+          paginate: { previous: "Previous", next: "Next" }
+        }
+      });
+    }
+
+    window.viewRentalDetails = async function(transactionId) {
+      const rentals = await fetchAllRentalsFromLocalDB();
+      const rental = rentals.find(r => r.transactionId == transactionId);
+      
+      const modal = document.getElementById('rentalDetailsModal');
+      const contentDiv = document.getElementById('rentalDetailsContent');
+      
+      if (rental) {
+        const dueStatus = getDueStatus(rental.dueDate);
+        contentDiv.innerHTML = `
+          <div class="book-detail-card">
+            <h4>Rental Transaction #${rental.transactionId}</h4>
+            <div class="details-grid">
+              <div class="detail-item"><label>Member ID</label><span>${rental.memberId}</span></div>
+              <div class="detail-item"><label>Member Name</label><span>${escapeHtml(rental.memberName)}</span></div>
+              <div class="detail-item"><label>Book ID</label><span>${rental.bookId || 'N/A'}</span></div>
+              <div class="detail-item"><label>Book Title</label><span>${escapeHtml(rental.bookTitle)}</span></div>
+              <div class="detail-item"><label>Borrowed Date</label><span>${formatDate(rental.borrowedDate)}</span></div>
+              <div class="detail-item"><label>Due Date</label><span>${formatDate(rental.dueDate)}</span></div>
+              <div class="detail-item"><label>Returned Date</label><span>${rental.actualReturnDate ? formatDate(rental.actualReturnDate) : 'Not returned yet'}</span></div>
+              <div class="detail-item"><label>Status</label><span class="status-badge ${rental.status === 'Returned' ? 'status-returned' : (rental.status === 'Overdue' ? 'status-overdue' : 'status-borrowed')}">${rental.status}</span></div>
+              <div class="detail-item"><label>Days Status</label><span class="due-badge ${dueStatus.class}">${dueStatus.text}</span></div>
+              <div class="detail-item"><label>Penalty Amount</label><span>$${rental.penaltyAmount.toFixed(2)}</span></div>
+              <div class="detail-item"><label>Renewals</label><span>${rental.renewedCount || 0} time(s)</span></div>
+            </div>
+          </div>
+        `;
+      } else {
+        contentDiv.innerHTML = `<div class="empty-state">Rental details not found</div>`;
+      }
+      modal.style.display = 'flex';
+    };
+
+    // Penalties Page
+    async function renderPenaltiesPage() {
+      const contentDiv = document.getElementById('mainContent');
+      contentDiv.innerHTML = `
+        <div class="data-table-wrapper">
+          <table id="penaltiesTable" class="display">
+            <thead>
+              <tr>
+                <th>Penalty ID</th>
+                <th>Rental ID</th>
+                <th>Member Name</th>
+                <th>Book Title</th>
+                <th>Amount</th>
+                <th>Reason</th>
+                <th>Status</th>
+                <th>Paid At</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      `;
+
+      const penalties = await fetchPenalties();
+      
+      const rows = penalties.map(p => {
+        const isPaid = p.paymentStatusDescription === 'Paid' || p.paymentStatus === 9;
+        return [
+          p.penaltyId || '—',
+          p.rentalTransactionId || '—',
+          p.memberName || '—',
+          p.bookName || '—',
+          `$${(p.amount || 0).toFixed(2)}`,
+          p.reasonDesc || '—',
+          `<span class="status-badge ${isPaid ? 'status-paid' : 'status-pending'}">${isPaid ? 'Paid' : 'Pending'}</span>`,
+          p.paidAt ? new Date(p.paidAt).toLocaleDateString() : '—',
+          !isPaid ? `<button class="action-btn pay-btn" onclick="payPenalty(${p.penaltyId}, ${p.amount || 0})"><i class="fas fa-money-bill"></i> Pay Now</button>` : 
+                    `<button class="action-btn" onclick="viewPenaltyDetails(${p.penaltyId})"><i class="fas fa-eye"></i> View</button>`
+        ];
+      });
+
+      if (penaltiesDataTable) {
+        penaltiesDataTable.clear();
+        penaltiesDataTable.rows.add(rows);
+        penaltiesDataTable.draw();
+      } else {
+        penaltiesDataTable = $('#penaltiesTable').DataTable({
+          data: rows,
+          columns: [
+            { title: "Penalty ID" }, { title: "Rental ID" }, { title: "Member Name" },
+            { title: "Book Title" }, { title: "Amount" }, { title: "Reason" },
+            { title: "Status", orderable: false }, { title: "Paid At" },
+            { title: "Actions", orderable: false }
+          ],
+          order: [[0, 'desc']],
+          pageLength: 10,
+          language: { emptyTable: "No penalties found" }
+        });
+      }
+    }
+
+    window.viewPenaltyDetails = async function(penaltyId) {
+      const penalties = await fetchPenalties();
+      const penalty = penalties.find(p => p.penaltyId == penaltyId);
+      if (penalty) {
+        alert(`💰 Penalty Details\n\nPenalty ID: ${penalty.penaltyId}\nBook: ${penalty.bookName}\nAmount: $${penalty.amount}\nReason: ${penalty.reasonDesc}\nStatus: ${penalty.paymentStatusDescription || 'Pending'}\nPaid At: ${penalty.paidAt || 'Not paid'}`);
+      }
+    };
+
+    // Navigation functions for Books
+    function navigateToBookList() {
+      window.location.href = 'booklist.html';
+    }
+
+    function navigateToAddBook() {
+      window.location.href = 'addbook.html';
+    }
+
+    // Dashboard
+    async function renderDashboard() {
+      const contentDiv = document.getElementById('mainContent');
+      contentDiv.innerHTML = '<div class="loading"><span class="loading-spinner"></span> Loading dashboard data...</div>';
+      
+      const [members, rentals, books] = await Promise.all([fetchMembers(), fetchAllRentalsFromLocalDB(), fetchBooks()]);
+      
+      const totalMembers = members.length;
+      const activeMembers = members.filter(m => m.membershipStatusDescription === "Active").length;
+      const activeRentals = rentals.filter(r => r.status === "Borrowed").length;
+      const overdueRentals = rentals.filter(r => r.status === "Overdue").length;
+      const totalPenaltyAmount = rentals.reduce((sum, r) => sum + (r.penaltyAmount || 0), 0);
+      const totalBooks = books.length;
+      const availableBooks = books.filter(b => (b.bookCount || 0) > 0).length;
+      
+      const dashboardHtml = `
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-info">
+              <h3><i class="fas fa-users"></i> Total Members</h3>
+              <div class="stat-number">${totalMembers}</div>
+              <small>Registered in system</small>
+            </div>
+            <div class="stat-icon"><i class="fas fa-user-friends"></i></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-info">
+              <h3><i class="fas fa-user-check"></i> Active Members</h3>
+              <div class="stat-number">${activeMembers}</div>
+              <small>With active membership</small>
+            </div>
+            <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-info">
+              <h3><i class="fas fa-book"></i> Total Books</h3>
+              <div class="stat-number">${totalBooks}</div>
+              <small>In library catalog</small>
+            </div>
+            <div class="stat-icon"><i class="fas fa-book"></i></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-info">
+              <h3><i class="fas fa-check-circle"></i> Available Books</h3>
+              <div class="stat-number">${availableBooks}</div>
+              <small>Ready to borrow</small>
+            </div>
+            <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-info">
+              <h3><i class="fas fa-exchange-alt"></i> Active Rentals</h3>
+              <div class="stat-number">${activeRentals}</div>
+              <small>Currently borrowed</small>
+            </div>
+            <div class="stat-icon"><i class="fas fa-exchange-alt"></i></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-info">
+              <h3><i class="fas fa-clock"></i> Overdue Rentals</h3>
+              <div class="stat-number">${overdueRentals}</div>
+              <small>Past due date</small>
+            </div>
+            <div class="stat-icon"><i class="fas fa-clock"></i></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-info">
+              <h3><i class="fas fa-gavel"></i> Total Penalties</h3>
+              <div class="stat-number">$${totalPenaltyAmount.toFixed(2)}</div>
+              <small>Pending & paid</small>
+            </div>
+            <div class="stat-icon"><i class="fas fa-gavel"></i></div>
+          </div>
+        </div>
+        <div class="coming-soon-card">
+          <i class="fas fa-chart-line"></i>
+          <h3>Library Overview</h3>
+          <p>Total Members: ${totalMembers} | Active Rentals: ${activeRentals} | Overdue: ${overdueRentals} | Total Penalties: $${totalPenaltyAmount.toFixed(2)}</p>
+          <p style="margin-top: 0.5rem; font-size: 0.8rem;">Penalty Calculation: 10% of book price per overdue day (max 200%)</p>
+        </div>
+      `;
+      
+      contentDiv.innerHTML = dashboardHtml;
+    }
+
+    function navigateTo(page) {
+      currentPage = page;
+      document.querySelectorAll('.menu-item').forEach(item => item.classList.remove('active'));
+      if (document.querySelector(`.menu-item[data-page="${page}"]`)) {
+        document.querySelector(`.menu-item[data-page="${page}"]`).classList.add('active');
+      }
+      
+      const titles = {
+        dashboard: 'Dashboard Overview',
+        addMember: 'Add Member',
+        memberList: 'Member List',
+        books: 'Books Management',
+        rentals: 'Rental Transactions',
+        penalties: 'Penalty Management'
+      };
+      document.getElementById('pageTitle').innerHTML = titles[page] || page;
+      
+      if (page === 'dashboard') {
+        renderDashboard();
+      } else if (page === 'books') {
+        renderBooksPage();
+      } else if (page === 'rentals') {
+        renderRentalsPage();
+      } else if (page === 'penalties') {
+        renderPenaltiesPage();
+      } else if (page === 'addMember') {
+        window.location.href = 'addMember.html';
+      } else if (page === 'memberList') {
+        window.location.href = 'memberList..html';
+      } else {
+        renderDashboard();
+      }
+    }
+
+    document.querySelectorAll('.menu-item').forEach(item => {
+      item.addEventListener('click', () => {
+        const page = item.dataset.page;
+        navigateTo(page);
+      });
+    });
+
+    renderDashboard();
+  </script>
+</body>
+</html>

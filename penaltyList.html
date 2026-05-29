@@ -1,0 +1,1009 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Penalty Management | Library System</title>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Inter', system-ui, sans-serif;
+            background: #eef2f7;
+            padding: 2rem 1.5rem;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .status-header {
+            background: white;
+            border-radius: 28px;
+            padding: 1.4rem 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .title-section h2 {
+            color: #1a2c3e;
+            font-weight: 700;
+            font-size: 1.7rem;
+        }
+
+        .title-section p {
+            color: #5a6e8a;
+            margin-top: 4px;
+        }
+
+        .stats-bar {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1rem 2rem;
+            border-radius: 20px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            min-width: 160px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #2b6cb0;
+        }
+
+        .stat-label {
+            color: #6c7a91;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .filter-bar {
+            background: white;
+            border-radius: 20px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            align-items: flex-end;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.3rem;
+        }
+
+        .filter-group label {
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: #6c7a91;
+            text-transform: uppercase;
+        }
+
+        .filter-group input,
+        .filter-group select {
+            padding: 8px 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            min-width: 140px;
+        }
+
+        .btn-filter,
+        .btn-reset {
+            padding: 8px 20px;
+            border-radius: 30px;
+            font-weight: 600;
+            cursor: pointer;
+            height: 38px;
+        }
+
+        .btn-filter {
+            background: #2b6cb0;
+            color: white;
+            border: none;
+        }
+
+        .btn-reset {
+            background: #e2e8f0;
+            color: #2c3e50;
+            border: none;
+        }
+
+        .action-buttons {
+            margin-top: 1rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-primary,
+        .btn-success,
+        .btn-danger {
+            padding: 10px 24px;
+            border-radius: 40px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #2b6cb0 0%, #2c3e66 100%);
+            color: white;
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-danger {
+            background: #dc2626;
+            color: white;
+        }
+
+        .btn-sm {
+            padding: 5px 12px;
+            font-size: 0.75rem;
+            margin: 2px;
+            border-radius: 20px;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-view {
+            background: #e3f2fd;
+            color: #1565c0;
+        }
+
+        .btn-pay {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-delete {
+            background: #dc2626;
+            color: white;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 5px 14px;
+            border-radius: 30px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .status-paid {
+            background: #e0f2e9;
+            color: #1a472a;
+        }
+
+        .status-pending {
+            background: #fff3e0;
+            color: #b45f06;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            overflow: auto;
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 2rem;
+            width: 90%;
+            max-width: 550px;
+            border-radius: 28px;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .modal-header h3 {
+            color: #2b6cb0;
+        }
+
+        .close-modal {
+            font-size: 1.8rem;
+            cursor: pointer;
+            color: #6c7a91;
+            transition: 0.2s;
+        }
+
+        .close-modal:hover {
+            color: #e53e3e;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #6c7a91;
+            margin-bottom: 0.25rem;
+            text-transform: uppercase;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 0.9rem;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #2b6cb0;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #ccc;
+            border-radius: 50%;
+            border-top-color: #2b6cb0;
+            animation: spin 0.6s linear infinite;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .message-card {
+            background: #fef9e3;
+            border-left: 6px solid #f5b042;
+            padding: 1rem 1.5rem;
+            border-radius: 20px;
+            margin-bottom: 1.8rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .message-card.success {
+            background: #e0f2e9;
+            border-left-color: #2e7d64;
+        }
+
+        .message-card.error {
+            background: #ffe6e5;
+            border-left-color: #c7362b;
+        }
+
+        .data-wrapper {
+            background: white;
+            border-radius: 28px;
+            padding: 1.2rem;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+        }
+
+        table.dataTable {
+            width: 100% !important;
+        }
+
+        table.dataTable thead th {
+            background: #f8fafc;
+            padding: 14px 12px;
+            font-weight: 700;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .nav-btn {
+            background: #e2e8f0;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 30px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            color: #2c3e50;
+        }
+
+        .nav-btn.active {
+            background: #2b6cb0;
+            color: white;
+        }
+
+        .info-text {
+            font-size: 0.7rem;
+            color: #6c7a91;
+            margin-top: 0.25rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="status-header">
+            <div class="title-section">
+                <h2><i class="fas fa-gavel"></i> Penalty Management</h2>
+                <p>Manage library penalties, payments, and violations</p>
+            </div>
+            <div class="nav-buttons">
+                <a href="rentalList.html" class="nav-btn">Rentals</a>
+                <a href="favorites.html" class="nav-btn">Favorites</a>
+                <a href="penaltyList.html" class="nav-btn active">Penalties</a>
+                <a href="dashboard.html" class="nav-btn">Dashboard</a>
+            </div>
+        </div>
+
+        <div class="stats-bar">
+            <div class="stat-card" id="totalPenaltiesCard">
+                <span class="stat-number" id="totalPenalties">0</span>
+                <span class="stat-label">Total Penalties</span>
+            </div>
+            <div class="stat-card" id="pendingPenaltiesCard">
+                <span class="stat-number" id="pendingPenalties">0</span>
+                <span class="stat-label">Pending</span>
+            </div>
+            <div class="stat-card" id="paidPenaltiesCard">
+                <span class="stat-number" id="paidPenalties">0</span>
+                <span class="stat-label">Paid</span>
+            </div>
+        </div>
+
+        <div class="action-buttons">
+            <button class="btn-primary" id="addPenaltyBtn"><i class="fas fa-plus"></i> Add Penalty</button>
+        </div>
+
+        <div class="filter-bar">
+            <div class="filter-group">
+                <label>Penalty ID</label>
+                <input type="text" id="filterPenaltyId" placeholder="Penalty ID">
+            </div>
+            <div class="filter-group">
+                <label>Member ID</label>
+                <input type="text" id="filterMemberId" placeholder="Member ID">
+            </div>
+            <div class="filter-group">
+                <label>Book ID</label>
+                <input type="text" id="filterBookId" placeholder="Book ID">
+            </div>
+            <div class="filter-group">
+                <label>Payment Status</label>
+                <select id="filterPaymentStatus">
+                    <option value="">All</option>
+                    <option value="PAID">Paid</option>
+                    <option value="PEND">Pending</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <button class="btn-filter" id="applyFilterBtn">Apply Filter</button>
+                <button class="btn-reset" id="resetFilterBtn">Reset</button>
+            </div>
+        </div>
+
+        <div id="messageArea" class="message-card info">Loading penalties...</div>
+
+        <div class="data-wrapper">
+            <table id="penaltyTable" class="display">
+                <thead>
+                    <tr>
+                        <th>Serial No</th>
+                        <th>Penalty ID</th>
+                        <th>Rental ID</th>
+                        <th>Book Name</th>
+                        <th>Amount ($)</th>
+                        <th>Reason</th>
+                        <th>Status</th>
+                        <th>Paid At</th>
+                        <th>Payment Mode</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Add Penalty Modal -->
+    <div id="addPenaltyModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-plus-circle"></i> Add Penalty</h3>
+                <span class="close-modal" onclick="closeModal('addPenaltyModal')">&times;</span>
+            </div>
+            <form id="addPenaltyForm">
+                <div class="form-group">
+                    <label>Penalty ID (optional)</label>
+                    <input type="text" id="penaltyId" placeholder="Leave empty for auto">
+                </div>
+                <div class="form-group">
+                    <label>Rental Transaction *</label>
+                    <select id="rentalTransactionIds" required>
+                        <option value="">Loading rental transactions...</option>
+                    </select>
+                    <div class="info-text">Only shows borrowed books that don't have penalties yet</div>
+                </div>
+                <div class="form-group">
+                    <label>Reason Code *</label>
+                    <select id="reasonCode" required>
+                        <option value="">Select Reason</option>
+                        <option value="DAMG">Damage (Half of book price)</option>
+                        <option value="MISS">Missing (Full book price)</option>
+                    </select>
+                </div>
+                <div class="form-group" id="calculatedAmount" style="display:none;">
+                    <label>Calculated Fine Amount</label>
+                    <input type="text" id="fineAmount" readonly style="background:#f0f2f8; font-weight:bold;">
+                </div>
+                <button type="submit" class="btn-primary" style="width:100%; margin-top:1rem;">Add Penalty</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Pay Penalty Modal -->
+    <div id="payPenaltyModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-money-bill-wave"></i> Pay Penalty</h3>
+                <span class="close-modal" onclick="closeModal('payPenaltyModal')">&times;</span>
+            </div>
+            <form id="payPenaltyForm">
+                <div class="form-group">
+                    <label>Penalty ID *</label>
+                    <input type="text" id="payPenaltyId" required readonly>
+                </div>
+                <div class="form-group">
+                    <label>Amount to Pay</label>
+                    <input type="text" id="payAmount" readonly style="background:#f0f2f8; font-weight:bold;">
+                </div>
+                <div class="form-group">
+                    <label>Payment Mode *</label>
+                    <select id="paymentModeCode" required>
+                        <option value="">Select Payment Mode</option>
+                        <option value="CASH">Cash</option>
+                        <option value="UPI">UPI</option>
+                        <option value="CARD">Card</option>
+                        <option value="ONLN">Online</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn-success" style="width:100%; margin-top:1rem;">Pay Penalty</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Delete Penalty Modal -->
+    <div id="deletePenaltyModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-trash-alt"></i> Delete Penalty</h3>
+                <span class="close-modal" onclick="closeModal('deletePenaltyModal')">&times;</span>
+            </div>
+            <form id="deletePenaltyForm">
+                <div class="form-group">
+                    <label>Penalty ID *</label>
+                    <input type="text" id="deletePenaltyId" required readonly>
+                </div>
+                <div class="form-group">
+                    <label>Reason Code *</label>
+                    <select id="deleteReasonCode" required>
+                        <option value="">Select Reason</option>
+                        <option value="DAMG">Damage</option>
+                        <option value="MISS">Missing</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn-danger" style="width:100%; margin-top:1rem;">Delete Penalty</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- View Details Modal -->
+    <div id="viewPenaltyModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-info-circle"></i> Penalty Details</h3>
+                <span class="close-modal" onclick="closeModal('viewPenaltyModal')">&times;</span>
+            </div>
+            <div id="penaltyDetails"></div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script>
+        let penaltyDataTable = null;
+        const BASE_URL = "https://dev-api.humhealth.com/LibraryManagementAPI";
+        let currentFilters = {
+            memberId: 0,
+            bookId: 0,
+            language: "",
+            genre: "",
+            penaltyId: 0,
+            paymentStatusCode: "",
+            rentalTransactionId: 0,
+            paymentModeCode: ""
+        };
+        let rentalsList = [];
+
+        function showMessage(text, type = 'info') {
+            const msgDiv = document.getElementById('messageArea');
+            const icon = type === 'success' ? 'fa-check-circle' : (type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle');
+            msgDiv.innerHTML = `<i class="fas ${icon}"></i> ${text}`;
+            msgDiv.className = `message-card ${type}`;
+            setTimeout(() => {
+                msgDiv.style.opacity = '0.9';
+            }, 4000);
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        // Fetch rental transactions for penalty (only borrowed books without penalties)
+        async function fetchRentalTransactions() {
+            try {
+                const response = await fetch(`${BASE_URL}/rentals/list`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        start: 0,
+                        length: 200,
+                        searchValue: "",
+                        order: { sortType: "desc", sortColumn: "serialNo" },
+                        filter: { startDate: "", endDate: "", transactionId: 0, memberId: 0, bookId: 0, rentalStatusCode: 5 } // Only borrowed
+                    })
+                });
+                const result = await response.json();
+                if (result.status === "Success" && result.data?.rentals) {
+                    rentalsList = result.data.rentals;
+                    const select = document.getElementById('rentalTransactionIds');
+                    select.innerHTML = '<option value="">-- Select Rental Transaction --</option>';
+                    rentalsList.forEach(r => {
+                        select.innerHTML += `<option value="${r.transactionId}" 
+                            data-book-id="${r.bookId}"
+                            data-book-title="${r.bookTitle}"
+                            data-member-id="${r.memberId}"
+                            data-member-name="${r.memberName}">
+                            ${r.transactionId} - ${r.bookTitle} (Member: ${r.memberName})
+                        </option>`;
+                    });
+                } else {
+                    document.getElementById('rentalTransactionIds').innerHTML = '<option value="">No borrowed books available</option>';
+                }
+            } catch (error) {
+                console.error("Error fetching rentals:", error);
+                document.getElementById('rentalTransactionIds').innerHTML = '<option value="">Error loading rentals</option>';
+            }
+        }
+
+        // Calculate fine amount based on reason and book price
+        async function calculateFineAmount(rentalTransactionId, reasonCode) {
+            if (!rentalTransactionId || !reasonCode) return;
+
+            const rental = rentalsList.find(r => r.transactionId == rentalTransactionId);
+            if (!rental) return;
+
+            try {
+                // Fetch book details to get price
+                const response = await fetch(`${BASE_URL}/books/list`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        start: 0,
+                        length: 1,
+                        searchValue: "",
+                        order: { sortType: "asc", sortColumn: "title" },
+                        filter: { language: "", genre: "", statusCode: "" }
+                    })
+                });
+                const result = await response.json();
+                let bookPrice = 0;
+                
+                if (result.status === "Success" && result.data) {
+                    const book = result.data.find(b => b.bookId == rental.bookId);
+                    if (book) {
+                        bookPrice = parseFloat(book.price);
+                    }
+                }
+
+                let fineAmount = 0;
+                if (reasonCode === 'MISS') {
+                    fineAmount = bookPrice; // Full price for missing
+                } else if (reasonCode === 'DAMG') {
+                    fineAmount = bookPrice / 2; // Half price for damage
+                }
+
+                document.getElementById('fineAmount').value = `$${fineAmount.toFixed(2)}`;
+                document.getElementById('calculatedAmount').style.display = 'block';
+                
+                return fineAmount;
+            } catch (error) {
+                console.error("Error calculating fine:", error);
+            }
+            return 0;
+        }
+
+        // Event listener for rental selection
+        document.getElementById('rentalTransactionIds').addEventListener('change', async function() {
+            const reasonCode = document.getElementById('reasonCode').value;
+            if (this.value && reasonCode) {
+                await calculateFineAmount(this.value, reasonCode);
+            }
+        });
+
+        document.getElementById('reasonCode').addEventListener('change', async function() {
+            const rentalId = document.getElementById('rentalTransactionIds').value;
+            if (rentalId && this.value) {
+                await calculateFineAmount(rentalId, this.value);
+            }
+        });
+
+        async function fetchPenalties() {
+            showMessage('<span class="loading"></span> Loading penalties...', 'info');
+
+            const payload = {
+                start: 0,
+                length: 100,
+                searchValue: "",
+                order: {
+                    sortColumn: "serialNo",
+                    sortType: "desc"
+                },
+                filter: currentFilters
+            };
+
+            try {
+                const response = await fetch(`${BASE_URL}/penalties/list`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+
+                if (result.status === "Success" && result.data) {
+                    const penalties = result.data.penalties || [];
+                    updateStats(penalties);
+                    renderDataTable(penalties);
+                    showMessage(`✅ Loaded ${penalties.length} penalties`, 'success');
+                } else {
+                    showMessage(`⚠️ No penalties found`, 'warning');
+                    renderDataTable([]);
+                    updateStats([]);
+                }
+            } catch (error) {
+                console.error("Error fetching penalties:", error);
+                showMessage(`❌ Error: ${error.message}`, 'error');
+                renderDataTable([]);
+                updateStats([]);
+            }
+        }
+
+        function updateStats(penalties) {
+            const total = penalties.length;
+            const pending = penalties.filter(p => p.paymentStatusDescription !== 'Paid' && p.paymentStatus !== 9).length;
+            const paid = penalties.filter(p => p.paymentStatusDescription === 'Paid' || p.paymentStatus === 9).length;
+
+            document.getElementById('totalPenalties').textContent = total;
+            document.getElementById('pendingPenalties').textContent = pending;
+            document.getElementById('paidPenalties').textContent = paid;
+        }
+
+        function renderDataTable(penalties) {
+            const rows = penalties.map(penalty => {
+                const isPaid = penalty.paymentStatusDescription === 'Paid' || penalty.paymentStatus === 9;
+                return [
+                    penalty.serialNo || '—',
+                    penalty.penaltyId || '—',
+                    penalty.rentalTransactionId || '—',
+                    penalty.bookName || '—',
+                    `$${penalty.amount?.toFixed(2) || '0.00'}`,
+                    penalty.reasonDesc || '—',
+                    `<span class="status-badge ${isPaid ? 'status-paid' : 'status-pending'}">${isPaid ? 'Paid' : 'Pending'}</span>`,
+                    penalty.paidAt ? new Date(penalty.paidAt).toLocaleDateString() : '—',
+                    penalty.paymentModeDescription || '—',
+                    `<div>
+                        <button class="btn-sm btn-view" onclick="viewPenalty(${penalty.penaltyId})"><i class="fas fa-eye"></i> View</button>
+                        ${!isPaid ? `<button class="btn-sm btn-pay" onclick="showPayModal(${penalty.penaltyId}, ${penalty.amount})"><i class="fas fa-money-bill"></i> Pay</button>` : ''}
+                        <button class="btn-sm btn-delete" onclick="showDeleteModal(${penalty.penaltyId})"><i class="fas fa-trash"></i> Delete</button>
+                    </div>`
+                ];
+            });
+
+            if (penaltyDataTable) {
+                penaltyDataTable.clear();
+                if (rows.length) penaltyDataTable.rows.add(rows);
+                penaltyDataTable.draw();
+            } else {
+                penaltyDataTable = $('#penaltyTable').DataTable({
+                    data: rows,
+                    columns: [
+                        { title: "Serial No" }, { title: "Penalty ID" }, { title: "Rental ID" },
+                        { title: "Book Name" }, { title: "Amount" }, { title: "Reason" },
+                        { title: "Status", orderable: false }, { title: "Paid At" },
+                        { title: "Payment Mode" }, { title: "Actions", orderable: false }
+                    ],
+                    order: [[0, 'desc']],
+                    pageLength: 10,
+                    language: { emptyTable: "No penalties found" }
+                });
+            }
+        }
+
+        async function viewPenalty(penaltyId) {
+            const modal = document.getElementById('viewPenaltyModal');
+            const contentDiv = document.getElementById('penaltyDetails');
+
+            modal.style.display = 'block';
+            contentDiv.innerHTML = '<div class="loading"></div> Loading...';
+
+            const payload = {
+                start: 0,
+                length: 1,
+                searchValue: "",
+                order: { sortColumn: "serialNo", sortType: "desc" },
+                filter: { ...currentFilters, penaltyId: penaltyId }
+            };
+
+            try {
+                const response = await fetch(`${BASE_URL}/penalties/list`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload)
+                });
+                const result = await response.json();
+
+                if (result.status === "Success" && result.data?.penalties?.length > 0) {
+                    const p = result.data.penalties[0];
+                    contentDiv.innerHTML = `
+                        <div class="form-group"><strong>Penalty ID:</strong> ${p.penaltyId}</div>
+                        <div class="form-group"><strong>Rental Transaction ID:</strong> ${p.rentalTransactionId}</div>
+                        <div class="form-group"><strong>Book Name:</strong> ${p.bookName}</div>
+                        <div class="form-group"><strong>Book ID:</strong> ${p.bookId}</div>
+                        <div class="form-group"><strong>Amount:</strong> $${p.amount?.toFixed(2)}</div>
+                        <div class="form-group"><strong>Reason:</strong> ${p.reasonDesc}</div>
+                        <div class="form-group"><strong>Status:</strong> ${p.paymentStatusDescription || 'Pending'}</div>
+                        <div class="form-group"><strong>Paid At:</strong> ${p.paidAt ? new Date(p.paidAt).toLocaleDateString() : 'Not paid yet'}</div>
+                        <div class="form-group"><strong>Payment Mode:</strong> ${p.paymentModeDescription || '—'}</div>
+                    `;
+                } else {
+                    contentDiv.innerHTML = '<div style="color:red;">Penalty not found</div>';
+                }
+            } catch (error) {
+                contentDiv.innerHTML = `<div style="color:red;">Error: ${error.message}</div>`;
+            }
+        }
+
+        function showPayModal(penaltyId, amount) {
+            document.getElementById('payPenaltyId').value = penaltyId;
+            document.getElementById('payAmount').value = `$${amount?.toFixed(2) || '0.00'}`;
+            document.getElementById('payPenaltyModal').style.display = 'block';
+        }
+
+        function showDeleteModal(penaltyId) {
+            document.getElementById('deletePenaltyId').value = penaltyId;
+            document.getElementById('deletePenaltyModal').style.display = 'block';
+        }
+
+        // Add Penalty
+        document.getElementById('addPenaltyForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const rentalId = document.getElementById('rentalTransactionIds').value;
+            const rental = rentalsList.find(r => r.transactionId == rentalId);
+            
+            const payload = {
+                penaltyId: document.getElementById('penaltyId').value || "",
+                rentalTransactionIds: [parseInt(rentalId)],
+                reasonCode: document.getElementById('reasonCode').value
+            };
+
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="loading"></span> Adding...';
+
+            try {
+                const response = await fetch(`${BASE_URL}/penalties/add`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload)
+                });
+                const result = await response.json();
+
+                if (result.status === "Success") {
+                    showMessage(`✅ Penalty added successfully for ${rental?.bookTitle}!`, 'success');
+                    closeModal('addPenaltyModal');
+                    document.getElementById('addPenaltyForm').reset();
+                    document.getElementById('calculatedAmount').style.display = 'none';
+                    fetchPenalties();
+                    fetchRentalTransactions(); // Refresh the list
+                } else {
+                    showMessage(`❌ Failed: ${result.message}`, 'error');
+                }
+            } catch (error) {
+                showMessage(`❌ Error: ${error.message}`, 'error');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = 'Add Penalty';
+            }
+        });
+
+        // Pay Penalty
+        document.getElementById('payPenaltyForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const penaltyId = document.getElementById('payPenaltyId').value;
+            const paymentModeCode = document.getElementById('paymentModeCode').value;
+
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="loading"></span> Processing...';
+
+            try {
+                const response = await fetch(`${BASE_URL}/penalties/pay?penaltyId=${penaltyId}&paymentModeCode=${paymentModeCode}`, {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" }
+                });
+                const result = await response.json();
+
+                if (result.status === "Success") {
+                    showMessage(`✅ Payment successful!`, 'success');
+                    closeModal('payPenaltyModal');
+                    document.getElementById('payPenaltyForm').reset();
+                    fetchPenalties();
+                } else {
+                    showMessage(`❌ Failed: ${result.message}`, 'error');
+                }
+            } catch (error) {
+                showMessage(`❌ Error: ${error.message}`, 'error');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = 'Pay Penalty';
+            }
+        });
+
+        // Delete Penalty
+        document.getElementById('deletePenaltyForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const penaltyId = document.getElementById('deletePenaltyId').value;
+            const reasonCode = document.getElementById('deleteReasonCode').value;
+
+            const payload = {
+                penaltyId: penaltyId,
+                rentalTransactionIds: [],
+                reasonCode: reasonCode
+            };
+
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="loading"></span> Deleting...';
+
+            try {
+                const response = await fetch(`${BASE_URL}/penalties/add`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload)
+                });
+                const result = await response.json();
+
+                if (result.status === "Success") {
+                    showMessage(`✅ Penalty deleted successfully!`, 'success');
+                    closeModal('deletePenaltyModal');
+                    document.getElementById('deletePenaltyForm').reset();
+                    fetchPenalties();
+                } else {
+                    showMessage(`❌ Failed: ${result.message}`, 'error');
+                }
+            } catch (error) {
+                showMessage(`❌ Error: ${error.message}`, 'error');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = 'Delete Penalty';
+            }
+        });
+
+        function applyFilters() {
+            currentFilters = {
+                memberId: parseInt(document.getElementById('filterMemberId').value) || 0,
+                bookId: parseInt(document.getElementById('filterBookId').value) || 0,
+                language: "",
+                genre: "",
+                penaltyId: parseInt(document.getElementById('filterPenaltyId').value) || 0,
+                paymentStatusCode: document.getElementById('filterPaymentStatus').value,
+                rentalTransactionId: 0,
+                paymentModeCode: ""
+            };
+            fetchPenalties();
+        }
+
+        function resetFilters() {
+            document.getElementById('filterPenaltyId').value = '';
+            document.getElementById('filterMemberId').value = '';
+            document.getElementById('filterBookId').value = '';
+            document.getElementById('filterPaymentStatus').value = '';
+            currentFilters = {
+                memberId: 0, bookId: 0, language: "", genre: "",
+                penaltyId: 0, paymentStatusCode: "", rentalTransactionId: 0, paymentModeCode: ""
+            };
+            fetchPenalties();
+        }
+
+        document.getElementById('addPenaltyBtn').onclick = () => {
+            document.getElementById('addPenaltyModal').style.display = 'block';
+            fetchRentalTransactions();
+        };
+        document.getElementById('applyFilterBtn').onclick = applyFilters;
+        document.getElementById('resetFilterBtn').onclick = resetFilters;
+
+        window.onclick = (event) => {
+            const modals = ['addPenaltyModal', 'payPenaltyModal', 'deletePenaltyModal', 'viewPenaltyModal'];
+            modals.forEach(modalId => {
+                const modal = document.getElementById(modalId);
+                if (event.target === modal) modal.style.display = 'none';
+            });
+        };
+
+        fetchPenalties();
+    </script>
+</body>
+</html>

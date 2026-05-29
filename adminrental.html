@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin | Rental Transactions Management</title>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #f5f7fb; min-height: 100vh; }
+        
+        /* Navbar */
+        .navbar {
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            padding: 0 1.5rem;
+        }
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            padding: 0.8rem 0;
+        }
+        .logo { display: flex; align-items: center; gap: 10px; }
+        .logo i { font-size: 1.8rem; color: #2b6cb0; }
+        .logo h1 { font-size: 1.3rem; font-weight: 700; background: linear-gradient(135deg, #2b6cb0, #2c3e66); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        .mobile-menu-btn { display: none; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #2b6cb0; }
+        .nav-links { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+        .nav-links a { padding: 8px 18px; text-decoration: none; color: #4a5568; font-weight: 500; border-radius: 40px; transition: all 0.3s; display: flex; align-items: center; gap: 8px; font-size: 0.9rem; }
+        .nav-links a i { font-size: 1rem; }
+        .nav-links a:hover, .nav-links a.active { background: #e3f2fd; color: #2b6cb0; }
+        .user-menu { display: flex; align-items: center; gap: 15px; }
+        .user-avatar { width: 40px; height: 40px; background: linear-gradient(135deg, #2b6cb0, #2c3e66); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; cursor: pointer; }
+
+        /* Main Container */
+        .main-container { max-width: 1400px; margin: 0 auto; padding: 1.5rem; }
+        
+        /* Welcome Section */
+        .welcome-section {
+            background: linear-gradient(135deg, #2b6cb0 0%, #2c3e66 100%);
+            border-radius: 28px;
+            padding: 1.8rem 2rem;
+            margin-bottom: 2rem;
+            color: white;
+        }
+        .welcome-section h2 { font-size: 1.6rem; font-weight: 600; margin-bottom: 0.3rem; }
+        .welcome-section p { opacity: 0.9; font-size: 0.9rem; }
+
+        /* Stats Cards */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.2rem; margin-bottom: 2rem; }
+        .stat-card {
+            background: white;
+            border-radius: 24px;
+            padding: 1.3rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            transition: transform 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .stat-card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.08); }
+        .stat-info h4 { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; color: #6c7a91; margin-bottom: 0.5rem; }
+        .stat-number { font-size: 2rem; font-weight: 700; color: #1a2c3e; }
+        .stat-icon i { font-size: 2.2rem; opacity: 0.7; color: #2b6cb0; }
+
+        /* Section Titles */
+        .section-title {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .section-title h3 { font-size: 1.2rem; font-weight: 600; color: #1a2c3e; }
+        
+        /* Quick Actions */
+        .quick-actions {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+        }
+        .action-btn {
+            background: white;
+            border: none;
+            padding: 10px 22px;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+        }
+        .action-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 14px rgba(0,0,0,0.1); }
+        .btn-refresh { background: #e3f2fd; color: #2b6cb0; }
+        .btn-filter { background: #2b6cb0; color: white; }
+        .btn-filter:hover { background: #1e4e7a; }
+
+        /* DataTable Wrapper */
+        .data-table-wrapper {
+            background: white;
+            border-radius: 24px;
+            padding: 1.3rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            overflow-x: auto;
+        }
+        table.dataTable { width: 100% !important; border-collapse: collapse; margin: 0 !important; }
+        table.dataTable thead th { 
+            padding: 1rem 0.8rem; 
+            background: #f8fafc; 
+            font-weight: 600; 
+            color: #1a2c3e; 
+            border-bottom: 2px solid #e2e8f0; 
+            font-size: 0.85rem;
+        }
+        table.dataTable tbody td { 
+            padding: 0.8rem; 
+            border-bottom: 1px solid #edf2f7; 
+            vertical-align: middle; 
+            font-size: 0.85rem;
+        }
+        table.dataTable tbody tr:hover { background-color: #f8fafc; }
+        
+        /* Status Badges */
+        .status-badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 0.7rem; font-weight: 600; }
+        .status-borrowed { background: #e3f2fd; color: #1565c0; }
+        .status-returned { background: #e0f2e9; color: #1a472a; }
+        .status-overdue { background: #ffe6e5; color: #a12218; }
+        .status-renewed { background: #fff3e0; color: #b45f06; }
+        
+        /* Due Badges */
+        .due-badge { display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: 600; }
+        .due-normal { background: #e0f2e9; color: #1a472a; }
+        .due-warning { background: #fff3e0; color: #b45f06; }
+        .due-overdue { background: #ffe6e5; color: #a12218; }
+        
+        /* Buttons */
+        .view-btn {
+            background: #e3f2fd;
+            color: #1565c0;
+            border: none;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin: 2px;
+        }
+        .view-btn:hover { background: #bbdef5; }
+
+        /* Filter Bar */
+        .filter-bar {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            align-items: flex-end;
+            background: white;
+            padding: 1rem;
+            border-radius: 20px;
+        }
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.3rem;
+        }
+        .filter-group label {
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: #6c7a91;
+            text-transform: uppercase;
+        }
+        .filter-group input, .filter-group select {
+            padding: 8px 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            min-width: 150px;
+            font-family: 'Inter', sans-serif;
+        }
+        .filter-group input:focus, .filter-group select:focus {
+            outline: none;
+            border-color: #2b6cb0;
+        }
+
+        .loading { display: inline-block; width: 20px; height: 20px; border: 2px solid #e2e8f0; border-top-color: #2b6cb0; border-radius: 50%; animation: spin 0.6s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .empty-state { text-align: center; padding: 3rem; color: #6c7a91; }
+        .empty-state i { font-size: 3rem; margin-bottom: 1rem; opacity: 0.5; }
+        .message-card { padding: 1rem; border-radius: 16px; margin-bottom: 1rem; display: flex; align-items: center; gap: 10px; animation: slideIn 0.3s ease; }
+        @keyframes slideIn { from { transform: translateY(-20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .message-card.success { background: #e0f2e9; color: #1a472a; border-left: 4px solid #1a472a; }
+        .message-card.error { background: #ffe6e5; color: #a12218; border-left: 4px solid #a12218; }
+        .message-card.info { background: #e3f2fd; color: #1565c0; border-left: 4px solid #1565c0; }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background: white;
+            border-radius: 28px;
+            max-width: 500px;
+            width: 90%;
+            padding: 1.8rem;
+            animation: modalSlideUp 0.3s ease;
+        }
+        @keyframes modalSlideUp {
+            from { transform: translateY(30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        .modal-header h3 { color: #2b6cb0; font-size: 1.3rem; }
+        .close-modal { font-size: 1.8rem; cursor: pointer; color: #6c7a91; transition: 0.2s; line-height: 1; }
+        .close-modal:hover { color: #e53e3e; }
+        
+        .details-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.8rem;
+            margin: 1rem 0;
+        }
+        .detail-item {
+            padding: 0.5rem;
+            background: #f8fafc;
+            border-radius: 12px;
+        }
+        .detail-item label {
+            font-size: 0.65rem;
+            color: #6c7a91;
+            display: block;
+        }
+        .detail-item span {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #1a2c3e;
+        }
+
+        /* DataTables Custom Styling */
+        .dataTables_wrapper .dataTables_length { margin-bottom: 1rem; }
+        .dataTables_wrapper .dataTables_length select {
+            padding: 6px 10px;
+            border: 1px solid #e2e8f0;
+            border-radius: 20px;
+            margin: 0 5px;
+            font-family: 'Inter', sans-serif;
+        }
+        .dataTables_wrapper .dataTables_filter { margin-bottom: 1rem; }
+        .dataTables_wrapper .dataTables_filter input {
+            padding: 8px 15px;
+            border: 1px solid #e2e8f0;
+            border-radius: 20px;
+            margin-left: 8px;
+            font-family: 'Inter', sans-serif;
+            width: 250px;
+        }
+        .dataTables_wrapper .dataTables_info { padding-top: 1rem; color: #6c7a91; font-size: 0.85rem; }
+        .dataTables_wrapper .dataTables_paginate { padding-top: 1rem; }
+        .dataTables_wrapper .dataTables_paginate .paginate_button {
+            padding: 6px 14px;
+            border-radius: 20px;
+            margin: 0 3px;
+            border: 1px solid #e2e8f0;
+            background: white;
+            font-family: 'Inter', sans-serif;
+        }
+        .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+            background: #e3f2fd;
+            border-color: #2b6cb0;
+        }
+        .dataTables_wrapper .dataTables_paginate .paginate_button.current {
+            background: #2b6cb0;
+            color: white !important;
+            border-color: #2b6cb0;
+        }
+
+        @media (max-width: 768px) {
+            .nav-container { flex-wrap: wrap; }
+            .mobile-menu-btn { display: block; }
+            .nav-links { display: none; width: 100%; flex-direction: column; padding: 1rem 0; }
+            .nav-links.show { display: flex; }
+            .stats-grid { grid-template-columns: 1fr; }
+            .filter-bar { flex-direction: column; }
+            .filter-group { width: 100%; }
+            .filter-group input, .filter-group select { width: 100%; }
+            .dataTables_wrapper .dataTables_filter input { width: 100%; margin-left: 0; margin-top: 10px; }
+        }
+        
+        footer { text-align: center; padding: 1.5rem; color: #6c7a91; font-size: 0.75rem; border-top: 1px solid #e2e8f0; margin-top: 2rem; }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <i class="fas fa-book-open"></i>
+                <h1>LibraRead Admin</h1>
+            </div>
+            <button class="mobile-menu-btn" id="mobileMenuBtn"><i class="fas fa-bars"></i></button>
+            <div class="nav-links" id="navLinks">
+                <a href="admindashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+                <a href="booklist.html"><i class="fas fa-book"></i> Books</a>
+                <a href="admin-rentals.html" class="active"><i class="fas fa-exchange-alt"></i> Rentals</a>
+                <a href="admin-penalties.html"><i class="fas fa-gavel"></i> Penalties</a>
+                <a href="#" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            </div>
+            <div class="user-menu">
+                <span id="userName" style="font-size:0.85rem; font-weight:500;">Admin</span>
+                <div class="user-avatar" id="userAvatar">A</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-container" id="mainContainer">
+        <div class="loading" style="display: block; margin: 2rem auto;"></div>
+    </div>
+
+    <footer>
+        <p>© 2026 LibraRead | Admin Rental Management System</p>
+    </footer>
+
+    <!-- View Details Modal -->
+    <div id="viewRentalModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-receipt"></i> Rental Details</h3>
+                <span class="close-modal" onclick="closeModal('viewRentalModal')">&times;</span>
+            </div>
+            <div id="rentalDetailsContent"></div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script>
+        // ==================== CONFIGURATION ====================
+        const LOCAL_BACKEND = "http://localhost:8080";
+        const COMPANY_API = "https://dev-api.humhealth.com/LibraryManagementAPI";
+        
+        let rentalsDataTable = null;
+        let allRentals = [];
+        let allMembers = [];
+
+        // ==================== HELPER FUNCTIONS ====================
+        function showMessage(text, type = 'info') {
+            const container = document.getElementById('mainContainer');
+            if (container) {
+                const msgDiv = document.createElement('div');
+                msgDiv.className = `message-card ${type}`;
+                msgDiv.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'}"></i> ${text}`;
+                container.insertBefore(msgDiv, container.firstChild);
+                setTimeout(() => msgDiv.remove(), 5000);
+            }
+        }
+
+        function closeModal(modalId) { 
+            document.getElementById(modalId).style.display = 'none'; 
+        }
+
+        function formatDate(dateString) {
+            if (!dateString || dateString === 'null') return '—';
+            const date = new Date(dateString);
+            if (isNaN(date.getTime())) return dateString;
+            return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+        }
+
+        function calculateDaysOverdue(dueDate) {
+            if (!dueDate) return 0;
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const due = new Date(dueDate);
+            due.setHours(0, 0, 0, 0);
+            if (today <= due) return 0;
+            return Math.ceil((today - due) / (1000 * 60 * 60 * 24));
+        }
+
+        function getDueStatus(dueDate) {
+            if (!dueDate) return { text: 'No due date', class: 'due-normal', days: 999, isOverdue: false };
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const due = new Date(dueDate);
+            due.setHours(0, 0, 0, 0);
+            const diffDays = Math.ceil((due - today) / (1000 * 60 * 60 * 24));
+            if (diffDays < 0) return { text: `Overdue by ${Math.abs(diffDays)} days`, class: 'due-overdue', days: diffDays, isOverdue: true };
+            if (diffDays === 0) return { text: 'Due today', class: 'due-warning', days: 0, isOverdue: false };
+            if (diffDays <= 3) return { text: `${diffDays} days left`, class: 'due-warning', days: diffDays, isOverdue: false };
+            return { text: `${diffDays} days left`, class: 'due-normal', days: diffDays, isOverdue: false };
+        }
+
+        // ==================== API CALLS ====================
+        async function fetchMembers() {
+            try {
+                const payload = {
+                    start: 0, length: 100, searchValue: "",
+                    order: { sortType: "asc", sortColumn: "memberFirstName" },
+                    filter: { memberWorkStatus: "", membershipStatus: "" }
+                };
+                const response = await fetch(`${COMPANY_API}/members/list`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload)
+                });
+                const data = await response.json();
+                if (data.members && Array.isArray(data.members)) {
+                    allMembers = data.members;
+                    return data.members;
+                }
+                return [];
+            } catch (error) {
+                console.error("Error fetching members:", error);
+                return [];
+            }
+        }
+
+        // Fetch rentals from the borrowed endpoint (returns active rentals)
+        async function fetchActiveRentals() {
+            try {
+                // This endpoint returns currently borrowed books for a specific member
+                // For admin, we need to get all members' rentals
+                const members = await fetchMembers();
+                let allActiveRentals = [];
+                
+                // Fetch rentals for each member (since there's no admin endpoint for all rentals)
+                for (const member of members) {
+                    try {
+                        const response = await fetch(`${LOCAL_BACKEND}/api/local/rentals/borrowed/${member.memberId}`);
+                        const result = await response.json();
+                        if (result.status === "Success" && result.data) {
+                            const rentalsWithMember = result.data.map(rental => ({
+                                ...rental,
+                                memberName: `${member.memberFirstName} ${member.memberLastName}`,
+                                memberId: member.memberId,
+                                status: rental.actualReturnDate ? 'Returned' : (calculateDaysOverdue(rental.returnDate) > 0 ? 'Overdue' : 'Borrowed')
+                            }));
+                            allActiveRentals.push(...rentalsWithMember);
+                        }
+                    } catch (err) {
+                        console.error(`Error fetching rentals for member ${member.memberId}:`, err);
+                    }
+                }
+                
+                return allActiveRentals;
+            } catch (error) {
+                console.error("Error fetching active rentals:", error);
+                return [];
+            }
+        }
+
+        // Get all rentals from rental_transactions table directly via SQL query
+        // Since we don't have a direct endpoint, we'll use the company API if available
+        async function fetchAllRentalsFromAPI() {
+            try {
+                const payload = {
+                    start: 0,
+                    length: 100,
+                    searchValue: "",
+                    order: { sortType: "desc", sortColumn: "transactionId" },
+                    filter: {
+                        startDate: "",
+                        endDate: "",
+                        transactionId: 0,
+                        memberId: 0,
+                        bookId: 0,
+                        rentalStatusCode: 0
+                    }
+                };
+                
+                const response = await fetch(`${COMPANY_API}/rentals/list`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload)
+                });
+                
+                const result = await response.json();
+                console.log("Rentals from API:", result);
+                
+                if (result.status === "Success" && result.data && result.data.rentals) {
+                    return result.data.rentals;
+                }
+                return [];
+            } catch (error) {
+                console.error("Error fetching rentals from API:", error);
+                return [];
+            }
+        }
+
+        // Main function to fetch all rentals
+        async function fetchAllRentals() {
+            try {
+                // Try to fetch from Company API first
+                let rentals = await fetchAllRentalsFromAPI();
+                
+                if (rentals && rentals.length > 0) {
+                    console.log(`✅ Found ${rentals.length} rentals from Company API`);
+                    return rentals.map(rental => ({
+                        transactionId: rental.transactionId,
+                        memberId: rental.memberId,
+                        memberName: rental.memberName || `Member ${rental.memberId}`,
+                        bookId: rental.bookId,
+                        bookTitle: rental.bookTitle || 'Unknown',
+                        borrowedDate: rental.borrowedDate,
+                        dueDate: rental.returnDate,
+                        returnDate: rental.actualReturnDate,
+                        actualReturnDate: rental.actualReturnDate,
+                        status: rental.rentalStatusDescription || (rental.actualReturnDate ? 'Returned' : 'Borrowed'),
+                        daysOverdue: calculateDaysOverdue(rental.returnDate),
+                        renewedCount: 0
+                    }));
+                }
+                
+                // Fallback: Get active rentals from local backend
+                const activeRentals = await fetchActiveRentals();
+                console.log(`✅ Found ${activeRentals.length} active rentals from Local DB`);
+                return activeRentals;
+                
+            } catch (error) {
+                console.error("Error fetching all rentals:", error);
+                return [];
+            }
+        }
+
+        // ==================== RENDER FUNCTIONS ====================
+        async function renderRentalsPage() {
+            const container = document.getElementById('mainContainer');
+            container.innerHTML = `
+                <div class="welcome-section">
+                    <h2><i class="fas fa-exchange-alt"></i> Rental Transactions</h2>
+                    <p>View and manage all rental transactions in the library</p>
+                </div>
+                <div class="stats-grid" id="rentalStats">
+                    <div class="stat-card"><div class="stat-info"><h4>Total Rentals</h4><div class="stat-number" id="totalRentals">0</div></div><div class="stat-icon"><i class="fas fa-list"></i></div></div>
+                    <div class="stat-card"><div class="stat-info"><h4>Active Rentals</h4><div class="stat-number" id="activeRentals">0</div></div><div class="stat-icon"><i class="fas fa-book"></i></div></div>
+                    <div class="stat-card"><div class="stat-info"><h4>Overdue Rentals</h4><div class="stat-number" id="overdueRentals">0</div></div><div class="stat-icon"><i class="fas fa-clock"></i></div></div>
+                    <div class="stat-card"><div class="stat-info"><h4>Returned Rentals</h4><div class="stat-number" id="returnedRentals">0</div></div><div class="stat-icon"><i class="fas fa-check-circle"></i></div></div>
+                </div>
+                <div class="filter-bar">
+                    <div class="filter-group">
+                        <label><i class="fas fa-user"></i> Member ID</label>
+                        <input type="text" id="filterMemberId" placeholder="Enter Member ID">
+                    </div>
+                    <div class="filter-group">
+                        <label><i class="fas fa-tag"></i> Status</label>
+                        <select id="filterStatus">
+                            <option value="">All</option>
+                            <option value="Borrowed">Borrowed</option>
+                            <option value="Returned">Returned</option>
+                            <option value="Overdue">Overdue</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label><i class="fas fa-calendar"></i> From Date</label>
+                        <input type="date" id="filterFromDate">
+                    </div>
+                    <div class="filter-group">
+                        <label><i class="fas fa-calendar"></i> To Date</label>
+                        <input type="date" id="filterToDate">
+                    </div>
+                    <div class="filter-group">
+                        <button class="action-btn btn-filter" id="applyFilterBtn"><i class="fas fa-search"></i> Apply Filter</button>
+                        <button class="action-btn btn-refresh" id="refreshBtn"><i class="fas fa-sync-alt"></i> Refresh</button>
+                    </div>
+                </div>
+                <div class="data-table-wrapper">
+                    <table id="rentalsTable" class="display" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th>Transaction ID</th>
+                                <th>Member ID</th>
+                                <th>Member Name</th>
+                                <th>Book Title</th>
+                                <th>Borrowed Date</th>
+                                <th>Due Date</th>
+                                <th>Returned Date</th>
+                                <th>Status</th>
+                                <th>Days Left/Overdue</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            `;
+            
+            await loadRentalsData();
+            
+            document.getElementById('applyFilterBtn').onclick = () => loadRentalsData();
+            document.getElementById('refreshBtn').onclick = () => loadRentalsData();
+        }
+
+        async function loadRentalsData() {
+            showMessage('<div class="loading"></div> Loading rentals...', 'info');
+            
+            const memberId = document.getElementById('filterMemberId')?.value || '';
+            const statusFilter = document.getElementById('filterStatus')?.value || '';
+            const fromDate = document.getElementById('filterFromDate')?.value || '';
+            const toDate = document.getElementById('filterToDate')?.value || '';
+            
+            let rentals = await fetchAllRentals();
+            
+            // Apply filters
+            if (memberId) {
+                rentals = rentals.filter(r => r.memberId == memberId);
+            }
+            if (statusFilter) {
+                rentals = rentals.filter(r => r.status === statusFilter);
+            }
+            if (fromDate) {
+                rentals = rentals.filter(r => r.borrowedDate >= fromDate);
+            }
+            if (toDate) {
+                rentals = rentals.filter(r => r.borrowedDate <= toDate);
+            }
+            
+            // Update stats
+            const totalRentals = rentals.length;
+            const activeRentals = rentals.filter(r => r.status === 'Borrowed').length;
+            const overdueRentals = rentals.filter(r => r.status === 'Overdue').length;
+            const returnedRentals = rentals.filter(r => r.status === 'Returned').length;
+            
+            document.getElementById('totalRentals').innerText = totalRentals;
+            document.getElementById('activeRentals').innerText = activeRentals;
+            document.getElementById('overdueRentals').innerText = overdueRentals;
+            document.getElementById('returnedRentals').innerText = returnedRentals;
+            
+            if (rentalsDataTable) {
+                rentalsDataTable.destroy();
+                rentalsDataTable = null;
+            }
+            
+            if (rentals.length === 0) {
+                $('#rentalsTable').DataTable({
+                    data: [],
+                    columns: [
+                        { title: "Transaction ID" }, { title: "Member ID" }, { title: "Member Name" },
+                        { title: "Book Title" }, { title: "Borrowed Date" }, { title: "Due Date" },
+                        { title: "Returned Date" }, { title: "Status" }, { title: "Days Left/Overdue" },
+                        { title: "Action" }
+                    ],
+                    language: { emptyTable: "No rental transactions found" }
+                });
+                showMessage("No rental transactions found", 'info');
+                return;
+            }
+            
+            const rows = rentals.map(rental => {
+                const statusClass = rental.status === 'Returned' ? 'status-returned' : (rental.status === 'Overdue' ? 'status-overdue' : 'status-borrowed');
+                const dueStatus = getDueStatus(rental.dueDate);
+                const daysDisplay = rental.status === 'Returned' ? '—' : dueStatus.text;
+                
+                return [
+                    rental.transactionId,
+                    rental.memberId,
+                    rental.memberName,
+                    rental.bookTitle,
+                    formatDate(rental.borrowedDate),
+                    formatDate(rental.dueDate),
+                    rental.actualReturnDate ? formatDate(rental.actualReturnDate) : '—',
+                    `<span class="status-badge ${statusClass}">${rental.status}</span>`,
+                    `<span class="due-badge ${dueStatus.class}">${daysDisplay}</span>`,
+                    `<button class="view-btn" onclick="viewRentalDetails(${rental.transactionId})"><i class="fas fa-eye"></i> View Details</button>`
+                ];
+            });
+            
+            rentalsDataTable = $('#rentalsTable').DataTable({
+                data: rows,
+                columns: [
+                    { title: "Transaction ID" },
+                    { title: "Member ID" },
+                    { title: "Member Name" },
+                    { title: "Book Title" },
+                    { title: "Borrowed Date" },
+                    { title: "Due Date" },
+                    { title: "Returned Date" },
+                    { title: "Status", orderable: false },
+                    { title: "Days Left/Overdue", orderable: false },
+                    { title: "Action", orderable: false }
+                ],
+                order: [[0, 'desc']],
+                pageLength: 10,
+                language: {
+                    search: "Search:",
+                    lengthMenu: "Show _MENU_ entries",
+                    info: "Showing _START_ to _END_ of _TOTAL_ entries",
+                    infoEmpty: "Showing 0 to 0 of 0 entries",
+                    paginate: { previous: "Previous", next: "Next" }
+                }
+            });
+            
+            showMessage(`✅ Loaded ${totalRentals} rental transactions`, 'success');
+        }
+
+        window.viewRentalDetails = async function(transactionId) {
+            const rentals = await fetchAllRentals();
+            const rental = rentals.find(r => r.transactionId == transactionId);
+            
+            const modal = document.getElementById('viewRentalModal');
+            const contentDiv = document.getElementById('rentalDetailsContent');
+            
+            if (rental) {
+                const dueStatus = getDueStatus(rental.dueDate);
+                contentDiv.innerHTML = `
+                    <div class="book-detail-card">
+                        <h4>Rental Transaction #${rental.transactionId}</h4>
+                        <div class="details-grid">
+                            <div class="detail-item"><label>Member ID</label><span>${rental.memberId}</span></div>
+                            <div class="detail-item"><label>Member Name</label><span>${escapeHtml(rental.memberName)}</span></div>
+                            <div class="detail-item"><label>Book ID</label><span>${rental.bookId || 'N/A'}</span></div>
+                            <div class="detail-item"><label>Book Title</label><span>${escapeHtml(rental.bookTitle)}</span></div>
+                            <div class="detail-item"><label>Borrowed Date</label><span>${formatDate(rental.borrowedDate)}</span></div>
+                            <div class="detail-item"><label>Due Date</label><span>${formatDate(rental.dueDate)}</span></div>
+                            <div class="detail-item"><label>Returned Date</label><span>${rental.actualReturnDate ? formatDate(rental.actualReturnDate) : 'Not returned yet'}</span></div>
+                            <div class="detail-item"><label>Status</label><span class="status-badge ${rental.status === 'Returned' ? 'status-returned' : (rental.status === 'Overdue' ? 'status-overdue' : 'status-borrowed')}">${rental.status}</span></div>
+                            <div class="detail-item"><label>Days Status</label><span class="due-badge ${dueStatus.class}">${dueStatus.text}</span></div>
+                        </div>
+                    </div>
+                `;
+            } else {
+                contentDiv.innerHTML = `<div class="empty-state">Rental details not found</div>`;
+            }
+            modal.style.display = 'flex';
+        };
+
+        // ==================== INITIALIZATION ====================
+        async function init() {
+            await renderRentalsPage();
+        }
+
+        // Mobile menu toggle
+        const mobileBtn = document.getElementById('mobileMenuBtn');
+        if (mobileBtn) {
+            mobileBtn.addEventListener('click', () => {
+                document.getElementById('navLinks').classList.toggle('show');
+            });
+        }
+
+        // Logout handler
+        const logoutBtn = document.getElementById('logoutBtn');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                localStorage.removeItem('adminLoggedIn');
+                window.location.href = 'admin-login.html';
+            });
+        }
+
+        // Close modals when clicking outside
+        window.onclick = (event) => {
+            if (event.target.classList && event.target.classList.contains('modal')) {
+                event.target.style.display = 'none';
+            }
+        };
+
+        // Start the app
+        init();
+    </script>
+</body>
+</html>

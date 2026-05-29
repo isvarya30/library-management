@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Rentals - LibraRead</title>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #f5f7fb; min-height: 100vh; }
+        
+        .navbar {
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            padding: 0 1.5rem;
+        }
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            padding: 0.8rem 0;
+        }
+        .logo { display: flex; align-items: center; gap: 10px; }
+        .logo i { font-size: 1.8rem; color: #2b6cb0; }
+        .logo h1 { font-size: 1.3rem; font-weight: 700; background: linear-gradient(135deg, #2b6cb0, #2c3e66); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        .mobile-menu-btn { display: none; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #2b6cb0; }
+        .nav-links { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+        .nav-links a { padding: 8px 18px; text-decoration: none; color: #4a5568; font-weight: 500; border-radius: 40px; transition: all 0.3s; display: flex; align-items: center; gap: 8px; font-size: 0.9rem; }
+        .nav-links a i { font-size: 1rem; }
+        .nav-links a:hover, .nav-links a.active { background: #e3f2fd; color: #2b6cb0; }
+        .user-menu { display: flex; align-items: center; gap: 15px; }
+        .user-avatar { width: 40px; height: 40px; background: linear-gradient(135deg, #2b6cb0, #2c3e66); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; cursor: pointer; }
+
+        .main-container { max-width: 1400px; margin: 0 auto; padding: 1.5rem; }
+        
+        .welcome-section {
+            background: linear-gradient(135deg, #2b6cb0 0%, #2c3e66 100%);
+            border-radius: 28px;
+            padding: 1.8rem 2rem;
+            margin-bottom: 2rem;
+            color: white;
+        }
+        .welcome-section h2 { font-size: 1.6rem; font-weight: 600; margin-bottom: 0.3rem; }
+        .welcome-section p { opacity: 0.9; font-size: 0.9rem; }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.2rem;
+            margin-bottom: 2rem;
+        }
+        .stat-card {
+            background: white;
+            border-radius: 24px;
+            padding: 1.3rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            transition: transform 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .stat-card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.08); }
+        .stat-info h4 { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; color: #6c7a91; margin-bottom: 0.5rem; }
+        .stat-number { font-size: 2rem; font-weight: 700; color: #1a2c3e; }
+        .stat-icon i { font-size: 2.2rem; opacity: 0.7; color: #2b6cb0; }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .section-title h3 { font-size: 1.2rem; font-weight: 600; color: #1a2c3e; }
+        
+        .quick-actions {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+        }
+        .action-btn {
+            background: white;
+            border: none;
+            padding: 10px 22px;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+        }
+        .action-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 14px rgba(0,0,0,0.1); }
+        .btn-borrow { background: #2b6cb0; color: white; }
+        .btn-return { background: #ff9800; color: white; }
+        .btn-renew { background: #28a745; color: white; }
+        .btn-fav { background: #9c27b0; color: white; }
+        .btn-refresh { background: #e3f2fd; color: #2b6cb0; }
+
+        .data-table-wrapper {
+            background: white;
+            border-radius: 24px;
+            padding: 1.3rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            overflow-x: auto;
+        }
+        table.dataTable { width: 100% !important; border-collapse: collapse; }
+        table.dataTable thead th { padding: 1rem 0.8rem; background: #f8fafc; font-weight: 600; color: #1a2c3e; border-bottom: 2px solid #e2e8f0; }
+        table.dataTable tbody td { padding: 0.8rem; border-bottom: 1px solid #edf2f7; vertical-align: middle; }
+
+        .status-badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 0.7rem; font-weight: 600; }
+        .status-borrowed { background: #e3f2fd; color: #1565c0; }
+        .status-returned { background: #e0f2e9; color: #1a472a; }
+        .status-overdue { background: #ffe6e5; color: #a12218; }
+        .status-renewed { background: #fff3e0; color: #b45f06; }
+
+        .due-badge { display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: 600; }
+        .due-normal { background: #e0f2e9; color: #1a472a; }
+        .due-warning { background: #fff3e0; color: #b45f06; }
+        .due-overdue { background: #ffe6e5; color: #a12218; }
+
+        .return-btn, .renew-btn {
+            color: white;
+            border: none;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin: 2px;
+        }
+        .return-btn { background: #ff9800; }
+        .return-btn:hover { background: #f57c00; }
+        .renew-btn { background: #28a745; }
+        .renew-btn:hover { background: #1e7e34; }
+        .renew-btn:disabled { background: #cbd5e1; cursor: not-allowed; opacity: 0.6; }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background: white;
+            border-radius: 28px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 85vh;
+            overflow-y: auto;
+            padding: 1.8rem;
+            animation: modalSlideUp 0.3s ease;
+        }
+        @keyframes modalSlideUp {
+            from { transform: translateY(30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        .modal-header h3 { color: #2b6cb0; font-size: 1.3rem; }
+        .close-modal { font-size: 1.8rem; cursor: pointer; color: #6c7a91; transition: 0.2s; line-height: 1; }
+        .close-modal:hover { color: #e53e3e; }
+
+        .form-group { margin-bottom: 1.2rem; }
+        .form-group label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #2c3e66;
+            margin-bottom: 0.5rem;
+        }
+        .form-group select, .form-group input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            font-family: 'Inter', sans-serif;
+        }
+        .form-group select:focus, .form-group input:focus {
+            outline: none;
+            border-color: #2b6cb0;
+        }
+
+        .checkbox-list {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 2px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 0.5rem;
+        }
+        .checkbox-item {
+            padding: 0.8rem;
+            border-bottom: 1px solid #edf2f7;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .checkbox-item:last-child { border-bottom: none; }
+        .checkbox-item input { width: 20px; height: 20px; cursor: pointer; }
+        .item-info { flex: 1; }
+        .item-title { font-weight: 600; color: #1a2c3e; }
+        .item-subtitle { font-size: 0.75rem; color: #6c7a91; margin-top: 2px; }
+
+        .selected-items {
+            background: #f8fafc;
+            border-radius: 16px;
+            padding: 1rem;
+            margin-top: 1rem;
+        }
+        .selected-items h4 { font-size: 0.85rem; color: #2c3e66; margin-bottom: 0.5rem; }
+        .selected-items ul { list-style: none; padding-left: 0; }
+        .selected-items li { font-size: 0.8rem; padding: 4px 0; color: #4a5568; }
+
+        .message-card {
+            padding: 1rem;
+            border-radius: 16px;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: slideIn 0.3s ease;
+        }
+        @keyframes slideIn {
+            from { transform: translateY(-20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .message-card.success { background: #e0f2e9; color: #1a472a; border-left: 4px solid #1a472a; }
+        .message-card.error { background: #ffe6e5; color: #a12218; border-left: 4px solid #a12218; }
+        .message-card.info { background: #e3f2fd; color: #1565c0; border-left: 4px solid #1565c0; }
+        .message-card.warning { background: #fff3e0; color: #b45f06; border-left: 4px solid #b45f06; }
+
+        .loading { display: inline-block; width: 20px; height: 20px; border: 2px solid #e2e8f0; border-top-color: #2b6cb0; border-radius: 50%; animation: spin 0.6s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .empty-state { text-align: center; padding: 3rem; color: #6c7a91; }
+        .empty-state i { font-size: 3rem; margin-bottom: 1rem; opacity: 0.5; }
+
+        .submit-btn {
+            background: linear-gradient(135deg, #2b6cb0, #2c3e66);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 40px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            font-size: 1rem;
+            margin-top: 1rem;
+            transition: all 0.2s;
+        }
+        .submit-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 14px rgba(0,0,0,0.1); }
+
+        @media (max-width: 768px) {
+            .nav-container { flex-wrap: wrap; }
+            .mobile-menu-btn { display: block; }
+            .nav-links { display: none; width: 100%; flex-direction: column; padding: 1rem 0; }
+            .nav-links.show { display: flex; }
+            .stats-grid { grid-template-columns: 1fr; }
+            .quick-actions { flex-direction: column; }
+        }
+
+        footer { text-align: center; padding: 1.5rem; color: #6c7a91; font-size: 0.75rem; border-top: 1px solid #e2e8f0; margin-top: 2rem; }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <i class="fas fa-book-open"></i>
+                <h1>LibraRead</h1>
+            </div>
+            <button class="mobile-menu-btn" id="mobileMenuBtn"><i class="fas fa-bars"></i></button>
+            <div class="nav-links" id="navLinks">
+                <a href="userdashboard.html"><i class="fas fa-chalkboard-user"></i> Dashboard</a>
+                <a href="booklist.html"><i class="fas fa-book"></i> Books</a>
+                <a href="rental.html" class="active"><i class="fas fa-exchange-alt"></i> Rentals</a>
+                <a href="penalty.html"><i class="fas fa-gavel"></i> Penalties</a>
+                <a href="#" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            </div>
+            <div class="user-menu">
+                <span id="userName" style="font-size:0.85rem; font-weight:500;">Loading...</span>
+                <div class="user-avatar" id="userAvatar">U</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-container" id="mainContainer">
+        <div class="loading" style="display: block; margin: 2rem auto;"></div>
+    </div>
+
+    <footer>
+        <p>© 2026 LibraRead | Rental Management System</p>
+    </footer>
+
+    <!-- Borrow Modal -->
+    <div id="borrowModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-hand-holding-heart"></i> Borrow Books</h3>
+                <span class="close-modal" onclick="closeModal('borrowModal')">&times;</span>
+            </div>
+            <div id="borrowFormContent"></div>
+        </div>
+    </div>
+
+    <!-- Return Modal -->
+    <div id="returnModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-undo-alt"></i> Return Books</h3>
+                <span class="close-modal" onclick="closeModal('returnModal')">&times;</span>
+            </div>
+            <div id="returnFormContent"></div>
+        </div>
+    </div>
+
+    <!-- Renew Modal -->
+    <div id="renewModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-calendar-plus"></i> Renew Book</h3>
+                <span class="close-modal" onclick="closeModal('renewModal')">&times;</span>
+            </div>
+            <div id="renewFormContent"></div>
+        </div>
+    </div>
+
+    <!-- Favorite Authors Modal -->
+    <div id="favoriteAuthorsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-star"></i> Favorite Authors & Books</h3>
+                <span class="close-modal" onclick="closeModal('favoriteAuthorsModal')">&times;</span>
+            </div>
+            <div id="favoriteAuthorsContent"></div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script>
+        // ==================== CONFIGURATION ====================
+        const LOCAL_BACKEND = "http://localhost:8080";
+        const COMPANY_API = "https://dev-api.humhealth.com/LibraryManagementAPI";
+        
+        let CURRENT_MEMBER_ID = localStorage.getItem('memberId') || 3;
+        let CURRENT_MEMBER = null;
+        let rentalsDataTable = null;
+        let allBooksList = [];
+        let allMembersList = [];
+        let currentRentals = [];
+
+        // ==================== HELPER FUNCTIONS ====================
+        function showMessage(text, type = 'info') {
+            const container = document.getElementById('mainContainer');
+            if (container) {
+                const msgDiv = document.createElement('div');
+                msgDiv.className = `message-card ${type}`;
+                msgDiv.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : type === 'warning' ? 'fa-exclamation-triangle' : 'fa-info-circle'}"></i> ${text}`;
+                container.insertBefore(msgDiv, container.firstChild);
+                setTimeout(() => msgDiv.remove(), 5000);
+            }
+        }
+
+        function closeModal(modalId) { document.getElementById(modalId).style.display = 'none'; }
+
+        function formatDate(dateString) {
+            if (!dateString || dateString === 'null') return '—';
+            const date = new Date(dateString);
+            if (isNaN(date.getTime())) return dateString;
+            return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+        }
+
+        function getDueStatus(dueDate) {
+            if (!dueDate) return { text: 'No due date', class: 'due-normal', days: 999, isOverdue: false };
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const due = new Date(dueDate);
+            due.setHours(0, 0, 0, 0);
+            const diffDays = Math.ceil((due - today) / (1000 * 60 * 60 * 24));
+            if (diffDays < 0) return { text: `Overdue by ${Math.abs(diffDays)} days`, class: 'due-overdue', days: diffDays, isOverdue: true };
+            if (diffDays === 0) return { text: 'Due today', class: 'due-warning', days: 0, isOverdue: false };
+            if (diffDays <= 3) return { text: `${diffDays} days left`, class: 'due-warning', days: diffDays, isOverdue: false };
+            return { text: `${diffDays} days left`, class: 'due-normal', days: diffDays, isOverdue: false };
+        }
+
+        // ==================== API CALLS ====================
+        async function fetchMemberDetails() {
+            try {
+                const response = await fetch(`${COMPANY_API}/members/${CURRENT_MEMBER_ID}`);
+                const result = await response.json();
+                if (result.status === "Success" && result.data) {
+                    CURRENT_MEMBER = result.data;
+                    document.getElementById('userName').innerText = `${CURRENT_MEMBER.memberFirstName || 'User'} ${CURRENT_MEMBER.memberLastName || ''}`;
+                    document.getElementById('userAvatar').innerText = (CURRENT_MEMBER.memberFirstName?.charAt(0) || 'U').toUpperCase();
+                    return CURRENT_MEMBER;
+                }
+            } catch (error) { console.error("Error fetching member:", error); }
+            return null;
+        }
+
+        async function fetchAllMembers() {
+            try {
+                const payload = { start: 0, length: 100, searchValue: "", order: { sortType: "desc", sortColumn: "memberId" }, filter: { memberWorkStatus: "", membershipStatus: "" } };
+                const response = await fetch(`${COMPANY_API}/members/list`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
+                const result = await response.json();
+                if (result.members) return result.members;
+                return [];
+            } catch (error) { return []; }
+        }
+
+        async function fetchAllBooksList() {
+            try {
+                const response = await fetch(`${LOCAL_BACKEND}/api/local/books/list`);
+                const result = await response.json();
+                if (result.status === "Success" && result.data) {
+                    allBooksList = result.data;
+                    return allBooksList;
+                }
+                return [];
+            } catch (error) { return []; }
+        }
+
+        async function fetchBorrowedBooks() {
+            try {
+                const response = await fetch(`${LOCAL_BACKEND}/api/local/rentals/borrowed/${CURRENT_MEMBER_ID}`);
+                const result = await response.json();
+                if (result.status === "Success") {
+                    currentRentals = result.data || [];
+                    return currentRentals;
+                }
+                return [];
+            } catch (error) { return []; }
+        }
+
+        async function borrowMultipleBooks(memberId, bookIds) {
+            const dueDate = new Date();
+            dueDate.setDate(dueDate.getDate() + 10);
+            const formattedDueDate = dueDate.toISOString().split('T')[0];
+            let successCount = 0, failedBooks = [];
+            
+            for (const bookId of bookIds) {
+                const book = allBooksList.find(b => b.bookId === bookId);
+                if (!book) continue;
+                try {
+                    const response = await fetch(`${LOCAL_BACKEND}/api/local/rentals/borrow`, {
+                        method: "POST", headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ memberId: parseInt(memberId), bookId: parseInt(bookId), bookTitle: book.title, dueDate: formattedDueDate })
+                    });
+                    const result = await response.json();
+                    if (result.status === "Success") successCount++;
+                    else failedBooks.push(book.title);
+                } catch (error) { failedBooks.push(book.title); }
+            }
+            if (successCount > 0) {
+                showMessage(`✅ ${successCount} book(s) borrowed successfully! Due in 10 days.`, 'success');
+                if (failedBooks.length > 0) showMessage(`⚠️ Could not borrow: ${failedBooks.join(', ')}`, 'warning');
+                return true;
+            }
+            showMessage(`❌ Failed to borrow books`, 'error');
+            return false;
+        }
+
+        async function returnMultipleBooks(rentalIds) {
+            let successCount = 0;
+            for (const rentalId of rentalIds) {
+                try {
+                    const response = await fetch(`${LOCAL_BACKEND}/api/local/rentals/return`, {
+                        method: "POST", headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ transactionId: parseInt(rentalId) })
+                    });
+                    const result = await response.json();
+                    if (result.status === "Success") successCount++;
+                } catch (error) {}
+            }
+            if (successCount > 0) {
+                showMessage(`✅ ${successCount} book(s) returned successfully!`, 'success');
+                return true;
+            }
+            showMessage(`❌ Failed to return books`, 'error');
+            return false;
+        }
+
+        async function renewSingleBook(transactionId) {
+            try {
+                const response = await fetch(`${LOCAL_BACKEND}/api/local/rentals/renew/${transactionId}`, { method: "PUT" });
+                const result = await response.json();
+                if (result.status === "Success") {
+                    showMessage(`✅ ${result.message}`, 'success');
+                    return true;
+                }
+                showMessage(`❌ ${result.message}`, 'error');
+                return false;
+            } catch (error) {
+                showMessage(`❌ Error: ${error.message}`, 'error');
+                return false;
+            }
+        }
+
+        async function getFavoriteAuthors(memberId) {
+            try {
+                const response = await fetch(`${COMPANY_API}/member/favorites/${memberId}?type=author`);
+                const result = await response.json();
+                if (result.status === "Success" && result.data && result.data.favouriteauthor) {
+                    const favAuthor = result.data.favouriteauthor;
+                    if (favAuthor.author && favAuthor.books) {
+                        return { authorName: favAuthor.author, books: favAuthor.books.slice(0, 3) };
+                    }
+                }
+                return null;
+            } catch (error) { return null; }
+        }
+
+        async function getFavoriteBooks(memberId) {
+            try {
+                const response = await fetch(`${COMPANY_API}/member/favorites/${memberId}?type=book`);
+                const result = await response.json();
+                if (result.status === "Success" && result.data && result.data.favouriteBook) {
+                    return result.data.favouriteBook;
+                }
+                return null;
+            } catch (error) { return null; }
+        }
+
+        // ==================== CORE RENDER FUNCTIONS ====================
+        async function renderRentals() {
+            const container = document.getElementById('mainContainer');
+            container.innerHTML = `
+                <div class="welcome-section">
+                    <h2><i class="fas fa-exchange-alt"></i> My Rentals</h2>
+                    <p>View and manage your borrowed books</p>
+                </div>
+                <div class="stats-grid" id="rentalStats">
+                    <div class="stat-card"><div class="stat-info"><h4>Currently Borrowed</h4><div class="stat-number" id="borrowedCount">0</div></div><div class="stat-icon"><i class="fas fa-book"></i></div></div>
+                    <div class="stat-card"><div class="stat-info"><h4>Overdue Books</h4><div class="stat-number" id="overdueCount">0</div></div><div class="stat-icon"><i class="fas fa-clock"></i></div></div>
+                </div>
+                <div class="quick-actions">
+                    <button class="action-btn btn-borrow" onclick="openBorrowModal()"><i class="fas fa-hand-holding-heart"></i> Borrow Books</button>
+                    <button class="action-btn btn-return" onclick="openReturnModal()"><i class="fas fa-undo-alt"></i> Return Books</button>
+                    <button class="action-btn btn-renew" onclick="openRenewModal()"><i class="fas fa-calendar-plus"></i> Renew Book</button>
+                    <button class="action-btn btn-fav" onclick="openFavoriteAuthorsModal()"><i class="fas fa-star"></i> Favorite Authors</button>
+                    <button class="action-btn btn-refresh" onclick="refreshRentalsData()"><i class="fas fa-sync-alt"></i> Refresh</button>
+                </div>
+                <div class="data-table-wrapper">
+                    <table id="rentalsTable" class="display" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th>Book Title</th>
+                                <th>Transaction ID</th>
+                                <th>Borrowed Date</th>
+                                <th>Due Date</th>
+                                <th>Status</th>
+                                <th>Days Left</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            `;
+            await loadRentalsData();
+        }
+
+        async function loadRentalsData() {
+            const rentals = await fetchBorrowedBooks();
+            
+            // Update stats
+            document.getElementById('borrowedCount').innerText = rentals.length;
+            document.getElementById('overdueCount').innerText = rentals.filter(r => getDueStatus(r.returnDate).isOverdue).length;
+            
+            // Destroy existing DataTable if it exists
+            if (rentalsDataTable) {
+                rentalsDataTable.destroy();
+                rentalsDataTable = null;
+            }
+            
+            if (rentals.length === 0) {
+                $('#rentalsTable').DataTable({
+                    data: [],
+                    columns: [
+                        { title: "Book Title" }, { title: "Transaction ID" }, { title: "Borrowed Date" },
+                        { title: "Due Date" }, { title: "Status" }, { title: "Days Left" }, { title: "Action" }
+                    ],
+                    language: { emptyTable: "No books borrowed currently. Click 'Borrow Books' to get started!" }
+                });
+                return;
+            }
+            
+            const rows = rentals.map(rental => {
+                const dueStatus = getDueStatus(rental.returnDate);
+                const statusClass = dueStatus.isOverdue ? 'status-overdue' : (rental.renewedCount > 0 ? 'status-renewed' : 'status-borrowed');
+                const statusText = dueStatus.isOverdue ? 'Overdue' : (rental.renewedCount > 0 ? 'Renewed' : 'Borrowed');
+                const canRenew = !dueStatus.isOverdue && (rental.renewedCount || 0) < 1;
+                const transactionId = rental.transactionId;
+                
+                let actionButtons = `<button class="return-btn" onclick="returnSingleBook(${transactionId}, '${escapeHtml(rental.bookTitle)}')"><i class="fas fa-undo-alt"></i> Return</button>`;
+                if (canRenew) {
+                    actionButtons += `<button class="renew-btn" onclick="renewSingleBook(${transactionId})"><i class="fas fa-calendar-plus"></i> Renew</button>`;
+                } else if (rental.renewedCount >= 1) {
+                    actionButtons += `<button class="renew-btn" disabled><i class="fas fa-check"></i> Renewed</button>`;
+                }
+                
+                return [
+                    rental.bookTitle || 'Unknown',
+                    rental.transactionId || '—',
+                    formatDate(rental.borrowedDate),
+                    formatDate(rental.returnDate),
+                    `<span class="status-badge ${statusClass}">${statusText}</span>`,
+                    `<span class="due-badge ${dueStatus.class}">${dueStatus.text}</span>`,
+                    actionButtons
+                ];
+            });
+            
+            rentalsDataTable = $('#rentalsTable').DataTable({
+                data: rows,
+                columns: [
+                    { title: "Book Title" },
+                    { title: "Transaction ID" },
+                    { title: "Borrowed Date" },
+                    { title: "Due Date" },
+                    { title: "Status", orderable: false },
+                    { title: "Days Left", orderable: false },
+                    { title: "Action", orderable: false }
+                ],
+                order: [[2, 'desc']],
+                pageLength: 10,
+                language: {
+                    search: "Search:",
+                    lengthMenu: "Show _MENU_ entries",
+                    info: "Showing _START_ to _END_ of _TOTAL_ entries",
+                    infoEmpty: "Showing 0 to 0 of 0 entries",
+                    paginate: { previous: "Previous", next: "Next" }
+                }
+            });
+        }
+
+        async function refreshRentalsData() {
+            showMessage("Refreshing rental data...", "info");
+            await loadRentalsData();
+            showMessage("Rental data refreshed!", "success");
+        }
+
+        // ==================== BORROW MODAL ====================
+        async function openBorrowModal() {
+            await fetchAllBooksList();
+            const members = await fetchAllMembers();
+            const modal = document.getElementById('borrowModal');
+            
+            document.getElementById('borrowFormContent').innerHTML = `
+                <div class="form-group">
+                    <label><i class="fas fa-user"></i> Select Member</label>
+                    <select id="memberSelect" class="member-select">
+                        ${members.map(m => `<option value="${m.memberId}" ${m.memberId == CURRENT_MEMBER_ID ? 'selected' : ''}>${escapeHtml(m.memberFirstName)} ${escapeHtml(m.memberLastName)} (ID: ${m.memberId})</option>`).join('')}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-book"></i> Select Books to Borrow <span style="font-size:0.7rem; color:#6c7a91;">(Multiple allowed)</span></label>
+                    <div class="checkbox-list" id="booksListContainer">
+                        ${allBooksList.map(book => `
+                            <div class="checkbox-item">
+                                <input type="checkbox" class="book-checkbox" data-book-id="${book.bookId}" data-book-title="${escapeHtml(book.title)}" data-book-author="${escapeHtml(book.author)}" data-available="${book.statusCodeId === 'AVAI'}" ${book.statusCodeId !== 'AVAI' ? 'disabled' : ''}>
+                                <div class="item-info">
+                                    <div class="item-title">${escapeHtml(book.title)}</div>
+                                    <div class="item-subtitle">by ${escapeHtml(book.author)}</div>
+                                </div>
+                                <span class="book-status ${book.statusCodeId === 'AVAI' ? 'status-available' : 'status-unavailable'}" style="font-size:0.7rem; padding:2px 8px; border-radius:12px; ${book.statusCodeId === 'AVAI' ? 'background:#e0f2e9; color:#1a472a;' : 'background:#ffe6e5; color:#a12218;'}">${book.statusCodeId === 'AVAI' ? 'Available' : 'Not Available'}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+                <div id="unavailableMessage" class="message-card warning" style="display:none;"></div>
+                <div id="selectedPreview" class="selected-items" style="display:none;">
+                    <h4><i class="fas fa-check-circle"></i> Selected Books:</h4>
+                    <ul id="selectedList"></ul>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-calendar"></i> Borrowing Period</label>
+                    <input type="text" value="10 days (Return by this date to avoid penalties)" readonly style="background:#f8fafc;">
+                </div>
+                <button class="submit-btn" id="confirmBorrowBtn"><i class="fas fa-hand-holding-heart"></i> Confirm Borrow (10 days)</button>
+            `;
+            
+            // Add event listeners
+            document.querySelectorAll('.book-checkbox').forEach(cb => cb.addEventListener('change', updateBorrowPreview));
+            document.getElementById('confirmBorrowBtn').onclick = async () => {
+                const memberId = document.getElementById('memberSelect').value;
+                const selected = [...document.querySelectorAll('.book-checkbox:checked')]
+                    .filter(cb => cb.dataset.available === 'true')
+                    .map(cb => parseInt(cb.dataset.bookId));
+                
+                if (selected.length === 0) { showMessage('Please select at least one available book', 'error'); return; }
+                
+                closeModal('borrowModal');
+                const success = await borrowMultipleBooks(memberId, selected);
+                if (success) {
+                    await loadRentalsData();
+                }
+            };
+            modal.style.display = 'flex';
+        }
+
+        function updateBorrowPreview() {
+            const selected = [...document.querySelectorAll('.book-checkbox:checked')];
+            const unavailable = selected.filter(cb => cb.dataset.available === 'false');
+            const preview = document.getElementById('selectedPreview');
+            const unavailableMsg = document.getElementById('unavailableMessage');
+            
+            if (unavailable.length > 0) {
+                unavailableMsg.style.display = 'flex';
+                unavailableMsg.innerHTML = `<i class="fas fa-exclamation-triangle"></i> The following books are not available: ${unavailable.map(cb => cb.dataset.bookTitle).join(', ')}`;
+            } else {
+                unavailableMsg.style.display = 'none';
+            }
+            
+            if (selected.length > 0) {
+                preview.style.display = 'block';
+                document.getElementById('selectedList').innerHTML = selected.map(cb => `<li><i class="fas fa-book"></i> ${escapeHtml(cb.dataset.bookTitle)} by ${escapeHtml(cb.dataset.bookAuthor)}</li>`).join('');
+            } else {
+                preview.style.display = 'none';
+            }
+        }
+
+        // ==================== RETURN MODAL ====================
+        async function openReturnModal() {
+            await fetchBorrowedBooks();
+            const modal = document.getElementById('returnModal');
+            
+            if (currentRentals.length === 0) {
+                document.getElementById('returnFormContent').innerHTML = `
+                    <div class="empty-state"><i class="fas fa-info-circle"></i><p>No books currently borrowed</p></div>
+                    <button class="submit-btn" onclick="closeModal('returnModal')">Close</button>
+                `;
+                modal.style.display = 'flex';
+                return;
+            }
+            
+            document.getElementById('returnFormContent').innerHTML = `
+                <div class="form-group">
+                    <label><i class="fas fa-list"></i> Select Books to Return <span style="font-size:0.7rem; color:#6c7a91;">(Multiple allowed)</span></label>
+                    <div class="checkbox-list" id="rentalListContainer">
+                        ${currentRentals.map(rental => `
+                            <div class="checkbox-item">
+                                <input type="checkbox" class="return-checkbox" data-transaction-id="${rental.transactionId}" data-book-title="${escapeHtml(rental.bookTitle)}">
+                                <div class="item-info">
+                                    <div class="item-title">${escapeHtml(rental.bookTitle)}</div>
+                                    <div class="item-subtitle">Due Date: ${formatDate(rental.returnDate)} | Borrowed: ${formatDate(rental.borrowedDate)}</div>
+                                </div>
+                                <span class="status-badge status-borrowed">Active</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+                <div id="returnSelectedPreview" class="selected-items" style="display:none;">
+                    <h4><i class="fas fa-check-circle"></i> Selected Books to Return:</h4>
+                    <ul id="returnSelectedList"></ul>
+                </div>
+                <button class="submit-btn" id="confirmReturnBtn" style="background:#ff9800;"><i class="fas fa-undo-alt"></i> Confirm Return</button>
+            `;
+            
+            document.querySelectorAll('.return-checkbox').forEach(cb => cb.addEventListener('change', updateReturnPreview));
+            document.getElementById('confirmReturnBtn').onclick = async () => {
+                const selected = [...document.querySelectorAll('.return-checkbox:checked')].map(cb => parseInt(cb.dataset.transactionId));
+                if (selected.length === 0) { showMessage('Please select at least one book to return', 'error'); return; }
+                closeModal('returnModal');
+                const success = await returnMultipleBooks(selected);
+                if (success) {
+                    await loadRentalsData();
+                }
+            };
+            modal.style.display = 'flex';
+        }
+
+        function updateReturnPreview() {
+            const selected = [...document.querySelectorAll('.return-checkbox:checked')];
+            const preview = document.getElementById('returnSelectedPreview');
+            
+            if (selected.length > 0) {
+                preview.style.display = 'block';
+                document.getElementById('returnSelectedList').innerHTML = selected.map(cb => `<li><i class="fas fa-book"></i> ${escapeHtml(cb.dataset.bookTitle)}</li>`).join('');
+            } else {
+                preview.style.display = 'none';
+            }
+        }
+
+        // ==================== RENEW MODAL ====================
+        async function openRenewModal() {
+            await fetchBorrowedBooks();
+            const modal = document.getElementById('renewModal');
+            const renewable = currentRentals.filter(r => !getDueStatus(r.returnDate).isOverdue && (r.renewedCount || 0) < 1);
+            
+            if (renewable.length === 0) {
+                document.getElementById('renewFormContent').innerHTML = `
+                    <div class="empty-state"><i class="fas fa-exclamation-triangle"></i><p>No renewable books available.<br>Books cannot be renewed if overdue or already renewed once.</p></div>
+                    <button class="submit-btn" onclick="closeModal('renewModal')">Close</button>
+                `;
+                modal.style.display = 'flex';
+                return;
+            }
+            
+            document.getElementById('renewFormContent').innerHTML = `
+                <div class="form-group">
+                    <label><i class="fas fa-book"></i> Select Rental Transaction to Renew</label>
+                    <select id="renewTransactionSelect" class="member-select">
+                        <option value="">-- Select Book to Renew --</option>
+                        ${renewable.map(r => `<option value="${r.transactionId}" data-book-title="${escapeHtml(r.bookTitle)}" data-due-date="${r.returnDate}" data-renewed="${r.renewedCount || 0}">${escapeHtml(r.bookTitle)} - Due: ${formatDate(r.returnDate)}</option>`).join('')}
+                    </select>
+                </div>
+                <div id="renewPreview" class="selected-items" style="display:none;"></div>
+                <div class="form-group">
+                    <label><i class="fas fa-calendar"></i> Renewal Period</label>
+                    <input type="text" value="+5 days from current due date (Only one renewal allowed per transaction)" readonly style="background:#f8fafc;">
+                </div>
+                <button class="submit-btn" id="confirmRenewBtn" style="background:#28a745;"><i class="fas fa-calendar-plus"></i> Confirm Renew (+5 days)</button>
+            `;
+            
+            const select = document.getElementById('renewTransactionSelect');
+            select.onchange = () => {
+                const opt = select.options[select.selectedIndex];
+                const preview = document.getElementById('renewPreview');
+                if (opt.value) {
+                    const newDue = new Date(opt.dataset.dueDate);
+                    newDue.setDate(newDue.getDate() + 5);
+                    preview.style.display = 'block';
+                    preview.innerHTML = `
+                        <h4><i class="fas fa-info-circle"></i> Renewal Details:</h4>
+                        <ul>
+                            <li><strong>Book:</strong> ${opt.dataset.bookTitle}</li>
+                            <li><strong>Current Due Date:</strong> ${formatDate(opt.dataset.dueDate)}</li>
+                            <li><strong>New Due Date:</strong> ${formatDate(newDue.toISOString())}</li>
+                            <li><strong>Renewals Used:</strong> ${opt.dataset.renewed}/1</li>
+                        </ul>
+                        <div class="message-card info" style="margin-top:0.5rem;"><i class="fas fa-info-circle"></i> Renewal extends due date by 5 days.</div>
+                    `;
+                } else {
+                    preview.style.display = 'none';
+                }
+            };
+            
+            document.getElementById('confirmRenewBtn').onclick = async () => {
+                const transactionId = document.getElementById('renewTransactionSelect').value;
+                if (!transactionId) { showMessage('Please select a book to renew', 'error'); return; }
+                closeModal('renewModal');
+                const success = await renewSingleBook(transactionId);
+                if (success) {
+                    await loadRentalsData();
+                }
+            };
+            modal.style.display = 'flex';
+        }
+
+        // ==================== FAVORITE AUTHORS MODAL ====================
+        async function openFavoriteAuthorsModal() {
+            const members = await fetchAllMembers();
+            const modal = document.getElementById('favoriteAuthorsModal');
+            
+            document.getElementById('favoriteAuthorsContent').innerHTML = `
+                <div class="form-group">
+                    <label><i class="fas fa-user"></i> Select Member</label>
+                    <select id="favMemberSelect" class="member-select">
+                        ${members.map(m => `<option value="${m.memberId}" ${m.memberId == CURRENT_MEMBER_ID ? 'selected' : ''}>${escapeHtml(m.memberFirstName)} ${escapeHtml(m.memberLastName)} (ID: ${m.memberId})</option>`).join('')}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-tag"></i> Select Type</label>
+                    <select id="favTypeSelect" class="member-select">
+                        <option value="">-- Select Type --</option>
+                        <option value="author">Top 3 Authors</option>
+                        <option value="book">Top 3 Books</option>
+                        <option value="both">Both Authors & Books</option>
+                    </select>
+                </div>
+                <button class="submit-btn" id="viewFavoritesBtn"><i class="fas fa-star"></i> View Favorites</button>
+                <div id="favResult" style="margin-top:1.5rem; display:none;">
+                    <div id="authorsResult"></div>
+                    <div id="booksResult"></div>
+                </div>
+            `;
+            
+            document.getElementById('viewFavoritesBtn').onclick = async () => {
+                const memberId = document.getElementById('favMemberSelect').value;
+                const type = document.getElementById('favTypeSelect').value;
+                
+                if (!memberId || !type) { showMessage('Please select member and type', 'error'); return; }
+                
+                const resultDiv = document.getElementById('favResult');
+                const authorsDiv = document.getElementById('authorsResult');
+                const booksDiv = document.getElementById('booksResult');
+                resultDiv.style.display = 'block';
+                
+                if (type === 'author' || type === 'both') {
+                    const favAuthors = await getFavoriteAuthors(memberId);
+                    if (favAuthors && favAuthors.books) {
+                        authorsDiv.innerHTML = `
+                            <div class="selected-items" style="margin-bottom:1rem;">
+                                <h4><i class="fas fa-star"></i> Top Author: ${escapeHtml(favAuthors.authorName)}</h4>
+                                <h4 style="margin-top:0.5rem;">Top 3 Books by ${escapeHtml(favAuthors.authorName)}:</h4>
+                                <ul>${favAuthors.books.map(b => `<li><strong>${escapeHtml(b.title)}</strong> - Available Copies: ${b.bookCount || 0}</li>`).join('')}</ul>
+                            </div>
+                        `;
+                    } else {
+                        authorsDiv.innerHTML = '<div class="empty-state">No favorite author data found</div>';
+                    }
+                } else {
+                    authorsDiv.innerHTML = '';
+                }
+                
+                if (type === 'book' || type === 'both') {
+                    const favBook = await getFavoriteBooks(memberId);
+                    if (favBook && favBook.bookName) {
+                        booksDiv.innerHTML = `
+                            <div class="selected-items">
+                                <h4><i class="fas fa-heart"></i> Top Favorite Book:</h4>
+                                <ul>
+                                    <li><strong>${escapeHtml(favBook.bookName)}</strong> by ${escapeHtml(favBook.author || 'Unknown')}</li>
+                                    <li>Available Copies: ${favBook.availableCount || 0}</li>
+                                </ul>
+                            </div>
+                        `;
+                    } else {
+                        booksDiv.innerHTML = '<div class="empty-state">No favorite book data found</div>';
+                    }
+                } else {
+                    booksDiv.innerHTML = '';
+                }
+            };
+            modal.style.display = 'flex';
+        }
+
+        // ==================== SINGLE ACTION FUNCTIONS ====================
+        window.returnSingleBook = async function(transactionId, bookTitle) {
+            if (confirm(`Are you sure you want to return "${bookTitle}"?`)) {
+                const success = await returnMultipleBooks([transactionId]);
+                if (success) {
+                    await loadRentalsData();
+                }
+            }
+        };
+
+        window.renewSingleBook = async function(transactionId) {
+            if (confirm('Renew this book for +5 days? (Only one renewal allowed per transaction)')) {
+                const success = await renewSingleBook(transactionId);
+                if (success) {
+                    await loadRentalsData();
+                }
+            }
+        };
+
+        // ==================== INITIALIZATION ====================
+        async function init() {
+            await fetchMemberDetails();
+            await renderRentals();
+        }
+
+        document.getElementById('mobileMenuBtn').addEventListener('click', () => {
+            document.getElementById('navLinks').classList.toggle('show');
+        });
+
+        document.getElementById('logoutBtn').addEventListener('click', (e) => {
+            e.preventDefault();
+            localStorage.removeItem('memberId');
+            window.location.href = 'login.html';
+        });
+
+        window.onclick = (event) => { if (event.target.classList.contains('modal')) event.target.style.display = 'none'; };
+
+        init();
+    </script>
+</body>
+</html>

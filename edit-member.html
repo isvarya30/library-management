@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Edit Member – Library Management</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:          #f4f3f0;
+      --surface:     #ffffff;
+      --border:      #e2e0da;
+      --border-focus:#3b7dd8;
+      --text:        #1a1a18;
+      --muted:       #6b6960;
+      --hint:        #a8a69f;
+      --accent:      #3b7dd8;
+      --accent-bg:   #eef4fd;
+      --danger:      #d63f3f;
+      --danger-bg:   #fdf0f0;
+      --success:     #1e8a5e;
+      --success-bg:  #edf7f3;
+      --radius-sm:   6px;
+      --radius-md:   10px;
+      --radius-lg:   14px;
+      --shadow:      0 1px 3px rgba(0,0,0,0.07), 0 4px 12px rgba(0,0,0,0.05);
+      --font: 'DM Sans', sans-serif;
+      --mono: 'DM Mono', monospace;
+    }
+
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 2rem 1rem;
+    }
+
+    .wrapper { max-width: 720px; margin: 0 auto; animation: fadeUp 0.4s ease both; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .page-header { display: flex; align-items: center; gap: 14px; margin-bottom: 1.75rem; }
+
+    .page-icon {
+      width: 44px; height: 44px; background: var(--accent-bg);
+      border-radius: var(--radius-md);
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .page-icon svg {
+      width: 22px; height: 22px; stroke: var(--accent);
+      fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+    }
+
+    .page-title h1 { font-size: 20px; font-weight: 600; color: var(--text); letter-spacing: -0.02em; }
+    .page-title p  { font-size: 12px; color: var(--muted); margin-top: 2px; font-family: var(--mono); }
+
+    .card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); padding: 1.25rem 1.5rem;
+      margin-bottom: 1rem; box-shadow: var(--shadow);
+    }
+
+    .card-label {
+      font-size: 10px; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 0.08em; color: var(--hint);
+      margin-bottom: 1rem; padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+    .grid-1 { display: grid; grid-template-columns: 1fr; }
+    .mt     { margin-top: 14px; }
+
+    .field { display: flex; flex-direction: column; gap: 4px; }
+    .field label { font-size: 12px; font-weight: 500; color: var(--muted); display: flex; align-items: center; gap: 4px; }
+    .field .api-key { font-size: 10px; font-family: var(--mono); color: var(--hint); margin-top: 1px; }
+    .req { color: var(--danger); font-size: 11px; }
+
+    .field input,
+    .field select {
+      width: 100%; padding: 9px 11px; font-size: 13.5px; font-family: var(--font);
+      border: 1px solid var(--border); border-radius: var(--radius-sm);
+      background: #fafaf9; color: var(--text); outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+      appearance: none; -webkit-appearance: none;
+    }
+    .field select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b6960' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 10px center;
+      padding-right: 30px; cursor: pointer;
+    }
+    .field input:hover, .field select:hover { border-color: #c8c5be; background: #fff; }
+    .field input:focus, .field select:focus {
+      border-color: var(--border-focus);
+      box-shadow: 0 0 0 3px rgba(59,125,216,0.12); background: #fff;
+    }
+    .field input.error, .field select.error {
+      border-color: var(--danger); box-shadow: 0 0 0 3px rgba(214,63,63,0.1);
+    }
+    .err-msg { font-size: 11px; color: var(--danger); min-height: 14px; font-weight: 500; }
+
+    .actions {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-top: 1.25rem; flex-wrap: wrap; gap: 10px;
+    }
+    .actions-right { display: flex; gap: 10px; }
+
+    .btn {
+      padding: 9px 20px; font-size: 13.5px; font-weight: 500; font-family: var(--font);
+      border-radius: var(--radius-sm); cursor: pointer; border: 1px solid transparent;
+      transition: all 0.15s; display: inline-flex; align-items: center; gap: 6px;
+    }
+    .btn-reset  { background: var(--surface); color: var(--muted); border-color: var(--border); }
+    .btn-reset:hover  { background: var(--bg); color: var(--text); }
+    .btn-preview { background: var(--surface); color: var(--text); border-color: var(--border); }
+    .btn-preview:hover { background: var(--bg); }
+    .btn-save   { background: var(--accent); color: #fff; border-color: var(--accent); min-width: 130px; justify-content: center; }
+    .btn-save:hover   { background: #2f6bc0; }
+    .btn-save:active  { transform: scale(0.98); }
+    .btn-save:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
+
+    .toast {
+      display: none; margin-top: 1rem; padding: 12px 16px;
+      border-radius: var(--radius-md); font-size: 13px; font-weight: 500;
+      line-height: 1.5; animation: fadeUp 0.25s ease;
+    }
+    .toast.success { display: flex; gap: 8px; background: var(--success-bg); color: var(--success); border: 1px solid #b6e3d0; }
+    .toast.error   { display: flex; gap: 8px; background: var(--danger-bg);  color: var(--danger);  border: 1px solid #f0c0c0; }
+
+    .json-preview {
+      display: none; margin-top: 1rem; background: #1c1c1a;
+      border-radius: var(--radius-md); overflow: hidden; box-shadow: var(--shadow);
+    }
+    .json-preview.show { display: block; }
+    .json-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 14px; background: #2a2a27; border-bottom: 1px solid #333;
+    }
+    .json-header span { font-size: 11px; font-family: var(--mono); color: #888; font-weight: 500; }
+    .json-copy-btn {
+      font-size: 11px; font-family: var(--mono); color: #aaa;
+      background: none; border: 1px solid #444; border-radius: 4px;
+      padding: 3px 10px; cursor: pointer; transition: color 0.15s, border-color 0.15s;
+    }
+    .json-copy-btn:hover { color: #fff; border-color: #888; }
+    .json-body {
+      padding: 14px 16px; font-family: var(--mono); font-size: 12px;
+      color: #d4d0c8; white-space: pre; overflow-x: auto; line-height: 1.7;
+    }
+    .json-body .k { color: #8bb6e8; }
+    .json-body .s { color: #a8d8a8; }
+    .json-body .n { color: #f0c080; }
+
+    .spinner {
+      width: 14px; height: 14px;
+      border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff;
+      border-radius: 50%; animation: spin 0.6s linear infinite; display: inline-block;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    @media (max-width: 580px) {
+      .grid-2, .grid-3 { grid-template-columns: 1fr; }
+      .actions { flex-direction: column; align-items: stretch; }
+      .actions-right { flex-direction: column; }
+      .btn { justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+<div class="wrapper">
+
+  <div class="page-header">
+    <div class="page-icon">
+      <svg viewBox="0 0 24 24">
+        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+        <circle cx="12" cy="7" r="4"/>
+      </svg>
+    </div>
+    <div class="page-title">
+      <h1>Edit Member</h1>
+      <p>POST &nbsp;·&nbsp; /members/save &nbsp;·&nbsp; humhealth LibraryManagementAPI</p>
+    </div>
+  </div>
+
+  <!-- Identity -->
+  <div class="card">
+    <div class="card-label">Identity</div>
+    <div class="grid-2">
+      <div class="field">
+        <label>Member ID <span class="req">*</span></label>
+        <span class="api-key">memberId</span>
+        <input type="text" id="memberId" placeholder="e.g. 13" />
+        <span class="err-msg" id="e-memberId"></span>
+      </div>
+      <div class="field">
+        <label>Date of Birth <span class="req">*</span></label>
+        <span class="api-key">memberDob</span>
+        <input type="date" id="memberDob" />
+        <span class="err-msg" id="e-memberDob"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Name -->
+  <div class="card">
+    <div class="card-label">Name</div>
+    <div class="grid-3">
+      <div class="field">
+        <label>First Name <span class="req">*</span></label>
+        <span class="api-key">memberFirstName</span>
+        <input type="text" id="memberFirstName" placeholder="Kani" />
+        <span class="err-msg" id="e-memberFirstName"></span>
+      </div>
+      <div class="field">
+        <label>Middle Name</label>
+        <span class="api-key">memberMiddleName</span>
+        <input type="text" id="memberMiddleName" placeholder="(optional)" />
+      </div>
+      <div class="field">
+        <label>Last Name <span class="req">*</span></label>
+        <span class="api-key">memberLastName</span>
+        <input type="text" id="memberLastName" placeholder="R" />
+        <span class="err-msg" id="e-memberLastName"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Contact -->
+  <div class="card">
+    <div class="card-label">Contact</div>
+    <div class="grid-2">
+      <div class="field">
+        <label>Email <span class="req">*</span></label>
+        <span class="api-key">memberEmail</span>
+        <input type="email" id="memberEmail" placeholder="kani24@gmail.com" />
+        <span class="err-msg" id="e-memberEmail"></span>
+      </div>
+      <div class="field">
+        <label>Mobile Number <span class="req">*</span></label>
+        <span class="api-key">memberMobileNumber</span>
+        <input type="tel" id="memberMobileNumber" placeholder="9090127199" maxlength="10" />
+        <span class="err-msg" id="e-memberMobileNumber"></span>
+      </div>
+    </div>
+    <div class="grid-1 mt">
+      <div class="field">
+        <label>Address Line 1 <span class="req">*</span></label>
+        <span class="api-key">memberAddressLine1</span>
+        <input type="text" id="memberAddressLine1" placeholder="123 Kamarajar Street" />
+        <span class="err-msg" id="e-memberAddressLine1"></span>
+      </div>
+    </div>
+    <div class="grid-1 mt">
+      <div class="field">
+        <label>Address Line 2</label>
+        <span class="api-key">memberAddressLine2</span>
+        <input type="text" id="memberAddressLine2" placeholder="Chennai" />
+      </div>
+    </div>
+  </div>
+
+  <!-- Membership -->
+  <div class="card">
+    <div class="card-label">Membership</div>
+    <div class="grid-2">
+      <div class="field">
+        <label>Work Status <span class="req">*</span></label>
+        <span class="api-key">memberWorkStatus</span>
+        <select id="memberWorkStatus">
+          <option value="">— Select —</option>
+          <option value="STUD">STUD – Student</option>
+          <option value="EMPL">EMPL – Employed</option>
+          <option value="SELF">SELF – Self-employed</option>
+          <option value="RETD">RETD – Retired</option>
+          <option value="UNEMP">UNEMP – Unemployed</option>
+        </select>
+        <span class="err-msg" id="e-memberWorkStatus"></span>
+      </div>
+      <div class="field">
+        <label>Membership Period <span class="req">*</span></label>
+        <span class="api-key">membershipPeriod</span>
+        <select id="membershipPeriod">
+          <option value="">— Select —</option>
+          <option value="1">1 year</option>
+          <option value="2">2 years</option>
+          <option value="3">3 years</option>
+          <option value="4">4 years</option>
+          <option value="5">5 years</option>
+        </select>
+        <span class="err-msg" id="e-membershipPeriod"></span>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <div id="jsonPreview" class="json-preview">
+    <div class="json-header">
+      <span>Request payload · application/json</span>
+      <button class="json-copy-btn" onclick="copyJSON()">Copy</button>
+    </div>
+    <div class="json-body" id="jsonBody"></div>
+  </div>
+
+  <div class="actions">
+    <button class="btn btn-reset" onclick="resetForm()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.9"/></svg>
+      Reset
+    </button>
+    <div class="actions-right">
+      <button class="btn btn-preview" onclick="togglePreview()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+        Preview JSON
+      </button>
+      <button class="btn btn-save" id="saveBtn" onclick="submitForm()">Save Member</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // ✅ Calls local proxy server — no CORS issue
+  const API_URL = "http://localhost:3000/api/members/save";
+
+  const REQUIRED_FIELDS = [
+    "memberId","memberFirstName","memberLastName","memberEmail",
+    "memberMobileNumber","memberAddressLine1","memberDob",
+    "memberWorkStatus","membershipPeriod"
+  ];
+
+  function getPayload() {
+    return {
+      memberId:           document.getElementById("memberId").value.trim(),
+      memberFirstName:    document.getElementById("memberFirstName").value.trim(),
+      memberMiddleName:   document.getElementById("memberMiddleName").value.trim(),
+      memberLastName:     document.getElementById("memberLastName").value.trim(),
+      memberEmail:        document.getElementById("memberEmail").value.trim(),
+      memberAddressLine1: document.getElementById("memberAddressLine1").value.trim(),
+      memberAddressLine2: document.getElementById("memberAddressLine2").value.trim(),
+      memberMobileNumber: document.getElementById("memberMobileNumber").value.trim(),
+      memberWorkStatus:   document.getElementById("memberWorkStatus").value,
+      membershipPeriod:   document.getElementById("membershipPeriod").value,
+      memberDob:          document.getElementById("memberDob").value
+    };
+  }
+
+  function clearErrors() {
+    REQUIRED_FIELDS.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.classList.remove("error");
+      const em = document.getElementById("e-" + id);
+      if (em) em.textContent = "";
+    });
+  }
+
+  function validate() {
+    clearErrors();
+    let isValid = true;
+    REQUIRED_FIELDS.forEach(id => {
+      const el = document.getElementById(id);
+      const em = document.getElementById("e-" + id);
+      if (!el || !el.value.trim()) {
+        if (el) el.classList.add("error");
+        if (em) em.textContent = "This field is required.";
+        isValid = false;
+      }
+    });
+    const emailEl  = document.getElementById("memberEmail");
+    const emailErr = document.getElementById("e-memberEmail");
+    if (emailEl.value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailEl.value)) {
+      emailEl.classList.add("error");
+      emailErr.textContent = "Enter a valid email address.";
+      isValid = false;
+    }
+    const mobEl  = document.getElementById("memberMobileNumber");
+    const mobErr = document.getElementById("e-memberMobileNumber");
+    if (mobEl.value && !/^\d{10}$/.test(mobEl.value)) {
+      mobEl.classList.add("error");
+      mobErr.textContent = "Mobile number must be exactly 10 digits.";
+      isValid = false;
+    }
+    return isValid;
+  }
+
+  function showToast(message, type) {
+    const toast = document.getElementById("toast");
+    const icon = type === "success"
+      ? `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`
+      : `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`;
+    toast.innerHTML = icon + `<span>${message}</span>`;
+    toast.className = "toast " + type;
+    setTimeout(() => { toast.className = "toast"; }, 7000);
+  }
+
+  function togglePreview() {
+    const preview = document.getElementById("jsonPreview");
+    const json = JSON.stringify(getPayload(), null, 2);
+    const highlighted = json.replace(
+      /("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g,
+      match => {
+        if (/^"/.test(match)) {
+          if (/:$/.test(match)) return `<span class="k">${match}</span>`;
+          return `<span class="s">${match}</span>`;
+        }
+        return `<span class="n">${match}</span>`;
+      }
+    );
+    document.getElementById("jsonBody").innerHTML = highlighted;
+    preview.classList.toggle("show");
+  }
+
+  function copyJSON() {
+    navigator.clipboard.writeText(JSON.stringify(getPayload(), null, 2)).then(() => {
+      const btn = document.querySelector(".json-copy-btn");
+      btn.textContent = "Copied!";
+      setTimeout(() => { btn.textContent = "Copy"; }, 2000);
+    });
+  }
+
+  async function submitForm() {
+    if (!validate()) return;
+    const btn = document.getElementById("saveBtn");
+    btn.disabled = true;
+    btn.innerHTML = `<span class="spinner"></span> Saving...`;
+    try {
+      const response = await fetch(API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(getPayload())
+      });
+      const data = await response.json();
+      if (data.status === "Success") {
+        showToast(data.message + " — " + data.data, "success");
+      } else {
+        showToast("Error: " + (data.message || JSON.stringify(data)), "error");
+      }
+    } catch (err) {
+      showToast("Request failed: " + err.message, "error");
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = "Save Member";
+    }
+  }
+
+  function resetForm() {
+    ["memberId","memberFirstName","memberMiddleName","memberLastName",
+     "memberEmail","memberMobileNumber","memberAddressLine1","memberAddressLine2",
+     "memberDob","memberWorkStatus","membershipPeriod"].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) { el.value = ""; el.classList.remove("error"); }
+    });
+    clearErrors();
+    document.getElementById("toast").className = "toast";
+    document.getElementById("jsonPreview").classList.remove("show");
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Add Book | Library Management System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Inter', system-ui, sans-serif;
+            background: #f0f2f8;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2b6cb0 0%, #2c3e66 100%);
+            border-radius: 28px;
+            padding: 1.5rem 2rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.2);
+        }
+
+        .header h1 {
+            color: white;
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .header h1 i {
+            margin-right: 10px;
+        }
+
+        .header p {
+            color: rgba(255,255,255,0.9);
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .form-card {
+            background: white;
+            border-radius: 28px;
+            overflow: hidden;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-header {
+            background: linear-gradient(135deg, #2b6cb0 0%, #2c3e66 100%);
+            color: white;
+            padding: 1rem 1.5rem;
+        }
+
+        .form-header h2 {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .form-header h2 i {
+            margin-right: 8px;
+        }
+
+        .form-body {
+            padding: 1.8rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.2rem;
+        }
+
+        .form-group {
+            margin-bottom: 0.2rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #6c7a91;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.4rem;
+        }
+
+        .form-group label i {
+            margin-right: 5px;
+            color: #2b6cb0;
+        }
+
+        .required {
+            color: #e53e3e;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 10px 14px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #2b6cb0;
+            box-shadow: 0 0 0 3px rgba(43, 108, 176, 0.1);
+        }
+
+        .form-group input.error, .form-group select.error {
+            border-color: #e53e3e;
+            background: #fff5f5;
+        }
+
+        .form-group input.success, .form-group select.success {
+            border-color: #2e7d64;
+            background: #e0f2e9;
+        }
+
+        .error-message {
+            font-size: 0.7rem;
+            color: #e53e3e;
+            margin-top: 0.3rem;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .full-width {
+            grid-column: span 2;
+        }
+
+        .btn-save {
+            background: linear-gradient(135deg, #2b6cb0 0%, #2c3e66 100%);
+            color: white;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 40px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 1.5rem;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-save:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(43, 108, 176, 0.4);
+        }
+
+        .btn-save:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border: 2px solid white;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 0.6s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .message {
+            margin-top: 1rem;
+            padding: 0.8rem 1rem;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            display: none;
+        }
+
+        .message.success {
+            background: #e0f2e9;
+            color: #1a4d3e;
+            border-left: 4px solid #2e7d64;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .message.error {
+            background: #ffe6e5;
+            color: #a12218;
+            border-left: 4px solid #c7362b;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .message.warning {
+            background: #fff3cd;
+            color: #856404;
+            border-left: 4px solid #ffc107;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 1rem;
+            text-align: center;
+            width: 100%;
+            color: #2b6cb0;
+            text-decoration: none;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 640px) {
+            body {
+                padding: 1rem;
+            }
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            .full-width {
+                grid-column: span 1;
+            }
+            .form-body {
+                padding: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1><i class="fas fa-book-plus"></i> Add New Book</h1>
+        <p>Add a new book to the library catalog</p>
+    </div>
+
+    <div class="form-card">
+        <div class="form-header">
+            <h2><i class="fas fa-book"></i> Book Registration Form</h2>
+        </div>
+        <div class="form-body">
+            <form id="saveBookForm">
+                <div class="form-grid">
+                    <div class="form-group full-width">
+                        <label><i class="fas fa-heading"></i> Book Title <span class="required">*</span></label>
+                        <input type="text" id="bookTitle" placeholder="Enter complete book title">
+                        <div class="error-message" id="titleError"></div>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label><i class="fas fa-user-pen"></i> Author <span class="required">*</span></label>
+                        <input type="text" id="bookAuthor" placeholder="Author full name">
+                        <div class="error-message" id="authorError"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label><i class="fas fa-language"></i> Language <span class="required">*</span></label>
+                        <select id="bookLanguage">
+                            <option value="">-- Select Language --</option>
+                            <option value="English">English</option>
+                            <option value="Spanish">Spanish</option>
+                            <option value="French">French</option>
+                            <option value="German">German</option>
+                            <option value="Chinese">Chinese</option>
+                            <option value="Japanese">Japanese</option>
+                            <option value="Hindi">Hindi</option>
+                            <option value="Arabic">Arabic</option>
+                            <option value="Portuguese">Portuguese</option>
+                            <option value="Russian">Russian</option>
+                        </select>
+                        <div class="error-message" id="languageError"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label><i class="fas fa-tags"></i> Genre</label>
+                        <select id="bookGenre">
+                            <option value="">-- Select Genre --</option>
+                            <option value="Fiction">Fiction</option>
+                            <option value="Non-Fiction">Non-Fiction</option>
+                            <option value="Mystery">Mystery</option>
+                            <option value="Thriller">Thriller</option>
+                            <option value="Romance">Romance</option>
+                            <option value="Science Fiction">Science Fiction</option>
+                            <option value="Fantasy">Fantasy</option>
+                            <option value="Horror">Horror</option>
+                            <option value="Biography">Biography</option>
+                            <option value="History">History</option>
+                            <option value="Self-Help">Self-Help</option>
+                            <option value="Technology">Technology</option>
+                            <option value="Children">Children</option>
+                        </select>
+                        <div class="error-message" id="genreError"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label><i class="fas fa-dollar-sign"></i> Price (USD) <span class="required">*</span></label>
+                        <input type="text" id="bookPrice" placeholder="0.00">
+                        <div class="error-message" id="priceError"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label><i class="fas fa-info-circle"></i> Status</label>
+                        <select id="statusCodeId">
+                            <option value="AVAI">Available (AVAI)</option>
+                            <option value="NAVAI">Not Available (NAVAI)</option>
+                        </select>
+                        <div class="error-message" id="statusError"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label><i class="fas fa-copy"></i> Book Count <span class="required">*</span></label>
+                        <input type="number" id="bookCount" placeholder="Number of copies" min="0" value="1">
+                        <div class="error-message" id="countError"></div>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-save" id="saveBtn">
+                    <i class="fas fa-save"></i> Add Book to Library
+                </button>
+            </form>
+
+            <div id="messageArea" class="message"></div>
+            <a href="admindashboard.html" class="back-link"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+        </div>
+    </div>
+</div>
+
+<script>
+    const LOCAL_BACKEND = "http://localhost:8080";
+    const API_URL = `${LOCAL_BACKEND}/api/local/books/add`;
+    const STORAGE_KEY = 'library_books';
+
+    // Clear all error messages and field highlights
+    function clearErrors() {
+        document.querySelectorAll('.error-message').forEach(el => {
+            el.classList.remove('show');
+            el.textContent = '';
+        });
+        document.querySelectorAll('input, select').forEach(el => {
+            el.classList.remove('error', 'success');
+        });
+    }
+
+    // Show error for a specific field with custom message
+    function showFieldError(fieldId, message) {
+        const errorDiv = document.getElementById(`${fieldId}Error`);
+        const inputField = document.getElementById(fieldId);
+        if (errorDiv) {
+            errorDiv.textContent = message;
+            errorDiv.classList.add('show');
+        }
+        if (inputField) {
+            inputField.classList.add('error');
+            inputField.classList.remove('success');
+        }
+    }
+
+    // Show success for a field
+    function showFieldSuccess(fieldId) {
+        const inputField = document.getElementById(fieldId);
+        if (inputField) {
+            inputField.classList.remove('error');
+            inputField.classList.add('success');
+        }
+    }
+
+    // Show message in message area
+    function showMessage(text, type) {
+        const msgDiv = document.getElementById('messageArea');
+        const icons = {
+            success: 'fa-check-circle',
+            error: 'fa-exclamation-circle',
+            warning: 'fa-exclamation-triangle'
+        };
+        msgDiv.innerHTML = `<i class="fas ${icons[type]}"></i> ${text}`;
+        msgDiv.className = `message ${type}`;
+        msgDiv.style.display = 'flex';
+        
+        setTimeout(() => {
+            msgDiv.style.display = 'none';
+        }, 5000);
+    }
+
+    // Save to localStorage as backup
+    function saveToLocalStorage(book) {
+        let books = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+        const newBook = {
+            ...book,
+            bookId: Date.now(),
+            bookRegisterDate: new Date().toISOString().split('T')[0],
+            source: 'Local DB'
+        };
+        books.push(newBook);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(books));
+        return newBook;
+    }
+
+    // Real-time validation functions
+    function validateTitle() {
+        const value = document.getElementById('bookTitle').value.trim();
+        if (!value) {
+            showFieldError('bookTitle', '❌ Book title is required');
+            return false;
+        }
+        if (value.length < 2) {
+            showFieldError('bookTitle', '❌ Title must be at least 2 characters');
+            return false;
+        }
+        if (value.length > 200) {
+            showFieldError('bookTitle', '❌ Title cannot exceed 200 characters');
+            return false;
+        }
+        showFieldSuccess('bookTitle');
+        return true;
+    }
+
+    function validateAuthor() {
+        const value = document.getElementById('bookAuthor').value.trim();
+        if (!value) {
+            showFieldError('bookAuthor', '❌ Author name is required');
+            return false;
+        }
+        if (value.length < 2) {
+            showFieldError('bookAuthor', '❌ Author name must be at least 2 characters');
+            return false;
+        }
+        showFieldSuccess('bookAuthor');
+        return true;
+    }
+
+    function validateLanguage() {
+        const value = document.getElementById('bookLanguage').value;
+        if (!value) {
+            showFieldError('bookLanguage', '❌ Language is required');
+            return false;
+        }
+        showFieldSuccess('bookLanguage');
+        return true;
+    }
+
+    function validatePrice() {
+        const value = document.getElementById('bookPrice').value.trim();
+        if (!value) {
+            showFieldError('bookPrice', '❌ Price is required');
+            return false;
+        }
+        const priceNum = parseFloat(value);
+        if (isNaN(priceNum)) {
+            showFieldError('bookPrice', '❌ Price must be a number (no letters allowed)');
+            return false;
+        }
+        if (priceNum <= 0) {
+            showFieldError('bookPrice', '❌ Price must be greater than 0');
+            return false;
+        }
+        showFieldSuccess('bookPrice');
+        return true;
+    }
+
+    function validateBookCount() {
+        const value = document.getElementById('bookCount').value.trim();
+        if (!value) {
+            showFieldError('bookCount', '❌ Book count is required');
+            return false;
+        }
+        const numCount = parseInt(value);
+        if (isNaN(numCount) || numCount < 0) {
+            showFieldError('bookCount', '❌ Book count must be a valid number (0 or greater)');
+            return false;
+        }
+        showFieldSuccess('bookCount');
+        return true;
+    }
+
+    // Attach real-time validation events
+    document.getElementById('bookTitle').addEventListener('input', validateTitle);
+    document.getElementById('bookAuthor').addEventListener('input', validateAuthor);
+    document.getElementById('bookLanguage').addEventListener('change', validateLanguage);
+    document.getElementById('bookPrice').addEventListener('input', validatePrice);
+    document.getElementById('bookCount').addEventListener('input', validateBookCount);
+
+    // Full form validation before submit
+    function validateForm() {
+        const isTitleValid = validateTitle();
+        const isAuthorValid = validateAuthor();
+        const isLanguageValid = validateLanguage();
+        const isPriceValid = validatePrice();
+        const isCountValid = validateBookCount();
+        
+        return isTitleValid && isAuthorValid && isLanguageValid && isPriceValid && isCountValid;
+    }
+
+    document.getElementById("saveBookForm").addEventListener("submit", async function(e) {
+        e.preventDefault();
+        
+        // Run client-side validation first
+        if (!validateForm()) {
+            showMessage("❌ Please fix the errors highlighted in the form", "error");
+            return;
+        }
+        
+        const bookTitle = document.getElementById("bookTitle").value.trim();
+        const author = document.getElementById("bookAuthor").value.trim();
+        const language = document.getElementById("bookLanguage").value;
+        const genre = document.getElementById("bookGenre").value;
+        const price = parseFloat(document.getElementById("bookPrice").value.trim());
+        const statusCodeId = document.getElementById("statusCodeId").value;
+        const bookCount = parseInt(document.getElementById("bookCount").value.trim());
+
+        const bookData = {
+            title: bookTitle,
+            author: author,
+            language: language,
+            genre: genre || "",
+            price: price,
+            statusCodeId: statusCodeId,
+            bookCount: bookCount
+        };
+
+        console.log("Saving book:", bookData);
+
+        const saveBtn = document.getElementById("saveBtn");
+        saveBtn.disabled = true;
+        saveBtn.innerHTML = '<span class="loading-spinner"></span> Adding Book...';
+        
+        let apiSuccess = false;
+        
+        // Try to save to backend API first
+        try {
+            const response = await fetch(API_URL, {
+                method: "POST",
+                headers: { 
+                    "Content-Type": "application/json",
+                    "Accept": "application/json"
+                },
+                body: JSON.stringify(bookData)
+            });
+
+            const result = await response.json();
+            console.log("API Response:", result);
+
+            if (response.ok && result.status === "Success") {
+                apiSuccess = true;
+                showMessage(`✅ "${bookTitle}" has been added to the database!`, "success");
+                sessionStorage.setItem('bookJustAdded', bookTitle);
+                
+                // Reset form
+                document.getElementById("saveBookForm").reset();
+                clearErrors();
+                document.getElementById("bookCount").value = "1";
+                document.getElementById("statusCodeId").value = "AVAI";
+                
+                // Redirect after 2 seconds
+                setTimeout(() => {
+                    window.location.href = 'admindashboard.html';
+                }, 2000);
+            } else {
+                throw new Error(result.message || "API error");
+            }
+        } catch (error) {
+            console.error("API error:", error);
+            
+            // Fallback to localStorage
+            const savedBook = saveToLocalStorage(bookData);
+            showMessage(`⚠️ Backend not available. Book saved to local storage!`, "warning");
+            sessionStorage.setItem('bookJustAdded', bookTitle);
+            sessionStorage.setItem('bookSavedLocally', 'true');
+            
+            // Reset form
+            document.getElementById("saveBookForm").reset();
+            clearErrors();
+            document.getElementById("bookCount").value = "1";
+            document.getElementById("statusCodeId").value = "AVAI";
+            
+            setTimeout(() => {
+                window.location.href = 'admindashboard.html';
+            }, 2000);
+        } finally {
+            saveBtn.disabled = false;
+            saveBtn.innerHTML = '<i class="fas fa-save"></i> Add Book to Library';
+        }
+    });
+</script>
+</body>
+</html>

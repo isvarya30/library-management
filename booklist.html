@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Management | Library Catalog</title>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', 'Inter', sans-serif; background: #eef2f7; padding: 2rem 1.5rem; }
+        .container { max-width: 1400px; margin: 0 auto; }
+        
+        .status-header {
+            background: white;
+            border-radius: 28px;
+            padding: 1.4rem 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .title-section h2 { color: #1a2c3e; font-weight: 700; font-size: 1.7rem; }
+        .title-section p { color: #6c7a91; margin-top: 5px; }
+        .stats-bar { display: flex; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+        .stat-card {
+            background: white;
+            padding: 1rem 2rem;
+            border-radius: 20px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            min-width: 180px;
+        }
+        .stat-number { font-size: 2rem; font-weight: 700; color: #2b6cb0; }
+        .stat-label { color: #6c7a91; font-size: 0.85rem; font-weight: 500; }
+
+        .message-card {
+            background: #fef9e3;
+            border-left: 6px solid #f5b042;
+            padding: 1rem 1.5rem;
+            border-radius: 20px;
+            margin-bottom: 1.8rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .message-card.success { background: #e0f2e9; border-left-color: #2e7d64; }
+        .message-card.error { background: #ffe6e5; border-left-color: #c7362b; }
+        .message-card.warning { background: #fff0db; border-left-color: #e67e22; }
+        .message-card.info { background: #e3f2fd; border-left-color: #1976d2; }
+
+        .data-wrapper { background: white; border-radius: 28px; padding: 1.2rem; box-shadow: 0 8px 24px rgba(0,0,0,0.08); }
+        table.dataTable { width: 100% !important; }
+        table.dataTable thead th { background: #f8fafc; font-weight: 700; color: #1f3a4b; padding: 14px 12px; }
+        table.dataTable tbody td { padding: 12px 10px; vertical-align: middle; }
+
+        .status-badge { display: inline-block; padding: 5px 14px; border-radius: 30px; font-size: 0.75rem; font-weight: 600; min-width: 100px; text-align: center; }
+        .status-avai { background: #e0f2e9; color: #1a472a; border: 1px solid #2e7d64; }
+        .status-navai { background: #ffe6e5; color: #a12218; border: 1px solid #dc2626; }
+
+        .action-buttons { margin-top: 2rem; display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+        .btn-outline { background: transparent; border: 2px solid #cbd5e1; padding: 10px 24px; border-radius: 40px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+        .btn-outline:hover { background: #f1f5f9; border-color: #94a3b8; }
+        .btn-primary { background: linear-gradient(135deg, #2b6cb0 0%, #2c3e66 100%); border: none; padding: 10px 28px; border-radius: 40px; color: white; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+        .btn-edit, .btn-view { background: #e3f2fd; color: #1565c0; border: none; padding: 5px 12px; border-radius: 20px; cursor: pointer; font-size: 0.75rem; margin: 2px; transition: all 0.2s; }
+        .btn-edit:hover, .btn-view:hover { background: #bbdef5; transform: scale(1.02); }
+        .loading { display: inline-block; width: 20px; height: 20px; border: 2px solid #ccc; border-radius: 50%; border-top-color: #2b6cb0; animation: spin 0.6s linear infinite; margin-right: 8px; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); overflow: auto; }
+        .modal-content { background-color: white; margin: 5% auto; padding: 2rem; width: 90%; max-width: 550px; border-radius: 28px; animation: modalSlideIn 0.3s ease; }
+        @keyframes modalSlideIn {
+            from { transform: translateY(-30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; padding-bottom: 0.5rem; border-bottom: 2px solid #e2e8f0; }
+        .modal-header h3 { color: #2b6cb0; }
+        .close-modal { font-size: 1.8rem; cursor: pointer; color: #6c7a91; transition: 0.2s; }
+        .close-modal:hover { color: #e53e3e; }
+        .book-detail { margin-bottom: 1rem; padding: 0.5rem; border-bottom: 1px solid #e2e8f0; }
+        .book-detail strong { display: inline-block; width: 130px; color: #1a2c3e; }
+        .edit-form-group { margin-bottom: 1rem; }
+        .edit-form-group label { display: block; font-size: 0.75rem; font-weight: 600; color: #6c7a91; margin-bottom: 0.25rem; text-transform: uppercase; }
+        .edit-form-group input, .edit-form-group select { width: 100%; padding: 10px 12px; border: 2px solid #e2e8f0; border-radius: 12px; font-size: 0.9rem; transition: border-color 0.2s; }
+        .edit-form-group input:focus, .edit-form-group select:focus { outline: none; border-color: #2b6cb0; }
+        .edit-form-group small { display: block; margin-top: 5px; }
+        .btn-update { background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%); color: white; border: none; padding: 12px 20px; border-radius: 40px; cursor: pointer; font-weight: 600; width: 100%; margin-top: 1rem; font-size: 1rem; transition: all 0.2s; }
+        .btn-update:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+        .btn-cancel { background: #e2e8f0; color: #2c3e50; border: none; padding: 12px 20px; border-radius: 40px; cursor: pointer; width: 100%; margin-top: 0.5rem; transition: all 0.2s; }
+        .btn-cancel:hover { background: #cbd5e1; }
+        
+        footer { text-align: center; margin-top: 2rem; color: #6c7a91; font-size: 0.75rem; }
+        
+        .dataTables_wrapper .dataTables_filter input {
+            padding: 8px 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 20px;
+            margin-left: 8px;
+        }
+        .dataTables_wrapper .dataTables_length select {
+            padding: 6px 10px;
+            border: 1px solid #e2e8f0;
+            border-radius: 20px;
+            margin: 0 5px;
+        }
+        .dataTables_wrapper .dataTables_paginate .paginate_button {
+            padding: 6px 12px;
+            border-radius: 20px;
+            margin: 0 2px;
+        }
+        .dataTables_wrapper .dataTables_paginate .paginate_button.current {
+            background: #2b6cb0;
+            color: white !important;
+            border-radius: 20px;
+        }
+        
+        @media (max-width: 768px) { 
+            .stats-bar { flex-direction: column; } 
+            .data-wrapper { overflow-x: auto; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="status-header">
+            <div class="title-section">
+                <h2><i class="fas fa-book-open"></i> Book Management System</h2>
+                <p>Complete library catalog - Manage your books collection</p>
+            </div>
+        </div>
+
+        <div class="stats-bar">
+            <div class="stat-card"><span class="stat-number" id="bookCount">0</span><span class="stat-label">Total Books</span></div>
+            <div class="stat-card"><span class="stat-number" id="availableCount">0</span><span class="stat-label">Available</span></div>
+            <div class="stat-card"><span class="stat-number" id="notAvailableCount">0</span><span class="stat-label">Not Available</span></div>
+        </div>
+
+        <div id="messageArea" class="message-card info"><i class="fas fa-info-circle"></i> Loading books...</div>
+
+        <div class="data-wrapper">
+            <table id="bookTable" class="display">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Title</th>
+                        <th>Author</th>
+                        <th>Language</th>
+                        <th>Genre</th>
+                        <th>Price</th>
+                        <th>Status</th>
+                        <th>Book Count</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+        <div class="action-buttons">
+            <button class="btn-outline" id="registerNewBookBtn"><i class="fas fa-plus-circle"></i> Add New Book</button>
+            <button class="btn-primary" id="refreshListBtn"><i class="fas fa-sync-alt"></i> Refresh List</button>
+        </div>
+        <footer>📚 Book count > 0 = Available | Book count = 0 = Not Available | Click Edit to modify books</footer>
+    </div>
+
+    <!-- View Details Modal -->
+    <div id="bookDetailsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header"><h3><i class="fas fa-book-open"></i> Book Details</h3><span class="close-modal" onclick="closeModal('bookDetailsModal')">&times;</span></div>
+            <div id="bookDetailsContent"></div>
+        </div>
+    </div>
+
+    <!-- Edit Book Modal -->
+    <div id="editBookModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header"><h3><i class="fas fa-edit"></i> Edit Book</h3><span class="close-modal" onclick="closeModal('editBookModal')">&times;</span></div>
+            <div id="editBookContent"></div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script>
+        let bookDataTable = null;
+        let allBooks = [];
+
+        const LOCAL_BACKEND = "http://localhost:8080";
+
+        function showMessage(text, type = 'info') {
+            const msgDiv = document.getElementById('messageArea');
+            const icon = type === 'success' ? 'fa-check-circle' : (type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle');
+            msgDiv.innerHTML = `<i class="fas ${icon}"></i> ${text}`;
+            msgDiv.className = `message-card ${type}`;
+            setTimeout(() => {
+                if (msgDiv.className === `message-card ${type}`) {
+                    msgDiv.style.opacity = '0.9';
+                }
+            }, 5000);
+        }
+
+        function closeModal(modalId) { 
+            document.getElementById(modalId).style.display = 'none'; 
+        }
+
+        function getStatusInfo(bookCount) {
+            if (bookCount > 0) {
+                return { text: 'Available', class: 'status-avai' };
+            }
+            return { text: 'Not Available', class: 'status-navai' };
+        }
+
+        function escapeHtml(text) { 
+            if (!text) return ''; 
+            const div = document.createElement('div'); 
+            div.textContent = text; 
+            return div.innerHTML; 
+        }
+
+        // Fetch books from Local Database
+        async function fetchBooksFromLocalDB() {
+            try {
+                const response = await fetch(`${LOCAL_BACKEND}/api/local/books/list`);
+                const result = await response.json();
+                console.log("Local DB Response:", result);
+                
+                if (result.status === "Success" && result.data && Array.isArray(result.data)) {
+                    console.log(`✅ Local DB returned ${result.data.length} books`);
+                    return result.data;
+                }
+                return [];
+            } catch (error) {
+                console.error("Local DB error:", error);
+                return [];
+            }
+        }
+
+        // Completely destroy and recreate DataTable
+        async function refreshDataTable() {
+            console.log("🔄 Refreshing DataTable...");
+            
+            // Destroy existing DataTable if it exists
+            if (bookDataTable) {
+                bookDataTable.destroy();
+                bookDataTable = null;
+            }
+            
+            // Clear the table body
+            $('#bookTable tbody').empty();
+            
+            // Fetch fresh data
+            const freshBooks = await fetchBooksFromLocalDB();
+            allBooks = freshBooks;
+            
+            // Update statistics
+            const total = allBooks.length;
+            const available = allBooks.filter(b => (b.bookCount || 0) > 0).length;
+            const notAvailable = total - available;
+            
+            document.getElementById('bookCount').textContent = total;
+            document.getElementById('availableCount').textContent = available;
+            document.getElementById('notAvailableCount').textContent = notAvailable;
+            
+            // Create new DataTable with fresh data
+            const rows = allBooks.map(book => {
+                const bookCount = book.bookCount || 0;
+                const statusInfo = getStatusInfo(bookCount);
+                
+                return [
+                    book.bookId || 'N/A',
+                    escapeHtml(book.title) || 'Untitled',
+                    escapeHtml(book.author) || 'Unknown',
+                    book.language || '—',
+                    book.genre || '—',
+                    book.price ? `$${parseFloat(book.price).toFixed(2)}` : '—',
+                    `<span class="status-badge ${statusInfo.class}">${statusInfo.text}</span>`,
+                    `<span style="font-weight: 600; color: ${bookCount > 0 ? '#1a472a' : '#a12218'};">${bookCount}</span>`,
+                    `<div>
+                        <button class="btn-view" onclick="viewBookDetails(${book.bookId})"><i class="fas fa-eye"></i> View</button>
+                        <button class="btn-edit" onclick="editBook(${book.bookId})"><i class="fas fa-edit"></i> Edit</button>
+                    </div>`
+                ];
+            });
+
+            bookDataTable = $('#bookTable').DataTable({
+                data: rows,
+                columns: [
+                    { title: "ID", width: "5%" },
+                    { title: "Title", width: "20%" },
+                    { title: "Author", width: "15%" },
+                    { title: "Language", width: "8%" },
+                    { title: "Genre", width: "10%" },
+                    { title: "Price", width: "8%" },
+                    { title: "Status", width: "12%", orderable: false },
+                    { title: "Book Count", width: "10%" },
+                    { title: "Actions", width: "12%", orderable: false }
+                ],
+                order: [[1, 'asc']],
+                pageLength: 10,
+                destroy: true,
+                language: {
+                    emptyTable: "No books found. Click 'Add New Book' to get started!",
+                    search: "Search:",
+                    lengthMenu: "Show _MENU_ books per page",
+                    info: "Showing _START_ to _END_ of _TOTAL_ books",
+                    infoEmpty: "Showing 0 to 0 of 0 books",
+                    paginate: {
+                        previous: "Previous",
+                        next: "Next"
+                    }
+                }
+            });
+            
+            console.log("✅ DataTable refreshed successfully");
+        }
+
+        // Load all books
+        async function loadAllBooks() {
+            showMessage('<span class="loading"></span> Loading books...', 'info');
+            await refreshDataTable();
+            showMessage(`✅ Loaded ${allBooks.length} books (${document.getElementById('availableCount').textContent} available)`, 'success');
+        }
+
+        async function viewBookDetails(bookId) {
+            const modal = document.getElementById('bookDetailsModal');
+            const contentDiv = document.getElementById('bookDetailsContent');
+            const book = allBooks.find(b => b.bookId == bookId);
+            
+            modal.style.display = 'block';
+            if (book) {
+                const bookCount = book.bookCount || 0;
+                const status = bookCount > 0 ? 'Available' : 'Not Available';
+                contentDiv.innerHTML = `
+                    <div class="book-detail"><strong>Book ID:</strong> ${book.bookId}</div>
+                    <div class="book-detail"><strong>Title:</strong> ${escapeHtml(book.title)}</div>
+                    <div class="book-detail"><strong>Author:</strong> ${escapeHtml(book.author)}</div>
+                    <div class="book-detail"><strong>Language:</strong> ${book.language || 'N/A'}</div>
+                    <div class="book-detail"><strong>Genre:</strong> ${book.genre || 'N/A'}</div>
+                    <div class="book-detail"><strong>Price:</strong> $${book.price ? parseFloat(book.price).toFixed(2) : 'N/A'}</div>
+                    <div class="book-detail"><strong>Status:</strong> ${status}</div>
+                    <div class="book-detail"><strong>Book Count:</strong> ${bookCount}</div>
+                    <div class="book-detail"><strong>Registered Date:</strong> ${book.bookRegisterDate || 'N/A'}</div>
+                `;
+            } else {
+                contentDiv.innerHTML = `<div style="color: red;">❌ Book not found</div>`;
+            }
+        }
+
+        // Edit book function
+        window.editBook = async function(bookId) {
+            const modal = document.getElementById('editBookModal');
+            const contentDiv = document.getElementById('editBookContent');
+            const book = allBooks.find(b => b.bookId == bookId);
+            
+            if (!book) {
+                alert("Book not found!");
+                return;
+            }
+            
+            contentDiv.innerHTML = `
+                <form id="editBookForm">
+                    <input type="hidden" id="editBookId" value="${book.bookId}">
+                    <div class="edit-form-group"><label>Title *</label><input type="text" id="editTitle" value="${escapeHtml(book.title)}" required></div>
+                    <div class="edit-form-group"><label>Author *</label><input type="text" id="editAuthor" value="${escapeHtml(book.author)}" required></div>
+                    <div class="edit-form-group"><label>Language *</label>
+                        <select id="editLanguage" required>
+                            <option value="English" ${book.language === 'English' ? 'selected' : ''}>English</option>
+                            <option value="Spanish" ${book.language === 'Spanish' ? 'selected' : ''}>Spanish</option>
+                            <option value="French" ${book.language === 'French' ? 'selected' : ''}>French</option>
+                            <option value="German" ${book.language === 'German' ? 'selected' : ''}>German</option>
+                            <option value="Hindi" ${book.language === 'Hindi' ? 'selected' : ''}>Hindi</option>
+                        </select>
+                    </div>
+                    <div class="edit-form-group"><label>Genre</label><input type="text" id="editGenre" value="${escapeHtml(book.genre || '')}"></div>
+                    <div class="edit-form-group"><label>Price *</label><input type="number" step="0.01" id="editPrice" value="${book.price}" required></div>
+                    <div class="edit-form-group"><label>Book Count *</label>
+                        <input type="number" id="editBookCount" value="${book.bookCount || 1}" min="0" required>
+                        <small style="color: #6c7a91;">Set to 0 for Not Available, 1 or more for Available</small>
+                    </div>
+                    <button type="button" class="btn-update" id="updateBookBtn">💾 Update Book</button>
+                    <button type="button" class="btn-cancel" onclick="closeModal('editBookModal')">Cancel</button>
+                </form>
+            `;
+            
+            const updateBtn = document.getElementById('updateBookBtn');
+            updateBtn.onclick = async function() { 
+                await saveBookToLocalDB(book.bookId);
+            };
+            modal.style.display = 'block';
+        };
+
+        async function saveBookToLocalDB(bookId) {
+            const title = document.getElementById('editTitle').value.trim();
+            const author = document.getElementById('editAuthor').value.trim();
+            const language = document.getElementById('editLanguage').value;
+            const genre = document.getElementById('editGenre').value.trim();
+            const price = document.getElementById('editPrice').value.trim();
+            const bookCount = parseInt(document.getElementById('editBookCount').value.trim());
+
+            if (!title || !author || !language) {
+                alert('Please fill all required fields (Title, Author, Language)');
+                return;
+            }
+
+            const priceNum = parseFloat(price);
+            if (isNaN(priceNum) || priceNum <= 0) {
+                alert('Price must be greater than 0');
+                return;
+            }
+
+            if (isNaN(bookCount) || bookCount < 0) {
+                alert('Book count must be 0 or greater');
+                return;
+            }
+
+            const updateBtn = document.getElementById('updateBookBtn');
+            updateBtn.disabled = true;
+            updateBtn.innerHTML = '<span class="loading"></span> Saving...';
+
+            const statusCodeId = bookCount > 0 ? 'AVAI' : 'NAVAI';
+
+            const payload = { 
+                bookId: bookId,
+                title: title, 
+                author: author, 
+                language: language, 
+                genre: genre || "", 
+                price: priceNum, 
+                statusCodeId: statusCodeId, 
+                bookCount: bookCount 
+            };
+            
+            console.log("Updating book payload:", payload);
+            
+            try {
+                const response = await fetch(`${LOCAL_BACKEND}/api/local/books/add`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload)
+                });
+                
+                const result = await response.json();
+                console.log("Update response:", result);
+                
+                if (result.status === "Success") {
+                    showMessage(`✅ "${title}" updated successfully! Status: ${bookCount > 0 ? 'Available' : 'Not Available'} (Count: ${bookCount})`, 'success');
+                    closeModal('editBookModal');
+                    
+                    // Refresh the entire table with fresh data
+                    await refreshDataTable();
+                } else {
+                    showMessage(`❌ Update failed: ${result.message}`, 'error');
+                    updateBtn.disabled = false;
+                    updateBtn.innerHTML = '💾 Update Book';
+                }
+            } catch (error) {
+                console.error("Update error:", error);
+                showMessage(`❌ Error: ${error.message}`, 'error');
+                updateBtn.disabled = false;
+                updateBtn.innerHTML = '💾 Update Book';
+            }
+        }
+
+        // Add new book function
+        window.addNewBook = async function() {
+            const modal = document.getElementById('editBookModal');
+            const contentDiv = document.getElementById('editBookContent');
+            
+            contentDiv.innerHTML = `
+                <form id="editBookForm">
+                    <div class="edit-form-group"><label>Title *</label><input type="text" id="editTitle" placeholder="Enter book title" required></div>
+                    <div class="edit-form-group"><label>Author *</label><input type="text" id="editAuthor" placeholder="Enter author name" required></div>
+                    <div class="edit-form-group"><label>Language *</label>
+                        <select id="editLanguage" required>
+                            <option value="English">English</option>
+                            <option value="Spanish">Spanish</option>
+                            <option value="French">French</option>
+                            <option value="German">German</option>
+                            <option value="Hindi">Hindi</option>
+                        </select>
+                    </div>
+                    <div class="edit-form-group"><label>Genre</label><input type="text" id="editGenre" placeholder="Enter genre"></div>
+                    <div class="edit-form-group"><label>Price *</label><input type="number" step="0.01" id="editPrice" placeholder="Enter price" required></div>
+                    <div class="edit-form-group"><label>Book Count *</label>
+                        <input type="number" id="editBookCount" value="1" min="0" required>
+                        <small style="color: #6c7a91;">Set to 0 for Not Available, 1 or more for Available</small>
+                    </div>
+                    <button type="button" class="btn-update" id="updateBookBtn">➕ Add Book</button>
+                    <button type="button" class="btn-cancel" onclick="closeModal('editBookModal')">Cancel</button>
+                </form>
+            `;
+            
+            const updateBtn = document.getElementById('updateBookBtn');
+            updateBtn.onclick = async function() { 
+                await saveNewBook();
+            };
+            modal.style.display = 'block';
+        };
+
+        async function saveNewBook() {
+            const title = document.getElementById('editTitle').value.trim();
+            const author = document.getElementById('editAuthor').value.trim();
+            const language = document.getElementById('editLanguage').value;
+            const genre = document.getElementById('editGenre').value.trim();
+            const price = document.getElementById('editPrice').value.trim();
+            const bookCount = parseInt(document.getElementById('editBookCount').value.trim());
+
+            if (!title || !author || !language) {
+                alert('Please fill all required fields (Title, Author, Language)');
+                return;
+            }
+
+            const priceNum = parseFloat(price);
+            if (isNaN(priceNum) || priceNum <= 0) {
+                alert('Price must be greater than 0');
+                return;
+            }
+
+            if (isNaN(bookCount) || bookCount < 0) {
+                alert('Book count must be 0 or greater');
+                return;
+            }
+
+            const updateBtn = document.getElementById('updateBookBtn');
+            updateBtn.disabled = true;
+            updateBtn.innerHTML = '<span class="loading"></span> Adding...';
+
+            const statusCodeId = bookCount > 0 ? 'AVAI' : 'NAVAI';
+
+            const payload = { 
+                title: title, 
+                author: author, 
+                language: language, 
+                genre: genre || "", 
+                price: priceNum, 
+                statusCodeId: statusCodeId, 
+                bookCount: bookCount 
+            };
+            
+            console.log("Adding new book payload:", payload);
+            
+            try {
+                const response = await fetch(`${LOCAL_BACKEND}/api/local/books/add`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload)
+                });
+                
+                const result = await response.json();
+                console.log("Add response:", result);
+                
+                if (result.status === "Success") {
+                    showMessage(`✅ "${title}" added successfully! Status: ${bookCount > 0 ? 'Available' : 'Not Available'}`, 'success');
+                    closeModal('editBookModal');
+                    await refreshDataTable();
+                } else {
+                    showMessage(`❌ Add failed: ${result.message}`, 'error');
+                    updateBtn.disabled = false;
+                    updateBtn.innerHTML = '➕ Add Book';
+                }
+            } catch (error) {
+                console.error("Add error:", error);
+                showMessage(`❌ Error: ${error.message}`, 'error');
+                updateBtn.disabled = false;
+                updateBtn.innerHTML = '➕ Add Book';
+            }
+        }
+
+        // Close modals when clicking outside
+        window.onclick = function(event) {
+            const detailsModal = document.getElementById('bookDetailsModal');
+            const editModal = document.getElementById('editBookModal');
+            if (event.target === detailsModal) detailsModal.style.display = 'none';
+            if (event.target === editModal) editModal.style.display = 'none';
+        }
+
+        // Event listeners
+        document.getElementById('registerNewBookBtn').onclick = () => {
+            addNewBook();
+        };
+        document.getElementById('refreshListBtn').onclick = () => {
+            refreshDataTable();
+        };
+
+        // Initialize the page
+        refreshDataTable();
+    </script>
+</body>
+</html>
