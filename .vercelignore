@@ -1,0 +1,5 @@
+﻿library-backend/
+.git/
+node_modules/
+backup-html/
+*.log
