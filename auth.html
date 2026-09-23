@@ -284,25 +284,13 @@
         }
 
         @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         @keyframes fadeInRight {
-            from {
-                opacity: 0;
-                transform: translateX(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
+            from { opacity: 0; transform: translateX(30px); }
+            to { opacity: 1; transform: translateX(0); }
         }
 
         @keyframes fadeIn {
@@ -310,23 +298,12 @@
             to { opacity: 1; }
         }
 
-        /* Responsive */
         @media (max-width: 768px) {
-            .split-container {
-                flex-direction: column;
-            }
-            .left-side {
-                min-height: 200px;
-            }
-            .left-content h1 {
-                font-size: 1.5rem;
-            }
-            .left-content p {
-                font-size: 0.8rem;
-            }
-            .right-side {
-                padding: 1.5rem;
-            }
+            .split-container { flex-direction: column; }
+            .left-side { min-height: 200px; }
+            .left-content h1 { font-size: 1.5rem; }
+            .left-content p { font-size: 0.8rem; }
+            .right-side { padding: 1.5rem; }
         }
     </style>
 </head>
@@ -432,19 +409,21 @@
     </div>
 
     <script>
-        const BASE_URL = "https://dev-api.humhealth.com/LibraryManagementAPI";
+        // ⚠️ CHANGE THIS to your actual Render URL if different
         const LOCAL_BACKEND = "https://library-management-api-h30d.onrender.com";
 
-        // Helper function to update input icon
+        // ============================================================
+        //  UI Helpers
+        // ============================================================
         function updateInputIcon(inputId, isValid, isLoading = false) {
             const iconSpan = document.getElementById(`${inputId}Icon`);
             if (!iconSpan) return;
-            
+
             if (isLoading) {
                 iconSpan.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
                 return;
             }
-            
+
             if (isValid === true) {
                 iconSpan.innerHTML = '<i class="fas fa-check-circle"></i>';
             } else if (isValid === false) {
@@ -454,7 +433,6 @@
             }
         }
 
-        // Clear all errors and success messages
         function clearFieldMessages(fieldId) {
             const errorDiv = document.getElementById(`${fieldId}Error`);
             const successDiv = document.getElementById(`${fieldId}Success`);
@@ -480,7 +458,7 @@
             const successDiv = document.getElementById(`${fieldId}Success`);
             const errorDiv = document.getElementById(`${fieldId}Error`);
             const inputField = document.getElementById(fieldId);
-            
+
             if (errorDiv) errorDiv.classList.remove('show');
             if (successDiv) {
                 if (message) successDiv.textContent = message;
@@ -497,83 +475,85 @@
             const inputField = document.getElementById(fieldId);
             const errorDiv = document.getElementById(`${fieldId}Error`);
             const successDiv = document.getElementById(`${fieldId}Success`);
-            
-            if (inputField) {
-                inputField.classList.remove('error', 'valid');
-            }
+
+            if (inputField) inputField.classList.remove('error', 'valid');
             if (errorDiv) errorDiv.classList.remove('show');
             if (successDiv) successDiv.classList.remove('show');
             updateInputIcon(fieldId, null);
         }
 
-        // Tab switching
+        // ============================================================
+        //  Tab switching
+        // ============================================================
         function switchTab(tab) {
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
             document.querySelector(`.tab[data-tab="${tab}"]`).classList.add('active');
-            
+
             document.getElementById('loginForm').classList.remove('active');
             document.getElementById('registerForm').classList.remove('active');
-            
+
             if (tab === 'login') {
                 document.getElementById('loginForm').classList.add('active');
             } else {
                 document.getElementById('registerForm').classList.add('active');
             }
-            
-            // Reset all fields
+
             document.querySelectorAll('input').forEach(input => {
                 resetFieldStyles(input.id);
             });
         }
 
-        // Validate email format
+        // ============================================================
+        //  Validators
+        // ============================================================
         function validateEmail(email) {
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             return emailRegex.test(email);
         }
 
-        // Validate password strength
         function validatePassword(password) {
             return password.length >= 6;
         }
 
-        // Validate name (letters and spaces only)
         function validateName(name) {
             const nameRegex = /^[a-zA-Z\s]{2,50}$/;
             return nameRegex.test(name);
         }
 
-        // Check if email exists in member list
+        // ============================================================
+        //  ✅ FIXED: Check member email against LOCAL Render backend
+        // ============================================================
         async function checkEmailInMemberList(email) {
             try {
-                const payload = {
-                    start: 0,
-                    length: 100,
-                    searchValue: "",
-                    order: { sortType: "asc", sortColumn: "memberFirstName" },
-                    filter: { memberWorkStatus: "", membershipStatus: "" }
-                };
-                
-                const response = await fetch(`${BASE_URL}/members/list`, {
+                const response = await fetch(`${LOCAL_BACKEND}/api/local/members/list`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(payload)
+                    body: JSON.stringify({})
                 });
-                
+
                 const result = await response.json();
-                
-                if (result.members && Array.isArray(result.members)) {
-                    const member = result.members.find(m => m.memberEmail === email);
-                    return member ? true : false;
-                }
-                return false;
+                console.log("📥 Member check response:", result);
+
+                // Handle both shapes: { members: [...] } and { data: [...] }
+                const list = Array.isArray(result.members) ? result.members
+                           : Array.isArray(result.data)    ? result.data
+                           : [];
+
+                const found = list.some(m =>
+                    (m.memberEmail || '').toLowerCase() === email.toLowerCase()
+                );
+
+                console.log(`🔍 Email "${email}" found in members?`, found);
+                return found;
             } catch (error) {
-                console.error("Error checking email:", error);
+                console.error("❌ Error checking email:", error);
                 return false;
             }
         }
 
-        // Register user
+        // ============================================================
+        //  Auth APIs (LOCAL Render backend)
+        // ============================================================
         async function registerUser(name, email, password) {
             try {
                 const response = await fetch(`${LOCAL_BACKEND}/api/auth/register`, {
@@ -581,7 +561,6 @@
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ name, email, password })
                 });
-                
                 return await response.json();
             } catch (error) {
                 console.error("Registration error:", error);
@@ -589,7 +568,6 @@
             }
         }
 
-        // Login user
         async function loginUser(email, password) {
             try {
                 const response = await fetch(`${LOCAL_BACKEND}/api/auth/login`, {
@@ -597,7 +575,6 @@
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ email, password })
                 });
-                
                 return await response.json();
             } catch (error) {
                 console.error("Login error:", error);
@@ -605,17 +582,19 @@
             }
         }
 
-        // Register Form Validations
+        // ============================================================
+        //  Register Form Validations
+        // ============================================================
         let emailCheckTimeout;
 
         document.getElementById('regName').addEventListener('input', function() {
             const value = this.value.trim();
             clearFieldMessages('regName');
-            
+
             if (!value) {
                 showFieldError('regName', 'Name is required');
             } else if (!validateName(value)) {
-                showFieldError('regName', 'Name should contain only letters and spaces (2-50 characters)');
+                showFieldError('regName', 'Only letters and spaces (2-50 chars)');
             } else {
                 showFieldSuccess('regName', '✓ Valid name');
             }
@@ -625,20 +604,20 @@
             const value = this.value.trim();
             clearFieldMessages('regEmail');
             updateInputIcon('regEmail', null, true);
-            
+
             if (!value) {
                 showFieldError('regEmail', 'Email is required');
                 updateInputIcon('regEmail', false);
                 return;
             }
-            
+
             if (!validateEmail(value)) {
                 showFieldError('regEmail', 'Enter a valid email address');
                 updateInputIcon('regEmail', false);
                 return;
             }
-            
-            // Check email in member list
+
+            // Debounced check against members table
             clearTimeout(emailCheckTimeout);
             emailCheckTimeout = setTimeout(async () => {
                 const exists = await checkEmailInMemberList(value);
@@ -655,14 +634,13 @@
         document.getElementById('regPassword').addEventListener('input', function() {
             const value = this.value;
             clearFieldMessages('regPassword');
-            
+
             if (!value) {
                 showFieldError('regPassword', 'Password is required');
             } else if (value.length < 6) {
                 showFieldError('regPassword', 'Password must be at least 6 characters');
             } else {
                 showFieldSuccess('regPassword', '✓ Strong password');
-                // Also validate confirm password if it has value
                 const confirmValue = document.getElementById('regConfirmPassword').value;
                 if (confirmValue) {
                     document.getElementById('regConfirmPassword').dispatchEvent(new Event('input'));
@@ -674,7 +652,7 @@
             const password = document.getElementById('regPassword').value;
             const confirm = this.value;
             clearFieldMessages('regConfirm');
-            
+
             if (!confirm) {
                 showFieldError('regConfirm', 'Please confirm your password');
             } else if (password !== confirm) {
@@ -684,11 +662,13 @@
             }
         });
 
-        // Login Form Validations
+        // ============================================================
+        //  Login Form Validations
+        // ============================================================
         document.getElementById('loginEmail').addEventListener('input', function() {
             const value = this.value.trim();
             clearFieldMessages('loginEmail');
-            
+
             if (!value) {
                 showFieldError('loginEmail', 'Email is required');
             } else if (!validateEmail(value)) {
@@ -702,7 +682,7 @@
         document.getElementById('loginPassword').addEventListener('input', function() {
             const value = this.value;
             clearFieldMessages('loginPassword');
-            
+
             if (!value) {
                 showFieldError('loginPassword', 'Password is required');
             } else {
@@ -711,17 +691,19 @@
             }
         });
 
-        // Register Submit
+        // ============================================================
+        //  Register Submit
+        // ============================================================
         document.getElementById('registerFormElement').addEventListener('submit', async (e) => {
             e.preventDefault();
-            
+
             const name = document.getElementById('regName').value.trim();
             const email = document.getElementById('regEmail').value.trim();
             const password = document.getElementById('regPassword').value;
             const confirm = document.getElementById('regConfirmPassword').value;
-            
+
             let isValid = true;
-            
+
             if (!name || !validateName(name)) {
                 showFieldError('regName', 'Valid name is required');
                 isValid = false;
@@ -744,40 +726,41 @@
                 showFieldError('regConfirm', 'Passwords do not match');
                 isValid = false;
             }
-            
+
             if (!isValid) return;
-            
+
             const registerBtn = document.getElementById('registerBtn');
             registerBtn.disabled = true;
             registerBtn.innerHTML = '<span class="loading-spinner"></span> Creating Account...';
-            
+
             const result = await registerUser(name, email, password);
-            
+
             if (result.status === "Success") {
                 alert('✅ Registration successful! Please login.');
                 switchTab('login');
                 document.getElementById('registerFormElement').reset();
-                // Reset all field styles
                 ['regName', 'regEmail', 'regPassword', 'regConfirmPassword'].forEach(field => {
                     resetFieldStyles(field);
                 });
             } else {
                 alert(`❌ Registration failed: ${result.message}`);
             }
-            
+
             registerBtn.disabled = false;
             registerBtn.innerHTML = 'Create Account';
         });
 
-        // Login Submit
+        // ============================================================
+        //  Login Submit
+        // ============================================================
         document.getElementById('loginFormElement').addEventListener('submit', async (e) => {
             e.preventDefault();
-            
+
             const email = document.getElementById('loginEmail').value.trim();
             const password = document.getElementById('loginPassword').value;
-            
+
             let isValid = true;
-            
+
             if (!email || !validateEmail(email)) {
                 showFieldError('loginEmail', 'Valid email is required');
                 isValid = false;
@@ -786,15 +769,15 @@
                 showFieldError('loginPassword', 'Password is required');
                 isValid = false;
             }
-            
+
             if (!isValid) return;
-            
+
             const loginBtn = document.getElementById('loginBtn');
             loginBtn.disabled = true;
             loginBtn.innerHTML = '<span class="loading-spinner"></span> Logging in...';
-            
+
             const result = await loginUser(email, password);
-            
+
             if (result.status === "Success") {
                 sessionStorage.setItem('userEmail', email);
                 sessionStorage.setItem('userName', result.data.name);
@@ -804,12 +787,14 @@
                 alert(`❌ Login failed: ${result.message}`);
                 showFieldError('loginPassword', 'Invalid email or password');
             }
-            
+
             loginBtn.disabled = false;
             loginBtn.innerHTML = 'Login to Library';
         });
 
-        // Tab click handlers
+        // ============================================================
+        //  Tab click handlers
+        // ============================================================
         document.querySelectorAll('.tab').forEach(tab => {
             tab.addEventListener('click', () => {
                 switchTab(tab.dataset.tab);

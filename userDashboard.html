@@ -10,7 +10,7 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Inter', sans-serif; background: #f5f7fb; min-height: 100vh; }
-        
+
         /* Navbar */
         .navbar {
             background: white;
@@ -42,7 +42,7 @@
 
         /* Main Container */
         .main-container { max-width: 1400px; margin: 0 auto; padding: 1.5rem; }
-        
+
         /* Welcome Section */
         .welcome-section {
             background: linear-gradient(135deg, #2b6cb0 0%, #2c3e66 100%);
@@ -76,7 +76,7 @@
         /* Section Titles */
         .section-title { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; flex-wrap: wrap; gap: 1rem; }
         .section-title h3 { font-size: 1.2rem; font-weight: 600; color: #1a2c3e; }
-        
+
         /* Quick Actions */
         .quick-actions { display: flex; gap: 1rem; flex-wrap: wrap; }
         .action-btn {
@@ -107,22 +107,22 @@
             overflow-x: auto;
         }
         table.dataTable { width: 100% !important; border-collapse: collapse; margin: 0 !important; }
-        table.dataTable thead th { 
-            padding: 1rem 0.8rem; 
-            background: #f8fafc; 
-            font-weight: 600; 
-            color: #1a2c3e; 
-            border-bottom: 2px solid #e2e8f0; 
+        table.dataTable thead th {
+            padding: 1rem 0.8rem;
+            background: #f8fafc;
+            font-weight: 600;
+            color: #1a2c3e;
+            border-bottom: 2px solid #e2e8f0;
             font-size: 0.85rem;
         }
-        table.dataTable tbody td { 
-            padding: 0.8rem; 
-            border-bottom: 1px solid #edf2f7; 
-            vertical-align: middle; 
+        table.dataTable tbody td {
+            padding: 0.8rem;
+            border-bottom: 1px solid #edf2f7;
+            vertical-align: middle;
             font-size: 0.85rem;
         }
         table.dataTable tbody tr:hover { background-color: #f8fafc; }
-        
+
         /* Status Badges */
         .status-avai, .status-available { display: inline-block; padding: 4px 12px; background: #e0f2e9; color: #1a472a; border-radius: 20px; font-size: 0.7rem; font-weight: 600; }
         .status-navai, .status-unavailable { display: inline-block; padding: 4px 12px; background: #ffe6e5; color: #a12218; border-radius: 20px; font-size: 0.7rem; font-weight: 600; }
@@ -131,13 +131,13 @@
         .status-returned { background: #e0f2e9; color: #1a472a; }
         .status-overdue { background: #ffe6e5; color: #a12218; }
         .status-renewed { background: #fff3e0; color: #b45f06; }
-        
+
         /* Due Badges */
         .due-badge { display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: 600; }
         .due-normal { background: #e0f2e9; color: #1a472a; }
         .due-warning { background: #fff3e0; color: #b45f06; }
         .due-overdue { background: #ffe6e5; color: #a12218; }
-        
+
         /* Buttons */
         .borrow-table-btn {
             background: #2b6cb0;
@@ -152,7 +152,7 @@
         }
         .borrow-table-btn:hover { background: #1e4e7a; transform: scale(1.02); }
         .borrow-table-btn:disabled { background: #cbd5e1; cursor: not-allowed; }
-        
+
         .return-btn, .renew-btn, .delete-btn {
             color: white;
             border: none;
@@ -174,7 +174,7 @@
 
         /* Cards */
         .books-card { background: white; border-radius: 24px; padding: 1.3rem; margin-bottom: 2rem; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
-        
+
         /* Loading & Messages */
         .loading { display: inline-block; width: 20px; height: 20px; border: 2px solid #e2e8f0; border-top-color: #2b6cb0; border-radius: 50%; animation: spin 0.6s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
@@ -225,7 +225,7 @@
         .modal-header h3 { color: #2b6cb0; font-size: 1.3rem; }
         .close-modal { font-size: 1.8rem; cursor: pointer; color: #6c7a91; transition: 0.2s; line-height: 1; }
         .close-modal:hover { color: #e53e3e; }
-        
+
         /* Form Styles */
         .form-group { margin-bottom: 1.2rem; }
         .form-group label {
@@ -247,7 +247,7 @@
             outline: none;
             border-color: #2b6cb0;
         }
-        
+
         /* Checkbox Lists */
         .book-checkbox-list, .return-book-list {
             max-height: 300px;
@@ -271,7 +271,7 @@
         .book-status { font-size: 0.7rem; padding: 2px 8px; border-radius: 12px; }
         .book-status.available { background: #e0f2e9; color: #1a472a; }
         .book-status.unavailable { background: #ffe6e5; color: #a12218; }
-        
+
         .selected-books-list {
             background: #f8fafc;
             border-radius: 16px;
@@ -281,7 +281,7 @@
         .selected-books-list h4 { font-size: 0.85rem; color: #2c3e66; margin-bottom: 0.5rem; }
         .selected-books-list ul { list-style: none; padding-left: 0; }
         .selected-books-list li { font-size: 0.8rem; padding: 4px 0; color: #4a5568; }
-        
+
         .unavailable-message {
             background: #ffe6e5;
             color: #a12218;
@@ -290,7 +290,7 @@
             margin-top: 1rem;
             font-size: 0.8rem;
         }
-        
+
         .submit-btn {
             background: linear-gradient(135deg, #2b6cb0, #2c3e66);
             color: white;
@@ -305,7 +305,7 @@
             transition: all 0.2s;
         }
         .submit-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 14px rgba(0,0,0,0.1); }
-        
+
         /* Book Detail Card */
         .book-detail-card {
             background: #f8fafc;
@@ -315,7 +315,7 @@
             text-align: center;
         }
         .book-detail-card h4 { font-size: 1.2rem; color: #1a2c3e; margin-bottom: 0.3rem; }
-        
+
         .details-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -337,7 +337,7 @@
             font-weight: 600;
             color: #1a2c3e;
         }
-        
+
         .modal-actions {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -365,7 +365,7 @@
         .modal-action-btn.borrow-btn:hover { background: #1e4e7a; transform: scale(1.02); }
         .modal-action-btn.buy-btn { background: #28a745; color: white; }
         .modal-action-btn.buy-btn:hover { background: #1e7e34; transform: scale(1.02); }
-        
+
         .due-date-info {
             background: #e3f2fd;
             padding: 0.8rem;
@@ -425,7 +425,7 @@
             .modal-actions { grid-template-columns: 1fr; }
             .dataTables_wrapper .dataTables_filter input { width: 100%; margin-left: 0; margin-top: 10px; }
         }
-        
+
         footer { text-align: center; padding: 1.5rem; color: #6c7a91; font-size: 0.75rem; border-top: 1px solid #e2e8f0; margin-top: 2rem; }
     </style>
 </head>
@@ -473,10 +473,13 @@
     <script>
         // ==================== CONFIGURATION ====================
         const LOCAL_BACKEND = "https://library-management-api-h30d.onrender.com";
-        const COMPANY_API = "https://dev-api.humhealth.com/LibraryManagementAPI";
-        
-        let CURRENT_MEMBER_ID = localStorage.getItem('memberId') || 3;
+
+        // ✅ Read from sessionStorage (set by auth.html after successful login)
+        let CURRENT_MEMBER_ID    = sessionStorage.getItem('memberId') || null;
+        let CURRENT_MEMBER_NAME  = sessionStorage.getItem('userName') || 'User';
+        let CURRENT_MEMBER_EMAIL = sessionStorage.getItem('userEmail') || '';
         let CURRENT_MEMBER = null;
+
         let currentPage = 'dashboard';
         let booksDataTable = null;
         let rentalsDataTable = null;
@@ -488,7 +491,13 @@
         let allMembersList = [];
         let currentRentals = [];
 
-        // ==================== HELPER FUNCTIONS ====================
+        // ✅ Auth guard — redirect if no session
+        if (!CURRENT_MEMBER_EMAIL) {
+            console.warn("⚠️ No session found. Redirecting to login.");
+            window.location.href = 'auth.html';
+        }
+
+        // ==================== HELPERS ====================
         function showMessage(text, type = 'info') {
             const container = document.getElementById('mainContainer');
             if (container) {
@@ -511,16 +520,16 @@
 
         function escapeHtml(str) {
             if (!str) return '';
-            return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+            return String(str)
+                .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
         }
 
         function getDueStatus(dueDate) {
             if (!dueDate) return { text: 'No due date', class: 'due-normal', days: 999, isOverdue: false };
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
-            const due = new Date(dueDate);
-            due.setHours(0, 0, 0, 0);
-            const diffDays = Math.ceil((due - today) / (1000 * 60 * 60 * 24));
+            const today = new Date(); today.setHours(0, 0, 0, 0);
+            const due = new Date(dueDate); due.setHours(0, 0, 0, 0);
+            const diffDays = Math.ceil((due - today) / 86400000);
             if (diffDays < 0) return { text: `Overdue by ${Math.abs(diffDays)} days`, class: 'due-overdue', days: diffDays, isOverdue: true };
             if (diffDays === 0) return { text: 'Due today', class: 'due-warning', days: 0, isOverdue: false };
             if (diffDays <= 3) return { text: `${diffDays} days left`, class: 'due-warning', days: diffDays, isOverdue: false };
@@ -528,28 +537,69 @@
         }
 
         // ==================== API CALLS ====================
+
+        // ✅ FIXED: uses LOCAL_BACKEND, matches by memberId or email
         async function fetchMemberDetails() {
             try {
-                const response = await fetch(`${COMPANY_API}/members/${CURRENT_MEMBER_ID}`);
+                const response = await fetch(`${LOCAL_BACKEND}/api/local/members/list`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({})
+                });
                 const result = await response.json();
-                if (result.status === "Success" && result.data) {
-                    CURRENT_MEMBER = result.data;
-                    document.getElementById('userName').innerText = `${CURRENT_MEMBER.memberFirstName || 'User'} ${CURRENT_MEMBER.memberLastName || ''}`;
-                    document.getElementById('userAvatar').innerText = (CURRENT_MEMBER.memberFirstName?.charAt(0) || 'U').toUpperCase();
+
+                const list = Array.isArray(result.members) ? result.members
+                           : Array.isArray(result.data)    ? result.data
+                           : [];
+
+                let member = null;
+                if (CURRENT_MEMBER_ID) {
+                    member = list.find(m => String(m.memberId) === String(CURRENT_MEMBER_ID));
+                }
+                if (!member && CURRENT_MEMBER_EMAIL) {
+                    member = list.find(m =>
+                        (m.memberEmail || '').toLowerCase() === CURRENT_MEMBER_EMAIL.toLowerCase()
+                    );
+                }
+
+                if (member) {
+                    CURRENT_MEMBER = member;
+                    CURRENT_MEMBER_ID = member.memberId;
+                    const displayName = `${member.memberFirstName || ''} ${member.memberLastName || ''}`.trim() || CURRENT_MEMBER_NAME;
+                    document.getElementById('userName').innerText = displayName;
+                    document.getElementById('userAvatar').innerText = (member.memberFirstName?.charAt(0) || 'U').toUpperCase();
+                    console.log("✅ Loaded member:", member.memberId, displayName);
                     return CURRENT_MEMBER;
                 }
-            } catch (error) { console.error("Error fetching member:", error); }
-            return null;
+
+                console.warn("⚠️ Member not found in DB, using session name");
+                document.getElementById('userName').innerText = CURRENT_MEMBER_NAME;
+                document.getElementById('userAvatar').innerText = (CURRENT_MEMBER_NAME.charAt(0) || 'U').toUpperCase();
+                return null;
+            } catch (error) {
+                console.error("Error fetching member:", error);
+                document.getElementById('userName').innerText = CURRENT_MEMBER_NAME;
+                return null;
+            }
         }
 
+        // ✅ FIXED: uses LOCAL_BACKEND
         async function fetchAllMembers() {
             try {
-                const payload = { start: 0, length: 100, searchValue: "", order: { sortType: "desc", sortColumn: "memberId" }, filter: { memberWorkStatus: "", membershipStatus: "" } };
-                const response = await fetch(`${COMPANY_API}/members/list`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
+                const response = await fetch(`${LOCAL_BACKEND}/api/local/members/list`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({})
+                });
                 const result = await response.json();
-                if (result.members) return result.members;
+                allMembersList = Array.isArray(result.members) ? result.members
+                               : Array.isArray(result.data)    ? result.data
+                               : [];
+                return allMembersList;
+            } catch (error) {
+                console.error("Error fetching members:", error);
                 return [];
-            } catch (error) { return []; }
+            }
         }
 
         async function fetchAllBooksList() {
@@ -565,6 +615,7 @@
         }
 
         async function fetchBorrowedBooks() {
+            if (!CURRENT_MEMBER_ID) return [];
             try {
                 const response = await fetch(`${LOCAL_BACKEND}/api/local/rentals/borrowed/${CURRENT_MEMBER_ID}`);
                 const result = await response.json();
@@ -577,11 +628,14 @@
         }
 
         async function fetchPenalties() {
+            // Penalties endpoint — external API. If you add a local route later, swap here.
             try {
-                const payload = { start: 0, length: 50, searchValue: "", order: { sortColumn: "serialNo", sortType: "desc" }, filter: { memberId: CURRENT_MEMBER_ID, bookId: 0, language: "", genre: "", penaltyId: 0, paymentStatusCode: "", rentalTransactionId: 0, paymentModeCode: "" } };
-                const response = await fetch(`${COMPANY_API}/penalties/list`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
+                const response = await fetch(`${LOCAL_BACKEND}/api/local/rentals/overdue`);
                 const result = await response.json();
-                if (result.status === "Success" && result.data) return result.data.penalties || [];
+                if (result.status === "Success" && Array.isArray(result.data)) {
+                    // Filter for current member
+                    return result.data.filter(r => String(r.member_id) === String(CURRENT_MEMBER_ID));
+                }
                 return [];
             } catch (error) { return []; }
         }
@@ -600,7 +654,7 @@
             dueDate.setDate(dueDate.getDate() + 10);
             const formattedDueDate = dueDate.toISOString().split('T')[0];
             let successCount = 0, failedBooks = [];
-            
+
             for (const bookId of bookIds) {
                 const book = allBooksList.find(b => b.bookId === bookId);
                 if (!book) continue;
@@ -661,31 +715,6 @@
             }
         }
 
-        async function getFavoriteAuthors(memberId) {
-            try {
-                const response = await fetch(`${COMPANY_API}/member/favorites/${memberId}?type=author`);
-                const result = await response.json();
-                if (result.status === "Success" && result.data && result.data.favouriteauthor) {
-                    const favAuthor = result.data.favouriteauthor;
-                    if (favAuthor.author && favAuthor.books) {
-                        return { authorName: favAuthor.author, books: favAuthor.books.slice(0, 3) };
-                    }
-                }
-                return null;
-            } catch (error) { return null; }
-        }
-
-        async function getFavoriteBooks(memberId) {
-            try {
-                const response = await fetch(`${COMPANY_API}/member/favorites/${memberId}?type=book`);
-                const result = await response.json();
-                if (result.status === "Success" && result.data && result.data.favouriteBook) {
-                    return result.data.favouriteBook;
-                }
-                return null;
-            } catch (error) { return null; }
-        }
-
         // ==================== DESTROY DATATABLES ====================
         function destroyDataTables() {
             if (booksDataTable) { booksDataTable.destroy(); booksDataTable = null; }
@@ -699,12 +728,19 @@
         async function renderDashboard() {
             const container = document.getElementById('mainContainer');
             container.innerHTML = '<div class="loading" style="display: block; margin: 2rem auto;"></div>';
-            
-            const [member, borrowedBooks, penalties] = await Promise.all([fetchMemberDetails(), fetchBorrowedBooks(), fetchPenalties()]);
-            const pendingPenalties = penalties.filter(p => p.paymentStatusDescription !== 'Paid' && p.paymentStatus !== 9);
-            const totalPenaltyAmount = pendingPenalties.reduce((sum, p) => sum + (p.amount || 0), 0);
+
+            const [member, borrowedBooks, penalties] = await Promise.all([
+                fetchMemberDetails(),
+                fetchBorrowedBooks(),
+                fetchPenalties()
+            ]);
+
+            const pendingPenalties = penalties.filter(p => (p.payment_status_description || p.paymentStatusDescription) !== 'Paid');
+            const totalPenaltyAmount = pendingPenalties.reduce((sum, p) => sum + (parseFloat(p.amount) || 0), 0);
             const overdueCount = borrowedBooks.filter(b => getDueStatus(b.returnDate).isOverdue).length;
-            
+
+            const displayFirstName = member?.memberFirstName || CURRENT_MEMBER_NAME.split(' ')[0] || 'Reader';
+
             let borrowedHtml = '';
             if (borrowedBooks.length === 0) {
                 borrowedHtml = `<div class="empty-state"><i class="fas fa-book-open"></i><p>No books borrowed currently</p><p><a href="#" onclick="navigateTo('books')" style="color:#2b6cb0;">Browse Books →</a></p></div>`;
@@ -716,10 +752,10 @@
                 });
                 borrowedHtml += `</tbody></table></div>`;
             }
-            
+
             container.innerHTML = `
                 <div class="welcome-section">
-                    <h2>Welcome back, ${member?.memberFirstName || 'Reader'}! 👋</h2>
+                    <h2>Welcome back, ${escapeHtml(displayFirstName)}! 👋</h2>
                     <p>Here's what's happening with your library account.</p>
                     <div class="member-badge"><i class="fas fa-id-card"></i> Member ID: ${CURRENT_MEMBER_ID} | ${member?.membershipStatusDescription === 'Active' ? '✅ Active' : '⏸ Inactive'}</div>
                 </div>
@@ -737,7 +773,7 @@
                 </div>
                 <div class="books-card"><div class="section-title"><h3><i class="fas fa-book"></i> Currently Borrowed (${borrowedBooks.length})</h3></div>${borrowedHtml}</div>
             `;
-            
+
             if (borrowedBooks.length > 0) {
                 $('#dashboardRentalsTable').DataTable({
                     pageLength: 5,
@@ -756,7 +792,7 @@
             `;
             const books = await fetchAllBooks();
             if (books.length === 0) { document.querySelector('#booksTable tbody').innerHTML = '<tr><td colspan="9"><div class="empty-state">No books found</div></td></tr>'; return; }
-            
+
             destroyDataTables();
             booksDataTable = $('#booksTable').DataTable({
                 data: books,
@@ -783,7 +819,6 @@
                 <div class="section-title"><h3><i class="fas fa-hand-holding-heart"></i> Borrow New Books</h3><button class="action-btn" style="background:#2b6cb0; color:white;" onclick="openBorrowModal()"><i class="fas fa-plus-circle"></i> Borrow Books</button></div>
                 <div class="section-title"><h3><i class="fas fa-undo-alt"></i> Return Books</h3><button class="action-btn" style="background:#ff9800; color:white;" onclick="openReturnModal()"><i class="fas fa-undo-alt"></i> Return Books</button></div>
                 <div class="section-title"><h3><i class="fas fa-calendar-plus"></i> Renew Book</h3><button class="action-btn" style="background:#28a745; color:white;" onclick="openRenewModal()"><i class="fas fa-calendar-plus"></i> Renew Book</button></div>
-                <div class="section-title"><h3><i class="fas fa-star"></i> Favorite Authors & Books</h3><button class="action-btn" style="background:#9c27b0; color:white;" onclick="openFavoriteAuthorsModal()"><i class="fas fa-star"></i> View Favorites</button></div>
                 <div class="data-table-wrapper" style="margin-top: 1rem;"><table id="rentalsTable" class="display" style="width:100%"><thead><tr><th>Book Title</th><th>Transaction ID</th><th>Borrowed Date</th><th>Due Date</th><th>Status</th><th>Days Left</th><th>Action</th></tr></thead><tbody></tbody></table></div>
             `;
             await loadRentalsData();
@@ -793,7 +828,7 @@
             const rentals = await fetchBorrowedBooks();
             document.getElementById('rentalBorrowedCount').innerText = rentals.length;
             document.getElementById('rentalOverdueCount').innerText = rentals.filter(r => getDueStatus(r.returnDate).isOverdue).length;
-            
+
             destroyDataTables();
             if (rentals.length === 0) {
                 $('#rentalsTable').DataTable({
@@ -803,18 +838,18 @@
                 });
                 return;
             }
-            
+
             const rows = rentals.map(rental => {
                 const dueStatus = getDueStatus(rental.returnDate);
                 const statusClass = dueStatus.isOverdue ? 'status-overdue' : (rental.renewedCount > 0 ? 'status-renewed' : 'status-borrowed');
                 const statusText = dueStatus.isOverdue ? 'Overdue' : (rental.renewedCount > 0 ? 'Renewed' : 'Borrowed');
                 const canRenew = !dueStatus.isOverdue && (rental.renewedCount || 0) < 1;
                 let actions = `<button class="return-btn" onclick="returnSingleBook(${rental.transactionId}, '${escapeHtml(rental.bookTitle)}')"><i class="fas fa-undo-alt"></i> Return</button>`;
-                if (canRenew) actions += `<button class="renew-btn" onclick="renewSingleBook(${rental.transactionId})"><i class="fas fa-calendar-plus"></i> Renew</button>`;
+                if (canRenew) actions += `<button class="renew-btn" onclick="renewSingleBookFromTable(${rental.transactionId})"><i class="fas fa-calendar-plus"></i> Renew</button>`;
                 else if (rental.renewedCount >= 1) actions += `<button class="renew-btn" disabled><i class="fas fa-check"></i> Renewed</button>`;
                 return [rental.bookTitle, rental.transactionId, formatDate(rental.borrowedDate), formatDate(rental.returnDate), `<span class="status-badge ${statusClass}">${statusText}</span>`, `<span class="due-badge ${dueStatus.class}">${dueStatus.text}</span>`, actions];
             });
-            
+
             rentalsDataTable = $('#rentalsTable').DataTable({
                 data: rows,
                 columns: [{ title: "Book Title" }, { title: "Transaction ID" }, { title: "Borrowed Date" }, { title: "Due Date" }, { title: "Status", orderable: false }, { title: "Days Left", orderable: false }, { title: "Action", orderable: false }],
@@ -826,10 +861,10 @@
         async function renderPenalties() {
             const container = document.getElementById('mainContainer');
             container.innerHTML = `<div class="welcome-section"><h2><i class="fas fa-gavel"></i> My Penalties</h2><p>View and pay your penalties</p></div><div class="data-table-wrapper"><table id="penaltiesTable" class="display" style="width:100%"><thead><tr><th>Penalty ID</th><th>Book</th><th>Amount</th><th>Reason</th><th>Status</th><th>Action</th></tr></thead><tbody></tbody></table></div>`;
-            
+
             const penalties = await fetchPenalties();
             destroyDataTables();
-            
+
             if (penalties.length === 0) {
                 $('#penaltiesTable').DataTable({
                     data: [],
@@ -838,12 +873,12 @@
                 });
                 return;
             }
-            
+
             const rows = penalties.map(p => {
-                const isPaid = p.paymentStatusDescription === 'Paid' || p.paymentStatus === 9;
-                return [p.penaltyId, p.bookName || '—', `$${(p.amount || 0).toFixed(2)}`, p.reasonDesc || '—', `<span class="due-badge ${isPaid ? 'due-normal' : 'due-overdue'}">${isPaid ? 'Paid' : 'Pending'}</span>`, !isPaid ? `<button class="return-btn" onclick="alert('Pay penalty for ID: ${p.penaltyId}')">Pay Now</button>` : '—'];
+                const isPaid = (p.paymentStatusDescription || p.payment_status_description) === 'Paid';
+                return [p.transactionId || p.penalty_id || '—', p.book_title || p.bookName || '—', `$${(parseFloat(p.totalPenalty) || parseFloat(p.amount) || 0).toFixed(2)}`, p.reasonDesc || 'Overdue', `<span class="due-badge ${isPaid ? 'due-normal' : 'due-overdue'}">${isPaid ? 'Paid' : 'Pending'}</span>`, !isPaid ? `<button class="return-btn" onclick="alert('Pay penalty for ID: ${p.transactionId || p.penalty_id}')">Pay Now</button>` : '—'];
             });
-            
+
             penaltiesDataTable = $('#penaltiesTable').DataTable({
                 data: rows,
                 columns: [{ title: "Penalty ID" }, { title: "Book" }, { title: "Amount" }, { title: "Reason" }, { title: "Status", orderable: false }, { title: "Action", orderable: false }],
@@ -855,13 +890,13 @@
         async function renderFavorites() {
             const container = document.getElementById('mainContainer');
             container.innerHTML = `<div class="welcome-section"><h2><i class="fas fa-heart"></i> My Favorites</h2><p>Your favorite books collection</p></div><div class="data-table-wrapper"><table id="favoritesTable" class="display" style="width:100%"><thead><tr><th>Book Title</th><th>Author</th><th>Price</th><th>Added Date</th><th>Action</th></tr></thead><tbody></tbody></table></div>`;
-            
+
             try {
                 const response = await fetch(`${LOCAL_BACKEND}/api/favorites/list/${CURRENT_MEMBER_ID}`);
                 const result = await response.json();
                 const favorites = result.data || [];
                 destroyDataTables();
-                
+
                 if (favorites.length === 0) {
                     $('#favoritesTable').DataTable({
                         data: [],
@@ -870,8 +905,8 @@
                     });
                     return;
                 }
-                
-                const rows = favorites.map(f => [f.title, f.author, `$${parseFloat(f.price).toFixed(2)}`, new Date(f.added_date).toLocaleDateString(), `<button class="delete-btn" onclick="deleteFavorite(${f.bookId}, '${escapeHtml(f.title)}')"><i class="fas fa-trash"></i> Remove</button>`]);
+
+                const rows = favorites.map(f => [f.title, f.author, `$${parseFloat(f.price).toFixed(2)}`, new Date(f.added_date).toLocaleDateString(), `<button class="delete-btn" onclick="deleteFavorite(${f.book_id}, '${escapeHtml(f.title)}')"><i class="fas fa-trash"></i> Remove</button>`]);
                 favoritesDataTable = $('#favoritesTable').DataTable({
                     data: rows,
                     columns: [{ title: "Book Title" }, { title: "Author" }, { title: "Price" }, { title: "Added Date" }, { title: "Action", orderable: false }],
@@ -886,13 +921,13 @@
         async function renderCart() {
             const container = document.getElementById('mainContainer');
             container.innerHTML = `<div class="welcome-section"><h2><i class="fas fa-shopping-cart"></i> My Cart</h2><p>Books ready for checkout</p></div><div class="data-table-wrapper"><table id="cartTable" class="display" style="width:100%"><thead><tr><th>Book Title</th><th>Author</th><th>Price</th><th>Added Date</th><th>Action</th></tr></thead><tbody></tbody></table></div>`;
-            
+
             try {
                 const response = await fetch(`${LOCAL_BACKEND}/api/cart/list/${CURRENT_MEMBER_ID}`);
                 const result = await response.json();
                 const cart = result.data || [];
                 destroyDataTables();
-                
+
                 if (cart.length === 0) {
                     $('#cartTable').DataTable({
                         data: [],
@@ -901,8 +936,8 @@
                     });
                     return;
                 }
-                
-                const rows = cart.map(c => [c.title, c.author, `$${parseFloat(c.price).toFixed(2)}`, new Date(c.added_date).toLocaleDateString(), `<button class="delete-btn" onclick="deleteCartItem(${c.bookId}, '${escapeHtml(c.title)}')"><i class="fas fa-trash"></i> Remove</button>`]);
+
+                const rows = cart.map(c => [c.title, c.author, `$${parseFloat(c.price).toFixed(2)}`, new Date(c.added_date).toLocaleDateString(), `<button class="delete-btn" onclick="deleteCartItem(${c.book_id}, '${escapeHtml(c.title)}')"><i class="fas fa-trash"></i> Remove</button>`]);
                 cartDataTable = $('#cartTable').DataTable({
                     data: rows,
                     columns: [{ title: "Book Title" }, { title: "Author" }, { title: "Price" }, { title: "Added Date" }, { title: "Action", orderable: false }],
@@ -922,17 +957,19 @@
                 document.querySelector('.books-card').innerHTML = `
                     <div style="padding:1rem;">
                         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem;">
-                            <div class="detail-item"><label>Full Name</label><span>${member.memberFirstName} ${member.memberMiddleName || ''} ${member.memberLastName}</span></div>
-                            <div class="detail-item"><label>Email Address</label><span>${member.memberEmail}</span></div>
-                            <div class="detail-item"><label>Mobile Number</label><span>${member.memberMobileNumber}</span></div>
-                            <div class="detail-item"><label>Date of Birth</label><span>${member.memberDob || 'N/A'}</span></div>
-                            <div class="detail-item"><label>Address</label><span>${member.memberAddressLine1 || ''} ${member.memberAddressLine2 || ''}</span></div>
-                            <div class="detail-item"><label>Work Status</label><span>${member.memberWorkStatusDescription || 'N/A'}</span></div>
-                            <div class="detail-item"><label>Membership Status</label><span class="${member.membershipStatusDescription === 'Active' ? 'status-avai' : 'status-navai'}">${member.membershipStatusDescription || 'N/A'}</span></div>
+                            <div class="detail-item"><label>Full Name</label><span>${escapeHtml(member.memberFirstName)} ${escapeHtml(member.memberMiddleName || '')} ${escapeHtml(member.memberLastName)}</span></div>
+                            <div class="detail-item"><label>Email Address</label><span>${escapeHtml(member.memberEmail)}</span></div>
+                            <div class="detail-item"><label>Mobile Number</label><span>${escapeHtml(member.memberMobileNumber)}</span></div>
+                            <div class="detail-item"><label>Date of Birth</label><span>${escapeHtml(member.memberDob || 'N/A')}</span></div>
+                            <div class="detail-item"><label>Address</label><span>${escapeHtml(member.memberAddressLine1 || '')} ${escapeHtml(member.memberAddressLine2 || '')}</span></div>
+                            <div class="detail-item"><label>Work Status</label><span>${escapeHtml(member.memberWorkStatusDescription || 'N/A')}</span></div>
+                            <div class="detail-item"><label>Membership Status</label><span class="${member.membershipStatusDescription === 'Active' ? 'status-avai' : 'status-navai'}">${escapeHtml(member.membershipStatusDescription || 'N/A')}</span></div>
                             <div class="detail-item"><label>Valid Until</label><span>${member.memberEndDate ? formatDate(member.memberEndDate) : 'N/A'}</span></div>
                         </div>
                     </div>
                 `;
+            } else {
+                document.querySelector('.books-card').innerHTML = `<div class="empty-state">Unable to load profile. Please log in again.</div>`;
             }
         }
 
@@ -941,7 +978,7 @@
             await fetchAllBooksList();
             const members = await fetchAllMembers();
             document.getElementById('borrowFormContent').innerHTML = `
-                <div class="form-group"><label><i class="fas fa-user"></i> Select Member</label><select id="memberSelect">${members.map(m => `<option value="${m.memberId}" ${m.memberId == CURRENT_MEMBER_ID ? 'selected' : ''}>${m.memberFirstName} ${m.memberLastName} (ID: ${m.memberId})</option>`).join('')}</select></div>
+                <div class="form-group"><label><i class="fas fa-user"></i> Select Member</label><select id="memberSelect">${members.map(m => `<option value="${m.memberId}" ${m.memberId == CURRENT_MEMBER_ID ? 'selected' : ''}>${escapeHtml(m.memberFirstName)} ${escapeHtml(m.memberLastName)} (ID: ${m.memberId})</option>`).join('')}</select></div>
                 <div class="form-group"><label><i class="fas fa-book"></i> Select Books to Borrow <span style="font-size:0.7rem; color:#6c7a91;">(Multiple allowed)</span></label><div id="booksListContainer" class="book-checkbox-list">${allBooksList.map(book => `<div class="book-checkbox-item"><input type="checkbox" class="book-checkbox" data-book-id="${book.bookId}" data-book-title="${escapeHtml(book.title)}" data-available="${book.statusCodeId === 'AVAI'}" ${book.statusCodeId !== 'AVAI' ? 'disabled' : ''}><div class="book-info"><div class="book-title">${escapeHtml(book.title)}</div><div class="book-author">by ${escapeHtml(book.author)}</div></div><span class="book-status ${book.statusCodeId === 'AVAI' ? 'available' : 'unavailable'}">${book.statusCodeId === 'AVAI' ? 'Available' : 'Not Available'}</span></div>`).join('')}</div></div>
                 <div id="unavailableMessage" class="unavailable-message" style="display:none;"></div>
                 <div id="selectedPreview" class="selected-books-list" style="display:none;"><h4><i class="fas fa-check-circle"></i> Selected Books:</h4><ul id="selectedList"></ul></div>
@@ -954,7 +991,11 @@
                 const selected = [...document.querySelectorAll('.book-checkbox:checked')].filter(cb => cb.dataset.available === 'true').map(cb => parseInt(cb.dataset.bookId));
                 if (selected.length === 0) { showMessage('Please select at least one available book', 'error'); return; }
                 closeModal('borrowModal');
-                if (await borrowMultipleBooks(memberId, selected)) { await loadRentalsData(); if (currentPage === 'dashboard') await renderDashboard(); if (currentPage === 'books') await renderBooks(); }
+                if (await borrowMultipleBooks(memberId, selected)) {
+                    await loadRentalsData();
+                    if (currentPage === 'dashboard') await renderDashboard();
+                    if (currentPage === 'books') await renderBooks();
+                }
             };
             document.getElementById('borrowModal').style.display = 'flex';
         }
@@ -964,8 +1005,10 @@
             const unavailable = selected.filter(cb => cb.dataset.available === 'false');
             const preview = document.getElementById('selectedPreview');
             const unavailableMsg = document.getElementById('unavailableMessage');
-            if (unavailable.length > 0) { unavailableMsg.style.display = 'block'; unavailableMsg.innerHTML = `<i class="fas fa-exclamation-triangle"></i> The following books are not available: ${unavailable.map(cb => cb.dataset.bookTitle).join(', ')}`; }
-            else { unavailableMsg.style.display = 'none'; }
+            if (unavailable.length > 0) {
+                unavailableMsg.style.display = 'block';
+                unavailableMsg.innerHTML = `<i class="fas fa-exclamation-triangle"></i> The following books are not available: ${unavailable.map(cb => cb.dataset.bookTitle).join(', ')}`;
+            } else { unavailableMsg.style.display = 'none'; }
             if (selected.length > 0) {
                 preview.style.display = 'block';
                 document.getElementById('selectedList').innerHTML = selected.map(cb => `<li><i class="fas fa-book"></i> ${escapeHtml(cb.dataset.bookTitle)}</li>`).join('');
@@ -987,7 +1030,10 @@
                 const selected = [...document.querySelectorAll('.return-checkbox:checked')].map(cb => parseInt(cb.dataset.transactionId));
                 if (selected.length === 0) { showMessage('Please select at least one book to return', 'error'); return; }
                 closeModal('returnModal');
-                if (await returnMultipleBooks(selected)) { await loadRentalsData(); if (currentPage === 'dashboard') await renderDashboard(); }
+                if (await returnMultipleBooks(selected)) {
+                    await loadRentalsData();
+                    if (currentPage === 'dashboard') await renderDashboard();
+                }
             };
             document.getElementById('returnModal').style.display = 'flex';
         }
@@ -1026,39 +1072,12 @@
                 const transactionId = document.getElementById('renewTransactionSelect').value;
                 if (!transactionId) { showMessage('Please select a transaction', 'error'); return; }
                 closeModal('renewModal');
-                if (await renewSingleBook(transactionId)) { await loadRentalsData(); if (currentPage === 'dashboard') await renderDashboard(); }
+                if (await renewSingleBook(transactionId)) {
+                    await loadRentalsData();
+                    if (currentPage === 'dashboard') await renderDashboard();
+                }
             };
             document.getElementById('renewModal').style.display = 'flex';
-        }
-
-        async function openFavoriteAuthorsModal() {
-            const members = await fetchAllMembers();
-            document.getElementById('favoriteAuthorsContent').innerHTML = `
-                <div class="form-group"><label><i class="fas fa-user"></i> Select Member</label><select id="favMemberSelect">${members.map(m => `<option value="${m.memberId}" ${m.memberId == CURRENT_MEMBER_ID ? 'selected' : ''}>${m.memberFirstName} ${m.memberLastName} (ID: ${m.memberId})</option>`).join('')}</select></div>
-                <div class="form-group"><label><i class="fas fa-tag"></i> Select Type</label><select id="favTypeSelect"><option value="">-- Select Type --</option><option value="author">Top 3 Authors</option><option value="book">Top 3 Books</option><option value="both">Both Authors & Books</option></select></div>
-                <button class="submit-btn" id="viewFavoritesBtn"><i class="fas fa-star"></i> View Favorites</button>
-                <div id="favResult" style="margin-top:1.5rem; display:none;"><div id="authorsResult"></div><div id="booksResult"></div></div>
-            `;
-            document.getElementById('viewFavoritesBtn').onclick = async () => {
-                const memberId = document.getElementById('favMemberSelect').value;
-                const type = document.getElementById('favTypeSelect').value;
-                if (!memberId || !type) { showMessage('Please select member and type', 'error'); return; }
-                const resultDiv = document.getElementById('favResult');
-                const authorsDiv = document.getElementById('authorsResult');
-                const booksDiv = document.getElementById('booksResult');
-                resultDiv.style.display = 'block';
-                if (type === 'author' || type === 'both') {
-                    const favAuthors = await getFavoriteAuthors(memberId);
-                    if (favAuthors && favAuthors.books) authorsDiv.innerHTML = `<div class="selected-books-list"><h4><i class="fas fa-star"></i> Top Author: ${escapeHtml(favAuthors.authorName)}</h4><h4 style="margin-top:0.5rem;">Top 3 Books by ${escapeHtml(favAuthors.authorName)}:</h4><ul>${favAuthors.books.map(b => `<li><strong>${escapeHtml(b.title)}</strong> - Available Copies: ${b.bookCount || 0}</li>`).join('')}</ul></div>`;
-                    else authorsDiv.innerHTML = '<div class="empty-state">No favorite author data found</div>';
-                } else authorsDiv.innerHTML = '';
-                if (type === 'book' || type === 'both') {
-                    const favBook = await getFavoriteBooks(memberId);
-                    if (favBook && favBook.bookName) booksDiv.innerHTML = `<div class="selected-books-list"><h4><i class="fas fa-heart"></i> Top Favorite Book:</h4><ul><li><strong>${escapeHtml(favBook.bookName)}</strong> by ${escapeHtml(favBook.author || 'Unknown')}</li><li>Available Copies: ${favBook.availableCount || 0}</li></ul></div>`;
-                    else booksDiv.innerHTML = '<div class="empty-state">No favorite book data found</div>';
-                } else booksDiv.innerHTML = '';
-            };
-            document.getElementById('favoriteAuthorsModal').style.display = 'flex';
         }
 
         // ==================== BOOK ACTIONS ====================
@@ -1076,20 +1095,30 @@
 
         window.returnSingleBook = async function(transactionId, bookTitle) {
             if (confirm(`Are you sure you want to return "${bookTitle}"?`)) {
-                if (await returnMultipleBooks([transactionId])) { await loadRentalsData(); if (currentPage === 'dashboard') await renderDashboard(); }
+                if (await returnMultipleBooks([transactionId])) {
+                    await loadRentalsData();
+                    if (currentPage === 'dashboard') await renderDashboard();
+                }
             }
         };
 
-        window.renewSingleBook = async function(transactionId) {
+        window.renewSingleBookFromTable = async function(transactionId) {
             if (confirm('Renew this book for +5 days? (Only one renewal allowed per transaction)')) {
-                if (await renewSingleBook(transactionId)) { await loadRentalsData(); if (currentPage === 'dashboard') await renderDashboard(); }
+                if (await renewSingleBook(transactionId)) {
+                    await loadRentalsData();
+                    if (currentPage === 'dashboard') await renderDashboard();
+                }
             }
         };
 
         window.deleteFavorite = async function(bookId, bookTitle) {
             if (confirm(`Remove "${bookTitle}" from favorites?`)) {
                 try {
-                    await fetch(`${LOCAL_BACKEND}/api/favorites/remove`, { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ memberId: CURRENT_MEMBER_ID, bookId }) });
+                    await fetch(`${LOCAL_BACKEND}/api/favorites/remove`, {
+                        method: "DELETE",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ memberId: CURRENT_MEMBER_ID, bookId })
+                    });
                     showMessage(`Removed "${bookTitle}" from favorites`, 'success');
                     await renderFavorites();
                 } catch (error) { showMessage(`Error: ${error.message}`, 'error'); }
@@ -1099,7 +1128,11 @@
         window.deleteCartItem = async function(bookId, bookTitle) {
             if (confirm(`Remove "${bookTitle}" from cart?`)) {
                 try {
-                    await fetch(`${LOCAL_BACKEND}/api/cart/remove`, { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ memberId: CURRENT_MEMBER_ID, bookId }) });
+                    await fetch(`${LOCAL_BACKEND}/api/cart/remove`, {
+                        method: "DELETE",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ memberId: CURRENT_MEMBER_ID, bookId })
+                    });
                     showMessage(`Removed "${bookTitle}" from cart`, 'success');
                     await renderCart();
                 } catch (error) { showMessage(`Error: ${error.message}`, 'error'); }
@@ -1110,7 +1143,17 @@
         document.getElementById('modalFavoriteBtn').onclick = async () => {
             if (currentSelectedBook) {
                 try {
-                    await fetch(`${LOCAL_BACKEND}/api/favorites/add`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ memberId: CURRENT_MEMBER_ID, bookId: currentSelectedBook.bookId, title: currentSelectedBook.title, author: currentSelectedBook.author, price: currentSelectedBook.price }) });
+                    await fetch(`${LOCAL_BACKEND}/api/favorites/add`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            memberId: CURRENT_MEMBER_ID,
+                            bookId: currentSelectedBook.bookId,
+                            title: currentSelectedBook.title,
+                            author: currentSelectedBook.author,
+                            price: currentSelectedBook.price
+                        })
+                    });
                     showMessage(`❤️ "${currentSelectedBook.title}" added to favorites!`, 'success');
                     document.getElementById('modalFavoriteBtn').innerHTML = '<i class="fas fa-heart"></i> Favorited';
                     document.getElementById('modalFavoriteBtn').style.opacity = '0.7';
@@ -1121,7 +1164,17 @@
         document.getElementById('modalCartBtn').onclick = async () => {
             if (currentSelectedBook) {
                 try {
-                    await fetch(`${LOCAL_BACKEND}/api/cart/add`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ memberId: CURRENT_MEMBER_ID, bookId: currentSelectedBook.bookId, title: currentSelectedBook.title, author: currentSelectedBook.author, price: currentSelectedBook.price }) });
+                    await fetch(`${LOCAL_BACKEND}/api/cart/add`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            memberId: CURRENT_MEMBER_ID,
+                            bookId: currentSelectedBook.bookId,
+                            title: currentSelectedBook.title,
+                            author: currentSelectedBook.author,
+                            price: currentSelectedBook.price
+                        })
+                    });
                     showMessage(`🛒 "${currentSelectedBook.title}" added to cart!`, 'success');
                     document.getElementById('modalCartBtn').innerHTML = '<i class="fas fa-check"></i> In Cart';
                     document.getElementById('modalCartBtn').style.opacity = '0.7';
@@ -1133,7 +1186,18 @@
             if (currentSelectedBook) {
                 closeModal('bookActionModal');
                 try {
-                    await fetch(`${LOCAL_BACKEND}/api/purchases/add`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ memberId: CURRENT_MEMBER_ID, bookId: currentSelectedBook.bookId, title: currentSelectedBook.title, author: currentSelectedBook.author, price: currentSelectedBook.price, purchaseDate: new Date().toISOString().split('T')[0] }) });
+                    await fetch(`${LOCAL_BACKEND}/api/purchases/add`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            memberId: CURRENT_MEMBER_ID,
+                            bookId: currentSelectedBook.bookId,
+                            title: currentSelectedBook.title,
+                            author: currentSelectedBook.author,
+                            price: currentSelectedBook.price,
+                            purchaseDate: new Date().toISOString().split('T')[0]
+                        })
+                    });
                     showMessage(`💰 "${currentSelectedBook.title}" purchased successfully!`, 'success');
                     if (currentPage === 'books') await renderBooks();
                 } catch (error) { showMessage(`Error: ${error.message}`, 'error'); }
@@ -1145,14 +1209,25 @@
                 closeModal('bookActionModal');
                 const dueDate = new Date(); dueDate.setDate(dueDate.getDate() + 10);
                 try {
-                    const response = await fetch(`${LOCAL_BACKEND}/api/local/rentals/borrow`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ memberId: CURRENT_MEMBER_ID, bookId: currentSelectedBook.bookId, bookTitle: currentSelectedBook.title, dueDate: dueDate.toISOString().split('T')[0] }) });
+                    const response = await fetch(`${LOCAL_BACKEND}/api/local/rentals/borrow`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            memberId: CURRENT_MEMBER_ID,
+                            bookId: currentSelectedBook.bookId,
+                            bookTitle: currentSelectedBook.title,
+                            dueDate: dueDate.toISOString().split('T')[0]
+                        })
+                    });
                     const result = await response.json();
                     if (result.status === "Success") {
                         showMessage(`✅ "${currentSelectedBook.title}" borrowed successfully! Due in 10 days.`, 'success');
                         if (currentPage === 'dashboard') await renderDashboard();
                         if (currentPage === 'books') await renderBooks();
                         if (currentPage === 'rentals') await loadRentalsData();
-                    } else showMessage(`❌ Failed to borrow: ${result.message}`, 'error');
+                    } else {
+                        showMessage(`❌ Failed to borrow: ${result.message}`, 'error');
+                    }
                 } catch (error) { showMessage(`❌ Error: ${error.message}`, 'error'); }
             }
         };
@@ -1162,15 +1237,27 @@
             currentPage = page;
             document.querySelectorAll('.nav-links a').forEach(link => link.classList.remove('active'));
             document.querySelector(`.nav-links a[data-page="${page}"]`)?.classList.add('active');
-            const pages = { dashboard: renderDashboard, books: renderBooks, rentals: renderRentals, penalties: renderPenalties, favorites: renderFavorites, cart: renderCart, profile: renderProfile };
+            const pages = {
+                dashboard: renderDashboard,
+                books: renderBooks,
+                rentals: renderRentals,
+                penalties: renderPenalties,
+                favorites: renderFavorites,
+                cart: renderCart,
+                profile: renderProfile
+            };
             if (pages[page]) pages[page]();
             else renderDashboard();
         };
 
-        document.querySelectorAll('.nav-links a').forEach(link => link.addEventListener('click', (e) => { e.preventDefault(); navigateTo(link.dataset.page); }));
+        document.querySelectorAll('.nav-links a').forEach(link => link.addEventListener('click', (e) => {
+            e.preventDefault();
+            navigateTo(link.dataset.page);
+        }));
         document.getElementById('mobileMenuBtn').addEventListener('click', () => document.getElementById('navLinks').classList.toggle('show'));
         window.onclick = (event) => { if (event.target.classList.contains('modal')) event.target.style.display = 'none'; };
 
+        // ==================== INIT ====================
         fetchMemberDetails().then(() => renderDashboard());
     </script>
 </body>
