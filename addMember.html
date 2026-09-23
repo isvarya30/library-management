@@ -6,11 +6,7 @@
   <title>Add Member | Library Management System</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
       font-family: 'Segoe UI', 'Inter', system-ui, sans-serif;
@@ -19,10 +15,7 @@
       padding: 2rem;
     }
 
-    .container {
-      max-width: 800px;
-      margin: 0 auto;
-    }
+    .container { max-width: 800px; margin: 0 auto; }
 
     .header {
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -32,10 +25,7 @@
       text-align: center;
     }
 
-    .header h1 {
-      color: white;
-      font-size: 1.8rem;
-    }
+    .header h1 { color: white; font-size: 1.8rem; }
 
     .form-card {
       background: white;
@@ -50,9 +40,7 @@
       padding: 1rem 1.5rem;
     }
 
-    .form-body {
-      padding: 1.8rem;
-    }
+    .form-body { padding: 1.8rem; }
 
     .form-grid {
       display: grid;
@@ -60,9 +48,7 @@
       gap: 1.2rem;
     }
 
-    .form-group {
-      margin-bottom: 0.2rem;
-    }
+    .form-group { margin-bottom: 0.2rem; }
 
     .form-group label {
       display: block;
@@ -72,9 +58,7 @@
       margin-bottom: 0.4rem;
     }
 
-    .required {
-      color: #e53e3e;
-    }
+    .required { color: #e53e3e; }
 
     .form-group input, .form-group select {
       width: 100%;
@@ -101,13 +85,9 @@
       display: none;
     }
 
-    .error-message.show {
-      display: block;
-    }
+    .error-message.show { display: block; }
 
-    .full-width {
-      grid-column: span 2;
-    }
+    .full-width { grid-column: span 2; }
 
     .btn-save {
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -121,10 +101,7 @@
       margin-top: 1.5rem;
     }
 
-    .btn-save:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-    }
+    .btn-save:disabled { opacity: 0.6; cursor: not-allowed; }
 
     .loading-spinner {
       display: inline-block;
@@ -136,9 +113,7 @@
       animation: spin 0.6s linear infinite;
     }
 
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
+    @keyframes spin { to { transform: rotate(360deg); } }
 
     .message {
       margin-top: 1rem;
@@ -173,12 +148,8 @@
     }
 
     @media (max-width: 640px) {
-      .form-grid {
-        grid-template-columns: 1fr;
-      }
-      .full-width {
-        grid-column: span 1;
-      }
+      .form-grid { grid-template-columns: 1fr; }
+      .full-width { grid-column: span 1; }
     }
   </style>
 </head>
@@ -201,7 +172,7 @@
           <div class="form-group">
             <label>First Name <span class="required">*</span></label>
             <input type="text" id="memberFirstName" placeholder="Enter first name">
-            <div class="error-message" id="firstNameError"></div>
+            <div class="error-message" id="memberFirstNameError"></div>
           </div>
 
           <div class="form-group">
@@ -212,31 +183,31 @@
           <div class="form-group">
             <label>Last Name <span class="required">*</span></label>
             <input type="text" id="memberLastName" placeholder="Enter last name">
-            <div class="error-message" id="lastNameError"></div>
+            <div class="error-message" id="memberLastNameError"></div>
           </div>
 
           <div class="form-group">
             <label>Email <span class="required">*</span></label>
             <input type="email" id="memberEmail" placeholder="example@email.com">
-            <div class="error-message" id="emailError"></div>
+            <div class="error-message" id="memberEmailError"></div>
           </div>
 
           <div class="form-group">
             <label>Mobile Number <span class="required">*</span></label>
             <input type="tel" id="memberMobileNumber" placeholder="10 digit mobile number">
-            <div class="error-message" id="mobileError"></div>
+            <div class="error-message" id="memberMobileNumberError"></div>
           </div>
 
           <div class="form-group">
             <label>Date of Birth <span class="required">*</span></label>
             <input type="date" id="memberDob">
-            <div class="error-message" id="dobError"></div>
+            <div class="error-message" id="memberDobError"></div>
           </div>
 
           <div class="form-group full-width">
             <label>Address Line 1 <span class="required">*</span></label>
             <input type="text" id="memberAddressLine1" placeholder="Street address">
-            <div class="error-message" id="address1Error"></div>
+            <div class="error-message" id="memberAddressLine1Error"></div>
           </div>
 
           <div class="form-group full-width">
@@ -275,18 +246,16 @@
 </div>
 
 <script>
-  // Use LOCAL BACKEND as proxy to avoid CORS
-  const LOCAL_API_URL = "http://localhost:8080/api/members/save";
+  // ✅ FIXED: Point to LOCAL MySQL endpoint (not the Company API proxy)
+  const LOCAL_API_URL = "http://localhost:8080/api/local/members/save";
 
   function showMessage(text, type) {
     const msgDiv = document.getElementById('messageArea');
     msgDiv.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i> ${text}`;
     msgDiv.className = `message ${type}`;
     msgDiv.style.display = 'flex';
-    
-    setTimeout(() => {
-      msgDiv.style.display = 'none';
-    }, 5000);
+
+    setTimeout(() => { msgDiv.style.display = 'none'; }, 5000);
   }
 
   function clearErrors() {
@@ -302,110 +271,62 @@
   function showFieldError(fieldId, message) {
     const errorDiv = document.getElementById(`${fieldId}Error`);
     const inputField = document.getElementById(fieldId);
-    if (errorDiv) {
-      errorDiv.textContent = message;
-      errorDiv.classList.add('show');
-    }
-    if (inputField) {
-      inputField.classList.add('error');
-    }
+    if (errorDiv) { errorDiv.textContent = message; errorDiv.classList.add('show'); }
+    if (inputField) { inputField.classList.add('error'); }
   }
 
   function showFieldSuccess(fieldId) {
     const inputField = document.getElementById(fieldId);
-    if (inputField) {
-      inputField.classList.remove('error');
-    }
+    if (inputField) inputField.classList.remove('error');
   }
 
   function validateFirstName() {
     const value = document.getElementById('memberFirstName').value.trim();
-    if (!value) {
-      showFieldError('memberFirstName', 'First name is required');
-      return false;
-    } else if (!/^[a-zA-Z\s]+$/.test(value)) {
-      showFieldError('memberFirstName', 'Only letters allowed');
-      return false;
-    } else if (value.length < 2) {
-      showFieldError('memberFirstName', 'Minimum 2 characters');
-      return false;
-    }
-    showFieldSuccess('memberFirstName');
-    return true;
+    if (!value) { showFieldError('memberFirstName', 'First name is required'); return false; }
+    if (!/^[a-zA-Z\s]+$/.test(value)) { showFieldError('memberFirstName', 'Only letters allowed'); return false; }
+    if (value.length < 2) { showFieldError('memberFirstName', 'Minimum 2 characters'); return false; }
+    showFieldSuccess('memberFirstName'); return true;
   }
 
   function validateLastName() {
     const value = document.getElementById('memberLastName').value.trim();
-    if (!value) {
-      showFieldError('memberLastName', 'Last name is required');
-      return false;
-    } else if (!/^[a-zA-Z\s]+$/.test(value)) {
-      showFieldError('memberLastName', 'Only letters allowed');
-      return false;
-    }
-    showFieldSuccess('memberLastName');
-    return true;
+    if (!value) { showFieldError('memberLastName', 'Last name is required'); return false; }
+    if (!/^[a-zA-Z\s]+$/.test(value)) { showFieldError('memberLastName', 'Only letters allowed'); return false; }
+    showFieldSuccess('memberLastName'); return true;
   }
 
   function validateEmail() {
     const value = document.getElementById('memberEmail').value.trim();
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!value) {
-      showFieldError('memberEmail', 'Email is required');
-      return false;
-    } else if (!emailRegex.test(value)) {
-      showFieldError('memberEmail', 'Enter valid email');
-      return false;
-    }
-    showFieldSuccess('memberEmail');
-    return true;
+    if (!value) { showFieldError('memberEmail', 'Email is required'); return false; }
+    if (!emailRegex.test(value)) { showFieldError('memberEmail', 'Enter valid email'); return false; }
+    showFieldSuccess('memberEmail'); return true;
   }
 
   function validateMobile() {
     const value = document.getElementById('memberMobileNumber').value.trim();
-    if (!value) {
-      showFieldError('memberMobileNumber', 'Mobile number is required');
-      return false;
-    } else if (!/^\d{10}$/.test(value)) {
-      showFieldError('memberMobileNumber', 'Must be 10 digits');
-      return false;
-    } else if (!/^[6-9]/.test(value)) {
-      showFieldError('memberMobileNumber', 'Must start with 6,7,8,9');
-      return false;
-    }
-    showFieldSuccess('memberMobileNumber');
-    return true;
+    if (!value) { showFieldError('memberMobileNumber', 'Mobile number is required'); return false; }
+    if (!/^\d{10}$/.test(value)) { showFieldError('memberMobileNumber', 'Must be 10 digits'); return false; }
+    if (!/^[6-9]/.test(value)) { showFieldError('memberMobileNumber', 'Must start with 6,7,8,9'); return false; }
+    showFieldSuccess('memberMobileNumber'); return true;
   }
 
   function validateDOB() {
     const value = document.getElementById('memberDob').value;
-    if (!value) {
-      showFieldError('memberDob', 'Date of birth is required');
-      return false;
-    }
+    if (!value) { showFieldError('memberDob', 'Date of birth is required'); return false; }
     const dob = new Date(value);
     const today = new Date();
     let age = today.getFullYear() - dob.getFullYear();
     const monthDiff = today.getMonth() - dob.getMonth();
-    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) {
-      age--;
-    }
-    if (age < 18) {
-      showFieldError('memberDob', 'Must be at least 18 years old');
-      return false;
-    }
-    showFieldSuccess('memberDob');
-    return true;
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) age--;
+    if (age < 18) { showFieldError('memberDob', 'Must be at least 18 years old'); return false; }
+    showFieldSuccess('memberDob'); return true;
   }
 
   function validateAddress() {
     const value = document.getElementById('memberAddressLine1').value.trim();
-    if (!value) {
-      showFieldError('memberAddressLine1', 'Address is required');
-      return false;
-    }
-    showFieldSuccess('memberAddressLine1');
-    return true;
+    if (!value) { showFieldError('memberAddressLine1', 'Address is required'); return false; }
+    showFieldSuccess('memberAddressLine1'); return true;
   }
 
   document.getElementById('memberFirstName').addEventListener('input', validateFirstName);
@@ -416,18 +337,18 @@
   document.getElementById('memberAddressLine1').addEventListener('input', validateAddress);
 
   function validateForm() {
-    return validateFirstName() && validateLastName() && validateEmail() && 
+    return validateFirstName() && validateLastName() && validateEmail() &&
            validateMobile() && validateDOB() && validateAddress();
   }
 
   document.getElementById("saveMemberForm").addEventListener("submit", async function(e) {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       showMessage("Please fix the errors in the form", "error");
       return;
     }
-    
+
     const formData = {
       memberId: "",
       memberFirstName: document.getElementById("memberFirstName").value.trim(),
@@ -441,37 +362,48 @@
       membershipPeriod: document.getElementById("membershipPeriod").value,
       memberDob: document.getElementById("memberDob").value
     };
-    
+
     console.log("Sending to local backend:", formData);
-    
+
     const saveBtn = document.getElementById("saveBtn");
     saveBtn.disabled = true;
     saveBtn.innerHTML = '<span class="loading-spinner"></span> Registering...';
-    
+
     try {
       const response = await fetch(LOCAL_API_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData)
       });
-      
-      const result = await response.json();
+
+      // ✅ Read as text first, then try to parse — gives useful errors
+      const rawText = await response.text();
+      let result;
+      try {
+        result = JSON.parse(rawText);
+      } catch (parseErr) {
+        console.error("Non-JSON response from server:", rawText);
+        throw new Error(
+          `Server returned non-JSON (HTTP ${response.status}). ` +
+          `Check that the backend is running on http://localhost:8080. ` +
+          `Raw: ${rawText.substring(0, 200)}`
+        );
+      }
+
       console.log("Response:", result);
-      
+
       if (result.status === "Success") {
         showMessage(`✅ ${result.message || "Member registered successfully!"}`, "success");
         document.getElementById("saveMemberForm").reset();
         clearErrors();
-        
-        setTimeout(() => {
-          window.location.href = 'admindashboard.html';
-        }, 2000);
+
+        setTimeout(() => { window.location.href = 'admindashboard.html'; }, 2000);
       } else {
         showMessage(`❌ ${result.message || "Registration failed"}`, "error");
       }
     } catch (error) {
       console.error("Error:", error);
-      showMessage(`❌ Error: ${error.message}`, "error");
+      showMessage(`❌ ${error.message}`, "error");
     } finally {
       saveBtn.disabled = false;
       saveBtn.innerHTML = '<i class="fas fa-save"></i> Register Member';
