@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Favorite Authors & Books | Library System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background: #eef2f7; padding: 2rem 1.5rem; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        
+        .status-header {
+            background: white;
+            border-radius: 28px;
+            padding: 1.4rem 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .title-section h2 { color: #1a2c3e; font-weight: 700; font-size: 1.7rem; }
+        
+        .nav-buttons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        .nav-btn {
+            background: #e2e8f0;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 30px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            color: #2c3e50;
+        }
+        .nav-btn.active { background: #2b6cb0; color: white; }
+        
+        .filter-section {
+            background: white;
+            border-radius: 20px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            align-items: flex-end;
+        }
+        .filter-group { display: flex; flex-direction: column; gap: 0.3rem; }
+        .filter-group label { font-size: 0.7rem; font-weight: 600; color: #6c7a91; text-transform: uppercase; }
+        .filter-group input, .filter-group select {
+            padding: 10px 14px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            min-width: 200px;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #2b6cb0 0%, #2c3e66 100%);
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 40px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .result-card {
+            background: white;
+            border-radius: 24px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        .result-card h3 {
+            color: #2b6cb0;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        .author-item, .book-item {
+            padding: 0.75rem;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .author-name { font-weight: 600; color: #1a2c3e; }
+        .book-count { background: #e3f2fd; color: #1565c0; padding: 2px 8px; border-radius: 20px; font-size: 0.7rem; }
+        .book-title { font-weight: 600; color: #1a2c3e; }
+        .book-author { font-size: 0.8rem; color: #6c7a91; }
+        .empty-message { color: #6c7a91; text-align: center; padding: 2rem; }
+        
+        .message-card {
+            background: #fef9e3;
+            border-left: 6px solid #f5b042;
+            padding: 1rem 1.5rem;
+            border-radius: 20px;
+            margin-bottom: 1.8rem;
+        }
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #ccc;
+            border-radius: 50%;
+            border-top-color: #2b6cb0;
+            animation: spin 0.6s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="status-header">
+            <div class="title-section">
+                <h2><i class="fas fa-heart"></i> Favorite Authors & Books</h2>
+                <p>View top 3 favorite authors and books based on borrowing history</p>
+            </div>
+            <div class="nav-buttons">
+                <a href="rentalList.html" class="nav-btn">Rentals</a>
+                <a href="favorites.html" class="nav-btn active">Favorites</a>
+                <a href="penaltyList.html" class="nav-btn">Penalties</a>
+                <a href="dashboard.html" class="nav-btn">Dashboard</a>
+            </div>
+        </div>
+
+        <div class="filter-section">
+            <div class="filter-group">
+                <label>Select Member</label>
+                <select id="memberId">
+                    <option value="">-- Select Member --</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Type (Optional)</label>
+                <select id="type">
+                    <option value="">Both Authors & Books</option>
+                    <option value="author">Only Authors</option>
+                    <option value="book">Only Books</option>
+                </select>
+            </div>
+            <button class="btn-primary" id="fetchFavoritesBtn"><i class="fas fa-search"></i> Get Favorites</button>
+        </div>
+
+        <div id="messageArea" class="message-card info">Select a member to view their favorite authors and books</div>
+
+        <div class="results-grid" id="resultsGrid">
+            <div class="result-card" id="authorsCard">
+                <h3><i class="fas fa-users"></i> Top 3 Favorite Authors</h3>
+                <div id="authorsList" class="empty-message">Select a member to view</div>
+            </div>
+            <div class="result-card" id="booksCard">
+                <h3><i class="fas fa-book"></i> Top 3 Favorite Books</h3>
+                <div id="booksList" class="empty-message">Select a member to view</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const BASE_URL = "https://dev-api.humhealth.com/LibraryManagementAPI";
+        let membersList = [];
+
+        function showMessage(text, type = 'info') {
+            const msgDiv = document.getElementById('messageArea');
+            msgDiv.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-info-circle'}"></i> ${text}`;
+            msgDiv.className = `message-card ${type}`;
+        }
+
+        async function fetchMembers() {
+            try {
+                const response = await fetch(`${BASE_URL}/members/list`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ start: 0, length: 100, searchValue: "", order: { sortType: "desc", sortColumn: "memberId" }, filter: { memberWorkStatus: "", membershipStatus: "" } })
+                });
+                const result = await response.json();
+                if (result.members) {
+                    membersList = result.members;
+                    const select = document.getElementById('memberId');
+                    select.innerHTML = '<option value="">-- Select Member --</option>';
+                    membersList.forEach(m => {
+                        select.innerHTML += `<option value="${m.memberId}">${m.memberId} - ${m.memberFirstName} ${m.memberLastName}</option>`;
+                    });
+                }
+            } catch (error) {
+                console.error("Error fetching members:", error);
+            }
+        }
+
+        async function fetchFavorites() {
+            const memberId = document.getElementById('memberId').value;
+            const type = document.getElementById('type').value;
+
+            if (!memberId) {
+                showMessage("Please select a member", 'info');
+                return;
+            }
+
+            showMessage('<span class="loading"></span> Loading favorites...', 'info');
+
+            try {
+                const url = `${BASE_URL}/member/favorites/${memberId}${type ? `?type=${type}` : ''}`;
+                const response = await fetch(url);
+                const result = await response.json();
+
+                if (result.status === "Success" && result.data) {
+                    displayResults(result.data);
+                    showMessage(`✅ Favorites loaded for member ID: ${memberId}`, 'success');
+                } else {
+                    showMessage(`⚠️ No favorites found for this member`, 'warning');
+                    displayEmpty();
+                }
+            } catch (error) {
+                console.error("Error fetching favorites:", error);
+                showMessage(`❌ Error: ${error.message}`, 'error');
+                displayEmpty();
+            }
+        }
+
+        function displayResults(data) {
+            // Display Authors
+            const authorsDiv = document.getElementById('authorsList');
+            if (data.favouriteauthor && data.favouriteauthor.author) {
+                const authorName = data.favouriteauthor.author;
+                const books = data.favouriteauthor.books || [];
+                
+                if (authorName && books.length > 0) {
+                    authorsDiv.innerHTML = `
+                        <div class="author-item">
+                            <span class="author-name"><i class="fas fa-star" style="color: #ffc107;"></i> ${escapeHtml(authorName)}</span>
+                            <span class="book-count">${books.length} books</span>
+                        </div>
+                        ${books.map(book => `
+                            <div class="book-item" style="margin-left: 1.5rem;">
+                                <span class="book-title">📖 ${escapeHtml(book.title)}</span>
+                                <span class="book-count">${book.bookCount || 0} copies</span>
+                            </div>
+                        `).join('')}
+                    `;
+                } else {
+                    authorsDiv.innerHTML = '<div class="empty-message">No favorite authors found</div>';
+                }
+            } else {
+                authorsDiv.innerHTML = '<div class="empty-message">No favorite authors found</div>';
+            }
+
+            // Display Books
+            const booksDiv = document.getElementById('booksList');
+            if (data.favouriteBook && data.favouriteBook.bookName) {
+                booksDiv.innerHTML = `
+                    <div class="book-item">
+                        <span class="book-title"><i class="fas fa-star" style="color: #ffc107;"></i> ${escapeHtml(data.favouriteBook.bookName)}</span>
+                        <span class="book-count">by ${escapeHtml(data.favouriteBook.author || 'Unknown')}</span>
+                    </div>
+                    <div class="book-item">
+                        <span class="book-count">Available Copies: ${data.favouriteBook.availableCount || 0}</span>
+                    </div>
+                `;
+            } else {
+                booksDiv.innerHTML = '<div class="empty-message">No favorite books found</div>';
+            }
+        }
+
+        function displayEmpty() {
+            document.getElementById('authorsList').innerHTML = '<div class="empty-message">No favorite authors found</div>';
+            document.getElementById('booksList').innerHTML = '<div class="empty-message">No favorite books found</div>';
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        document.getElementById('fetchFavoritesBtn').onclick = fetchFavorites;
+        fetchMembers();
+    </script>
+</body>
+</html>

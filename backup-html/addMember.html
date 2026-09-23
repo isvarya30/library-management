@@ -247,7 +247,7 @@
 
 <script>
   // ✅ FIXED: Point to LOCAL MySQL endpoint (not the Company API proxy)
-  const LOCAL_API_URL = "https://library-management-api-h30d.onrender.com/api/local/members/save";
+  const LOCAL_API_URL = "http://localhost:8080/api/local/members/save";
 
   function showMessage(text, type) {
     const msgDiv = document.getElementById('messageArea');
@@ -385,7 +385,7 @@
         console.error("Non-JSON response from server:", rawText);
         throw new Error(
           `Server returned non-JSON (HTTP ${response.status}). ` +
-          `Check that the backend is running on https://library-management-api-h30d.onrender.com. ` +
+          `Check that the backend is running on http://localhost:8080. ` +
           `Raw: ${rawText.substring(0, 200)}`
         );
       }
