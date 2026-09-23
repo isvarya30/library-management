@@ -1,5 +1,6 @@
 // ============================================================
-//  server.js  —  Library Management Backend (Corrected)
+//  server.js  —  Library Management Backend
+//  Ready for: Render (Node) + TiDB Cloud (MySQL-compatible)
 // ============================================================
 require('dotenv').config();
 
@@ -8,22 +9,35 @@ const mysql   = require('mysql2');
 const cors    = require('cors');
 const https   = require('https');
 const http    = require('http');
+const fs      = require('fs');
+const path    = require('path');
 
 const app = express();
 app.use(cors());
 app.use(express.json({ limit: '5mb' }));
 app.use(express.urlencoded({ extended: true }));
 
-// ---------- MySQL Pool ----------
+// ------------------------------------------------------------
+//  MySQL / TiDB Cloud Connection
+// ------------------------------------------------------------
+// TiDB Cloud requires TLS. We load ca.pem if it exists locally,
+// otherwise fall back to non-SSL for local MySQL development.
+const caPath = path.join(__dirname, 'ca.pem');
+const sslConfig = fs.existsSync(caPath)
+    ? { ca: fs.readFileSync(caPath), minVersion: 'TLSv1.2', rejectUnauthorized: true }
+    : undefined;
+
 const db = mysql.createPool({
     host:     process.env.DB_HOST     || 'localhost',
     user:     process.env.DB_USER     || 'root',
-    password: process.env.DB_PASSWORD || 'Anu@12345',   // move to .env!
+    password: process.env.DB_PASSWORD || 'Anu@12345',
     database: process.env.DB_NAME     || 'library_management',
+    port:     parseInt(process.env.DB_PORT) || 3306,
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0,
-    dateStrings: true
+    dateStrings: true,
+    ...(sslConfig && { ssl: sslConfig })
 });
 
 db.getConnection((err, connection) => {
@@ -37,14 +51,16 @@ db.getConnection((err, connection) => {
 
 const COMPANY_API = process.env.COMPANY_API || 'https://dev-api.humhealth.com/LibraryManagementAPI';
 
-// ---------- HTTP helper ----------
+// ------------------------------------------------------------
+//  HTTP helper (used for calling the Company API)
+// ------------------------------------------------------------
 function makeRequest(url, data, method = 'POST') {
     return new Promise((resolve, reject) => {
         const urlObj = new URL(url);
         const options = {
             hostname: urlObj.hostname,
             port:     urlObj.port || (urlObj.protocol === 'https:' ? 443 : 80),
-            path:     urlObj.pathname + urlObj.search,   // FIX: keep query string
+            path:     urlObj.pathname + urlObj.search,
             method,
             headers: {
                 'Content-Type': 'application/json',
@@ -72,7 +88,7 @@ function makeRequest(url, data, method = 'POST') {
         });
 
         req.on('error', reject);
-        req.setTimeout(10000, () => {           // FIX: proper timeout
+        req.setTimeout(10000, () => {
             req.destroy(new Error('Request timeout'));
         });
 
@@ -202,7 +218,7 @@ app.put('/api/local/books/update/:bookId', (req, res) => {
         });
 });
 
-// Combined books
+// Combined books (local + company API)
 app.get('/api/books/all', async (req, res) => {
     console.log('\n📚 Fetching books from both Local DB and Company API...');
 
@@ -494,10 +510,10 @@ app.get('/api/cart/check/:memberId/:bookId', (req, res) => {
 });
 
 // ============================================================
-//  RENTALS  (single, consolidated definitions)
+//  RENTALS
 // ============================================================
 
-// --- Borrow ---
+// Borrow
 app.post('/api/local/rentals/borrow', (req, res) => {
     const { memberId, bookId, bookTitle, dueDate } = req.body;
 
@@ -539,7 +555,7 @@ app.post('/api/local/rentals/borrow', (req, res) => {
     });
 });
 
-// --- Borrowed list for member ---
+// Borrowed list for member
 app.get('/api/local/rentals/borrowed/:memberId', (req, res) => {
     const { memberId } = req.params;
     const sql = `SELECT transaction_id AS transactionId,
@@ -563,7 +579,7 @@ app.get('/api/local/rentals/borrowed/:memberId', (req, res) => {
     });
 });
 
-// --- Return ---
+// Return
 app.post('/api/local/rentals/return', (req, res) => {
     const { transactionId } = req.body;
     if (!transactionId)
@@ -621,7 +637,7 @@ app.post('/api/local/rentals/return', (req, res) => {
     });
 });
 
-// --- Renew ---
+// Renew
 app.put('/api/local/rentals/renew/:transactionId', (req, res) => {
     const { transactionId } = req.params;
 
@@ -675,7 +691,7 @@ app.put('/api/local/rentals/renew/:transactionId', (req, res) => {
     });
 });
 
-// --- History ---
+// History
 app.get('/api/local/rentals/history/:memberId', (req, res) => {
     const { memberId } = req.params;
     const sql = `SELECT r.transaction_id AS transactionId,
@@ -697,7 +713,7 @@ app.get('/api/local/rentals/history/:memberId', (req, res) => {
     });
 });
 
-// --- Renewal history ---
+// Renewal history
 app.get('/api/local/rentals/renewal-history/:transactionId', (req, res) => {
     const { transactionId } = req.params;
     const sql = `SELECT renewal_id AS renewalId,
@@ -716,7 +732,7 @@ app.get('/api/local/rentals/renewal-history/:transactionId', (req, res) => {
     });
 });
 
-// --- Stats ---
+// Stats
 app.get('/api/local/rentals/stats/:memberId', (req, res) => {
     const { memberId } = req.params;
     const sql = `SELECT
@@ -735,7 +751,7 @@ app.get('/api/local/rentals/stats/:memberId', (req, res) => {
     });
 });
 
-// --- Overdue (admin) — FIXED JOIN ---
+// Overdue (admin) — FIXED JOIN
 app.get('/api/local/rentals/overdue', (req, res) => {
     const sql = `SELECT r.*,
                         m.member_first_name AS memberFirstName,
@@ -773,7 +789,7 @@ app.get('/api/local/rentals/overdue', (req, res) => {
     });
 });
 
-// --- Calculate penalty for a specific rental ---
+// Calculate penalty
 app.get('/api/local/rentals/calculate-penalty/:transactionId', (req, res) => {
     const { transactionId } = req.params;
     const sql = `SELECT r.*, b.price, b.title
@@ -815,7 +831,7 @@ app.get('/api/local/rentals/calculate-penalty/:transactionId', (req, res) => {
     });
 });
 
-// --- All rentals (admin) ---
+// All rentals (admin)
 app.get('/api/local/rentals/all/:memberId', (req, res) => {
     const { memberId } = req.params;
 
@@ -969,12 +985,11 @@ app.get('/api/health', (req, res) => {
 });
 
 // ============================================================
-//  START
+//  START SERVER
 // ============================================================
 
 const PORT = process.env.PORT || 8080;
-app.listen(PORT, () => {
-    console.log(`\n🚀 Backend server running on http://localhost:${PORT}`);
-    console.log(`📚 API endpoints ready.`);
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`\n🚀 Backend server running on port ${PORT}`);
     console.log(`✅ Connected to MySQL database\n`);
 });
